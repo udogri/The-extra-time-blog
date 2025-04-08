@@ -13,6 +13,9 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebaseConfig'; // Import Firebase Auth
+
 
 const LoginSignup = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
@@ -23,7 +26,9 @@ const LoginSignup = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
+  
+
+  const handleSubmit = async () => {
     if (!email || !password || (!isLogin && !confirmPassword)) {
       toast({
         title: 'Missing fields',
@@ -46,15 +51,30 @@ const LoginSignup = () => {
       return;
     }
 
-    const action = isLogin ? 'logged in' : 'signed up';
-    navigate('/');
-    toast({
-      title: `Successfully ${action}`,
-      description: `You have successfully ${action}!`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+
+      toast({
+        title: `Successfully ${isLogin ? 'logged in' : 'signed up'}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: 'Authentication error',
+        description: error.message,
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+    }
   };
 
   return (

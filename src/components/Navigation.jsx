@@ -83,7 +83,7 @@ const Navbar = ({ isAuthenticated }) => {
     <Box bg="teal.500" px={4} color="white">
       <Flex h={16} alignItems="center" justifyContent="space-between">
         <HStack spacing={8} alignItems="center">
-          <Text fontSize="lg" fontWeight="bold">
+          <Text fontSize="lg" cursor="pointer" fontWeight="bold" onClick={() => navigate(`/`)}>
             Extra Time Blog
           </Text>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>

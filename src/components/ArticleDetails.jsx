@@ -29,13 +29,10 @@ import { doc, getDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db, app } from '../firebaseConfig';
 import { FaRegTrashCan } from "react-icons/fa6";
-import { FaFacebook } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa";
-import { FaWhatsapp } from "react-icons/fa";
-import { FaThumbsUp, FaThumbsDown, FaLinkedin } from "react-icons/fa";
-import PropTypes from 'prop-types';
+import { FaFacebook, FaTwitter, FaWhatsapp, FaThumbsUp, FaThumbsDown, FaLinkedin } from "react-icons/fa";
+import firebase from 'firebase/compat/app';
 
-const ArticleDetails = ({ isAuthenticated }) => {
+const ArticleDetails = () => {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,23 +46,27 @@ const ArticleDetails = ({ isAuthenticated }) => {
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
-  const [user, setUser] = useState(null);
-  const [userReaction, setUserReaction] = useState(null); // "liked", "disliked", or null
+  const [userReaction, setUserReaction] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const auth = getAuth(app);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user || null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         const docRef = doc(db, 'articles', articleId);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const data = docSnap.data();
           setArticle(data);
-          setLikes(docSnap.data().likes || 0);
-          setDislikes(docSnap.data().disLikes || 0);
+          setLikes(data.likes || 0);
+          setDislikes(data.dislikes || 0);
           setEditedArticle({
             title: data.title,
             description: data.description,
@@ -98,6 +99,16 @@ const ArticleDetails = ({ isAuthenticated }) => {
   }, [articleId, toast]);
 
   const handleDeleteArticle = async () => {
+    if (!currentUser || currentUser.uid !== article.authorId) {
+      toast({
+        title: 'Unauthorized action.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
       setIsDeleting(true);
       await deleteDoc(doc(db, 'articles', articleId));
@@ -122,68 +133,21 @@ const ArticleDetails = ({ isAuthenticated }) => {
     }
   };
 
- 
-const handleLike = async () => {
-  if (!articleId) return;
-
-  const articleRef = doc(db, "articles", articleId);
-
-  try {
-    const updateData = {};
-
-    if (userReaction === "liked") {
-      updateData.likes = increment(-1); // Remove like
-      setLikes((prev) => prev - 1);
-      setUserReaction(null);
-    } else {
-      updateData.likes = increment(1); // Add like
-      if (userReaction === "disliked") {
-        updateData.dislikes = increment(-1); // Remove dislike
-        setDislikes((prev) => prev - 1);
-      }
-      setLikes((prev) => prev + 1);
-      setUserReaction("liked");
-    }
-
-    await updateDoc(articleRef, updateData);
-  } catch (error) {
-    console.error("Error updating likes:", error);
-  }
-};
-
-const handleDislike = async () => {
-  if (!articleId) return;
-
-  const articleRef = doc(db, "articles", articleId);
-
-  try {
-    const updateData = {};
-
-    if (userReaction === "disliked") {
-      updateData.dislikes = increment(-1); // Remove dislike
-      setDislikes((prev) => prev - 1);
-      setUserReaction(null);
-    } else {
-      updateData.dislikes = increment(1); // Add dislike
-      if (userReaction === "liked") {
-        updateData.likes = increment(-1); // Remove like
-        setLikes((prev) => prev - 1);
-      }
-      setDislikes((prev) => prev + 1);
-      setUserReaction("disliked");
-    }
-
-    await updateDoc(articleRef, updateData);
-  } catch (error) {
-    console.error("Error updating dislikes:", error);
-  }
-};
-
-  
-  
-
-
   const handleUpdate = async () => {
+    const user = auth.currentUser;
+if (!user) {
+  // Redirect to login or show an error message
+  toast({
+    title: 'Not Authenticated',
+    description: 'You need to be logged in to update an article.',
+    status: 'error',
+    duration: 3000,
+    isClosable: true,
+  });
+  return;
+}
+
+
     try {
       setIsUpdating(true);
       const docRef = doc(db, 'articles', articleId);
@@ -209,21 +173,74 @@ const handleDislike = async () => {
     }
   };
 
+  const handleLike = async () => {
+    if (!articleId) return;
+
+    const articleRef = doc(db, "articles", articleId);
+
+    try {
+      const updateData = {};
+
+      if (userReaction === "liked") {
+        updateData.likes = increment(-1);
+        setLikes((prev) => prev - 1);
+        setUserReaction(null);
+      } else {
+        updateData.likes = increment(1);
+        if (userReaction === "disliked") {
+          updateData.dislikes = increment(-1);
+          setDislikes((prev) => prev - 1);
+        }
+        setLikes((prev) => prev + 1);
+        setUserReaction("liked");
+      }
+
+      await updateDoc(articleRef, updateData);
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+  const handleDislike = async () => {
+    if (!articleId) return;
+
+    const articleRef = doc(db, "articles", articleId);
+
+    try {
+      const updateData = {};
+
+      if (userReaction === "disliked") {
+        updateData.dislikes = increment(-1);
+        setDislikes((prev) => prev - 1);
+        setUserReaction(null);
+      } else {
+        updateData.dislikes = increment(1);
+        if (userReaction === "liked") {
+          updateData.likes = increment(-1);
+          setLikes((prev) => prev - 1);
+        }
+        setDislikes((prev) => prev + 1);
+        setUserReaction("disliked");
+      }
+
+      await updateDoc(articleRef, updateData);
+    } catch (error) {
+      console.error("Error updating dislikes:", error);
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append('image', file);
-
     setUploadingImage(true);
+
     try {
       const response = await fetch(
         'https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a',
-        {
-          method: 'POST',
-          body: formData,
-        }
+        { method: 'POST', body: formData }
       );
       const data = await response.json();
       if (data.success) {
@@ -251,32 +268,9 @@ const handleDislike = async () => {
     }
   };
 
-  
-
-  const shareUrl = window.location.href;
-
-  useEffect(() => {
-    // Get the currently authenticated user
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   if (loading) {
     return (
-      <Box
-        minHeight="100vh"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        bg="gray.50"
-      >
+      <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
         <Spinner size="xl" color="teal.500" />
       </Box>
     );
@@ -290,40 +284,21 @@ const handleDislike = async () => {
     );
   }
 
+  const shareUrl = window.location.href;
 
   return (
-    <Box
-    w='100vw'
-      p={8}
-      bg="gray.50"
-      minHeight="100vh"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-    >
-    <Box  alignItems="center" justifyContent="center" w="100%" maxW="800px" border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
-      <Heading size="xl" mb={4}>
-        {article.title}
-      </Heading>
-      <Image
-        src={article.imageUrl || 'https://via.placeholder.com/150'}
-        alt={article.title}
-        borderRadius="md"
-        mb={4}
-        w="100%"
-      />
-      <HStack mb={4} justifyContent="space-between" w="100%">
-      <Text>by {article.author}</Text>
-        <Text fontSize="sm" color="gray.500">
-          {new Date(article.date).toLocaleDateString()}
-        </Text>
-      </HStack>
-      <Divider border="1px" color="black.700" my={4} />
-      <Text fontSize="lg" mb={4}>
-        {article.description}
-      </Text>
+    <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="center">
+      <Box w="100%" maxW="800px" border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
+        <Heading size="xl" mb={4}>{article.title}</Heading>
+        <Image src={article.imageUrl || 'https://via.placeholder.com/150'} alt={article.title} borderRadius="md" mb={4} w="100%" />
+        <HStack mb={4} justifyContent="space-between">
+          <Text>by {article.author}</Text>
+          <Text fontSize="sm" color="gray.500">{new Date(article.date).toLocaleDateString()}</Text>
+        </HStack>
+        <Divider my={4} />
+        <Text fontSize="lg" mb={4}>{article.description}</Text>
 
-      <HStack spacing={3} mt={4}>
+        <HStack spacing={3} mt={4}>
           <IconButton as="a" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" icon={<FaFacebook />} colorScheme="facebook" />
           <IconButton as="a" href={`https://twitter.com/intent/tweet?url=${shareUrl}`} target="_blank" icon={<FaTwitter />} colorScheme="twitter" />
           <IconButton as="a" href={`https://api.whatsapp.com/send?text=${shareUrl}`} target="_blank" icon={<FaWhatsapp />} colorScheme="whatsapp" />
@@ -333,25 +308,18 @@ const handleDislike = async () => {
         <Divider my={6} />
 
         <HStack spacing={4} mt={4}>
-          <Button leftIcon={<FaThumbsUp />} colorScheme="green" onClick={handleLike}>
-            {likes}
-          </Button>
-          <Button leftIcon={<FaThumbsDown />} colorScheme="red" onClick={handleDislike}>
-            {dislikes}
-          </Button>
+          <Button leftIcon={<FaThumbsUp />} colorScheme="green" onClick={handleLike}>{likes}</Button>
+          <Button leftIcon={<FaThumbsDown />} colorScheme="red" onClick={handleDislike}>{dislikes}</Button>
         </HStack>
 
-
-      {isAuthenticated && (
-        <Box display="flex" mt="10px" justifyContent="space-between">
-          <Button colorScheme="blue" onClick={onEditOpen}>
-            Edit Article
-          </Button>
-          <Button colorScheme="red" onClick={onOpen}>
-            Delete Article
-          </Button>
-        </Box>
-      )}
+        {currentUser && article.userId === currentUser.uid && (
+          <Box mt={6}>
+            <HStack spacing={4}>
+              <Button colorScheme="blue" onClick={onEditOpen}>Edit</Button>
+              <Button colorScheme="red" onClick={onOpen}>Delete</Button>
+            </HStack>
+          </Box>
+        )}
       </Box>
 
       {/* Delete Confirmation Modal */}
@@ -360,89 +328,44 @@ const handleDislike = async () => {
         <ModalContent>
           <ModalHeader>Confirm Delete</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            Are you sure you want to delete this article? This action cannot be undone.
-          </ModalBody>
+          <ModalBody>Are you sure you want to delete this article?</ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" onClick={handleDeleteArticle}>
-              Delete
-            </Button>
-            <Button onClick={onClose} ml={3}>
-              Cancel
-            </Button>
+            <Button variant="ghost" onClick={onClose}>Cancel</Button>
+            <Button colorScheme="red" onClick={handleDeleteArticle} isLoading={isDeleting}>Delete</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-
+      {/* Edit Modal */}
       <Modal isOpen={isEditOpen} onClose={onEditClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Article</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormControl mb={4}>
-              <FormLabel>Title</FormLabel>
-              <Input
-                value={editedArticle.title}
-                onChange={(e) =>
-                  setEditedArticle({ ...editedArticle, title: e.target.value })
-                }
-              />
-              <FormLabel>Author</FormLabel>
-              <Input
-                value={editedArticle.author}
-                onChange={(e) =>
-                  setEditedArticle({ ...editedArticle, author: e.target.value })
-                }
-              />
-              
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Description</FormLabel>
-              <Textarea
-                value={editedArticle.description}
-                onChange={(e) =>
-                  setEditedArticle({ ...editedArticle, description: e.target.value })
-                }
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Image</FormLabel>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-              {uploadingImage && <Spinner size="sm" mt={2} />}
-            </FormControl>
-            <FormControl>
-              <FormLabel>Image URL</FormLabel>
-              <Input
-                value={editedArticle.imageUrl}
-                readOnly
-              />
-            </FormControl>
+            <VStack spacing={4}>
+              <FormControl>
+                <FormLabel>Title</FormLabel>
+                <Input value={editedArticle.title} onChange={(e) => setEditedArticle({ ...editedArticle, title: e.target.value })} />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Description</FormLabel>
+                <Textarea value={editedArticle.description} onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })} />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Image</FormLabel>
+                <Input type="file" accept="image/*" onChange={handleImageUpload} />
+              </FormControl>
+            </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              isLoading={isUpdating}
-              onClick={handleUpdate}
-            >
-              Save Changes
-            </Button>
-            <Button onClick={onEditClose}>Cancel</Button>
+            <Button onClick={onEditClose} variant="ghost">Cancel</Button>
+            <Button colorScheme="blue" onClick={handleUpdate} isLoading={isUpdating}>Update</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
   );
-};
-
-ArticleDetails.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired, // Ensure it's a boolean and required
 };
 
 export default ArticleDetails;

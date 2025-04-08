@@ -23,8 +23,8 @@ import { FaArrowRightLong } from "react-icons/fa6";
 const categories = [
   'Latest News',
   'Trending News',
-  'Sports',
-  'Business',
+  'Sports News',
+  'Business News',
   'Local News',
   'International News',
 ];
@@ -57,6 +57,8 @@ const HomePage = () => {
             id: doc.id,
             ...doc.data(),
           }));
+          console.log(`Category: ${category}, Articles:`, categoryArticles); // Debugging line
+
 
           fetchedArticles[categoryKey] = categoryArticles;
 

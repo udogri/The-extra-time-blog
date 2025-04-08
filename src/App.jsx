@@ -33,10 +33,10 @@ const App = () => {
         <main style={{ minHeight: 'calc(100vh - 150px)' }}>
           <Routes>
             <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} />} />
-            <Route path="/add-article" element={<AddArticle isAuthenticated={setIsAuthenticated} />} />
+            <Route path="/add-article" element={<AddArticle />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/about" element={<About />} />
-            <Route path="/articledetails/:articleId" element={<ArticleDetails isAuthenticated={setIsAuthenticated} />} />
+            <Route path="/articledetails/:articleId" element={<ArticleDetails isAuthenticated={isAuthenticated} />} />
             <Route path="/login" element={<LoginSignup />} />
           </Routes>
         </main>

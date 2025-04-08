@@ -10,6 +10,7 @@ import {
   VStack,
   Select,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { setDoc, doc } from 'firebase/firestore';
@@ -17,7 +18,6 @@ import { db } from '../firebaseConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
-import PropTypes from 'prop-types';
 
 const categories = [
   'Top News',
@@ -29,7 +29,7 @@ const categories = [
   'International News',
 ];
 
-const AddArticle = ({ isAuthenticated }) => {
+const AddArticle = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
@@ -39,34 +39,40 @@ const AddArticle = ({ isAuthenticated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate(); 
+  const [authChecked, setAuthChecked] = useState(false);
+
 
   // Get the authenticated user's ID
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    console.log('Checking auth...');
+const unsubscribe = onAuthStateChanged(auth, (user) => {
+  console.log('USER:', user);
+
       if (user) {
-        setUserId(user.uid); // Set user ID when authenticated
+        setUserId(user.uid);
       } else {
-        setUserId(null);
+        // Don't navigate immediately, let UI update first
+        setTimeout(() => {
+          toast({
+            title: 'Authentication Required',
+            description: 'Please log in to access this page.',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+            position: 'top',
+          });
+          navigate('/login');
+        }, 0);
       }
+      setAuthChecked(true); // Auth state has been determined
     });
-
-    return () => unsubscribe(); // Cleanup function
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      toast({
-        title: 'Authentication Required',
-        description: 'Please log in to access this page.',
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-      navigate('/login'); 
-    }
-  }, [isAuthenticated, navigate, toast]);
+  
+    return () => unsubscribe();
+  }, [navigate, toast]);
+  
+  
+  
 
   const handleImageUpload = async () => {
     if (!image) return null;
@@ -168,6 +174,15 @@ const AddArticle = ({ isAuthenticated }) => {
     }
   };
 
+  if (!authChecked) {
+    return (
+      <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
+        <Spinner size="xl" />
+      </Box>
+    );
+  }
+  
+
   return (
     <Box
       width="100vw"
@@ -251,8 +266,6 @@ const AddArticle = ({ isAuthenticated }) => {
   );
 };
 
-AddArticle.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-};
+
 
 export default AddArticle;

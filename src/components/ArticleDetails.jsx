@@ -268,6 +268,15 @@ if (!user) {
     }
   };
 
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Do something with the file, like uploading or preview
+      console.log('Dropped file:', file);
+    }
+  };
+
   if (loading) {
     return (
       <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
@@ -353,9 +362,59 @@ if (!user) {
                 <Textarea value={editedArticle.description} onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })} />
               </FormControl>
               <FormControl>
-                <FormLabel>Image</FormLabel>
-                <Input type="file" accept="image/*" onChange={handleImageUpload} />
-              </FormControl>
+              <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
+  Upload Image
+</FormLabel>
+
+<Box
+  p={6}
+  border="2px dashed"
+  borderColor="gray.300"
+  borderRadius="md"
+  textAlign="center"
+  cursor="pointer"
+  bg="gray.50"
+  _hover={{ bg: 'gray.100' }}
+  onClick={() => document.getElementById('fileInput').click()}
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={handleFileDrop}
+>
+  {editedArticle.imageUrl ? (
+    <Box>
+      <Text fontSize="sm" color="gray.500" mb={2}>
+        Image Preview
+      </Text>
+      <Image
+        src={editedArticle.imageUrl}
+        alt="Preview"
+        borderRadius="lg"
+        boxSize={{ base: "200px", md: "250px" }}
+        objectFit="cover"
+        boxShadow="md"
+        border="1px solid"
+        borderColor="gray.200"
+        mx="auto"
+      />
+    </Box>
+  ) : (
+    <Box>
+      <Text fontSize="md" color="gray.500">
+        Drag & drop an image here, or <strong>click to select</strong>
+      </Text>
+    </Box>
+  )}
+</Box>
+
+<Input
+  id="fileInput"
+  type="file"
+  accept="image/*"
+  display="none"
+  onChange={handleImageUpload}
+/>
+
+</FormControl>
+
             </VStack>
           </ModalBody>
           <ModalFooter>

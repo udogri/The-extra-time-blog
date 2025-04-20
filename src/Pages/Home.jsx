@@ -153,7 +153,7 @@ const HomePage = () => {
           <Box
             display='flex'
             gap={4}
-            overflowX="scroll"
+            overflowX="auto"
             w="100%"
             className="scroll-container"
             p={4}

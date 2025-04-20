@@ -11,6 +11,8 @@ import {
   Select,
   useToast,
   Spinner,
+  Text,
+  Image,
 } from '@chakra-ui/react';
 import { v4 as uuidv4 } from 'uuid';
 import { setDoc, doc } from 'firebase/firestore';
@@ -18,6 +20,7 @@ import { db } from '../firebaseConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
+
 
 const categories = [
   'Top News',
@@ -174,6 +177,16 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
     }
   };
 
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Do something with the file, like uploading or preview
+      console.log('Dropped file:', file);
+    }
+  };
+  
+
   if (!authChecked) {
     return (
       <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
@@ -245,13 +258,59 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
             </Select>
           </FormControl>
           <FormControl>
-            <FormLabel>Image</FormLabel>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-            />
-          </FormControl>
+          <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
+  Upload Image
+</FormLabel>
+
+<Box
+  p={6}
+  border="2px dashed"
+  borderColor="gray.300"
+  borderRadius="md"
+  textAlign="center"
+  cursor="pointer"
+  bg="gray.50"
+  _hover={{ bg: 'gray.100' }}
+  onClick={() => document.getElementById('fileInput').click()}
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={handleFileDrop}
+>
+  {image ? (
+    <Box>
+      <Text fontSize="sm" color="gray.600" mb={2}>
+        {image.name}
+      </Text>
+      <Image
+        src={URL.createObjectURL(image)}
+        alt="Preview"
+        borderRadius="lg"
+        boxSize={{ base: "200px", md: "250px" }}
+        objectFit="cover"
+        boxShadow="md"
+        border="1px solid"
+        borderColor="gray.200"
+        mx="auto"
+      />
+    </Box>
+  ) : (
+    <Box>
+      <Text fontSize="md" color="gray.500">
+        Drag & drop an image here, or <strong>click to select</strong>
+      </Text>
+    </Box>
+  )}
+</Box>
+
+<Input
+  id="fileInput"
+  type="file"
+  accept="image/*"
+  display="none"
+  onChange={(e) => setImage(e.target.files[0])}
+/>
+
+</FormControl>
+
           <Button
             colorScheme="teal"
             onClick={handleSubmit}

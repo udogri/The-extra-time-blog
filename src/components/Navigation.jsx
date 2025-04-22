@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -19,6 +19,10 @@ const Navbar = ({ isAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+  const [mounted, setMounted] = useState(false);
+
+  
+
 
   const links = [
     { name: 'Home', path: '/' },
@@ -68,25 +72,31 @@ const Navbar = ({ isAuthenticated }) => {
         style={{
           padding: '8px 16px',
           borderRadius: '4px',
-          backgroundColor: isActive ? 'gray.200' : 'transparent',
+          textAlign: 'center',
+          backgroundColor: isActive ? 'gray.800' : 'transparent',
           textDecoration: 'none',
-          color: isActive ? 'teal.600' : 'white',
           fontWeight: isActive ? 'bold' : 'normal',
         }}
+        
       >
         {name}
       </RouterLink>
     );
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <Box bg="teal.500" px={4} color="white">
+    
+    <Box bg="teal.500" px={4} color="white" w="100%" minWidth="100%">
       <Flex h={16} alignItems="center" justifyContent="space-between">
         <HStack spacing={8} alignItems="center">
           <Text fontSize="lg" cursor="pointer" fontWeight="bold" onClick={() => navigate(`/`)}>
             Extra Time Blog
           </Text>
-          <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
+          <HStack as="nav" align="center" spacing={4} display={{ base: 'none', md: 'flex' }}>
             {links.map((link) => (
               <NavLink key={link.name} name={link.name} path={link.path} />
             ))}

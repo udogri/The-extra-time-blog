@@ -85,6 +85,7 @@ const LoginSignup = () => {
       alignItems="center"
       bg="gray.50"
       px={4}
+      w="100vw"
     >
       <Box
         bg="white"
@@ -94,6 +95,10 @@ const LoginSignup = () => {
         maxWidth="400px"
         w="100%"
       >
+        <Heading size="lg" mb={6} textAlign="center">
+        <Text>Extra Time Blog</Text>
+
+        </Heading>
         <Heading size="lg" mb={6} textAlign="center">
           {isLogin ? 'Login' : 'Sign Up'}
         </Heading>

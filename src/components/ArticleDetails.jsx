@@ -323,7 +323,7 @@ if (!user) {
 
         {currentUser && article.userId === currentUser.uid && (
           <Box mt={6}>
-            <HStack spacing={4}>
+            <HStack spacing={4} justifyContent="space-between">
               <Button colorScheme="blue" onClick={onEditOpen}>Edit</Button>
               <Button colorScheme="red" onClick={onOpen}>Delete</Button>
             </HStack>

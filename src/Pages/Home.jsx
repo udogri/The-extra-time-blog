@@ -31,7 +31,7 @@ const categories = [
 
 const HomePage = () => {
   const [articles, setArticles] = useState({});
-  const [sortedCategories, setSortedCategories] = useState(categories);
+  const [sortedCategories, setSortedCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadedCounts, setLoadedCounts] = useState({});
   const [networkError, setNetworkError] = useState(false);
@@ -57,12 +57,9 @@ const HomePage = () => {
             id: doc.id,
             ...doc.data(),
           }));
-          console.log(`Category: ${category}, Articles:`, categoryArticles); // Debugging line
-
-
-          fetchedArticles[categoryKey] = categoryArticles;
 
           if (categoryArticles.length > 0) {
+            fetchedArticles[categoryKey] = categoryArticles;
             categoriesWithArticles.push(category);
           }
         }
@@ -86,17 +83,12 @@ const HomePage = () => {
 
         fetchedArticles.topNews = randomTopNews;
 
-        // Update sorted categories
-        const sorted = [
-          ...categoriesWithArticles,
-          ...categories.filter((category) => !categoriesWithArticles.includes(category)),
-        ];
-
+        // Update sorted categories (only ones with articles)
         setArticles(fetchedArticles);
-        setSortedCategories(sorted);
+        setSortedCategories(categoriesWithArticles);
         setLoadedCounts(
-          sorted.reduce((acc, key) => {
-            acc[key.toLowerCase().replace(' ', '')] = 3; // Initial load count for each category
+          categoriesWithArticles.reduce((acc, key) => {
+            acc[key.toLowerCase().replace(' ', '')] = 3;
             return acc;
           }, {})
         );
@@ -129,80 +121,71 @@ const HomePage = () => {
     const loadedCount = loadedCounts[categoryKey] || 0;
 
     return (
-      <VStack align="start" maxW="100%"  spacing={4} mt={8} key={categoryKey}>
+      <VStack align="start" maxW="100%" spacing={4} mt={8} key={categoryKey}>
         <HStack w="100%" justify="space-between" p={4} rounded="md">
-        <Heading size="md">{category}</Heading>
-        {articlesForCategory.length > loadedCount && (
-          <Button
-            size="sm"
-            color="teal"
-            bg="transparent"
-            gap={2}
-            onClick={() => loadMore(categoryKey)}
-            
-          >
-            View More
-            <FaArrowRightLong color="teal" />
-          </Button>
-        )}
-        
-       
+          <Heading size="md">{category}</Heading>
+          {articlesForCategory.length > loadedCount && (
+            <Button
+              size="sm"
+              color="teal"
+              bg="transparent"
+              gap={2}
+              onClick={() => loadMore(categoryKey)}
+            >
+              View More
+              <FaArrowRightLong color="teal" />
+            </Button>
+          )}
         </HStack>
 
-        {articlesForCategory.length > 0 ? (
-          <Box
-            display='flex'
-            gap={4}
-            overflowX="auto"
-            w="100%"
-            className="scroll-container"
-            p={4}
-          >
-            {articlesForCategory.slice(0, loadedCount).map((article) => (
-              <Box
-                key={article.id}
-                p={4}
-                border="1px solid"
-                borderColor="gray.300"
-                rounded="md"
-                minWidth="300px"
-                maxWidth="350px"
-                mx='auto'
+        <Box
+          display="flex"
+          gap={4}
+          overflowX="auto"
+          w="100%"
+          className="scroll-container"
+          p={4}
+        >
+          {articlesForCategory.slice(0, loadedCount).map((article) => (
+            <Box
+              key={article.id}
+              p={4}
+              border="1px solid"
+              borderColor="gray.300"
+              rounded="md"
+              minWidth="300px"
+              maxWidth="350px"
+              mx="auto"
+            >
+              <Image
+                src={article.imageUrl || 'https://via.placeholder.com/150'}
+                alt={article.title}
+                borderRadius="md"
+                mb={4}
+                objectFit="cover"
+                boxSize="200px"
+                w="100%"
+              />
+              <Text fontWeight="bold" noOfLines={1}>
+                {article.title}
+              </Text>
+              <Text fontSize="sm" noOfLines={2}>
+                {article.description || article.content}
+              </Text>
+              <Text fontSize="sm" color="red.700">
+                {article.author} | {new Date(article.date).toLocaleDateString()}
+              </Text>
+              <Button
+                size="sm"
+                colorScheme="teal"
+                mt={2}
+                onClick={() => navigate(`/articledetails/${article.id}`)}
               >
-                <Image
-                  src={article.imageUrl || 'https://via.placeholder.com/150'}
-                  alt={article.title}
-                  borderRadius="md"
-                  mb={4}
-                  objectFit="cover"
-                  boxSize="200px"
-                  w="100%"
-                />
-                <Text fontWeight="bold" noOfLines={1}>
-                  {article.title}
-                </Text>
-                <Text fontSize="sm" noOfLines={2}>
-                  {article.description || article.content}
-                </Text>
-                <Text fontSize="sm" color="red.700">
-                  {article.author} | {new Date(article.date).toLocaleDateString()}
-                </Text>
-                <Button
-                  size="sm"
-                  colorScheme="teal"
-                  mt={2}
-                  onClick={() => navigate(`/articledetails/${article.id}`)}
-                >
-                  Read Article
-                </Button>
-              </Box>
-
-            ))}
-          </Box>
-        ) : (
-          <NoNewsAvailable />
-        )}
-        
+                Read Article
+              </Button>
+            </Box>
+          ))}
+        </Box>
       </VStack>
     );
   };
@@ -226,6 +209,15 @@ const HomePage = () => {
     return <NetworkError onRetry={() => window.location.reload()} />;
   }
 
+  if (
+    !loading &&
+    !networkError &&
+    sortedCategories.length === 0 &&
+    !articles.topNews
+  ) {
+    return <NoNewsAvailable />;
+  }
+
   return (
     <Box
       minHeight="100vh"
@@ -237,7 +229,7 @@ const HomePage = () => {
       bg="gray.50"
       p={8}
     >
-      {articles.topNews ? (
+      {articles.topNews && (
         <Box
           mb={8}
           p={4}
@@ -270,9 +262,8 @@ const HomePage = () => {
             Read Article
           </Button>
         </Box>
-      ) : (
-        <NoNewsAvailable />
       )}
+
       {sortedCategories.map((category) =>
         renderCategorySection(category, category.toLowerCase().replace(' ', ''))
       )}

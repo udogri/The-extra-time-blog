@@ -239,6 +239,7 @@ const HomePage = () => {
           rounded="md"
           w="100%"
           textAlign="center"
+
         >
           <Image
             src={articles.topNews.imageUrl || 'https://via.placeholder.com/150'}
@@ -246,6 +247,7 @@ const HomePage = () => {
             borderRadius="md"
             mb={4}
             objectFit="cover"
+            boxSize="300px"
             w="100%"
           />
           <Heading size="xl" mb={4}>

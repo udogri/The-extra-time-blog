@@ -250,7 +250,7 @@ fetchedArticles.topNews = randomTopNews;
             objectFit="cover"
             w="100%"
           />
-          <Heading size="xl" mb={4}>
+          <Heading fontSize={{ base: 'md', md: 'x-large' }} mb={4}>
             {articles.topNews.title}
           </Heading>
           <Text mb={4} noOfLines={2}>

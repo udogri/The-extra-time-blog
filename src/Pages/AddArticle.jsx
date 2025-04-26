@@ -246,19 +246,21 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Category</FormLabel>
-            <Select
-              placeholder="Select category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+  <FormLabel>Category</FormLabel>
+  <Select
+    placeholder="Select category"
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    fontSize={{ base: '12px', md: 'md' }} // responsive font size
+  >
+    {categories.map((cat) => (
+      <option key={cat} value={cat}>
+        {cat}
+      </option>
+    ))}
+  </Select>
+</FormControl>
+
           <FormControl>
           <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
   Upload Image

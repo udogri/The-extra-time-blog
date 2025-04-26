@@ -36,6 +36,7 @@ const LoginSignup = () => {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       return;
     }
@@ -47,6 +48,7 @@ const LoginSignup = () => {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       return;
     }
@@ -63,6 +65,7 @@ const LoginSignup = () => {
         status: 'success',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
 
       navigate('/');
@@ -73,6 +76,7 @@ const LoginSignup = () => {
         status: 'error',
         duration: 4000,
         isClosable: true,
+        position: 'top',
       });
     }
   };

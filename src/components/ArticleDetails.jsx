@@ -78,6 +78,7 @@ const ArticleDetails = () => {
             status: 'error',
             duration: 3000,
             isClosable: true,
+            position: 'top',
           });
         }
       } catch (error) {
@@ -87,6 +88,7 @@ const ArticleDetails = () => {
           status: 'error',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
       } finally {
         setLoading(false);
@@ -105,6 +107,7 @@ const ArticleDetails = () => {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       return;
     }
@@ -126,6 +129,7 @@ const ArticleDetails = () => {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
     } finally {
       setIsDeleting(false);
@@ -143,6 +147,7 @@ if (!user) {
     status: 'error',
     duration: 3000,
     isClosable: true,
+    position: 'top',
   });
   return;
 }
@@ -158,6 +163,7 @@ if (!user) {
         status: 'success',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       onEditClose();
     } catch (error) {
@@ -167,6 +173,7 @@ if (!user) {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
     } finally {
       setIsUpdating(false);
@@ -251,6 +258,7 @@ if (!user) {
           status: 'success',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
       } else {
         throw new Error('Image upload failed');
@@ -262,6 +270,7 @@ if (!user) {
         status: 'error',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
     } finally {
       setUploadingImage(false);
@@ -298,7 +307,7 @@ if (!user) {
   return (
     <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="center">
       <Box w="100%"  border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
-        <Heading size="xl" mb={4}>{article.title}</Heading>
+        <Heading fontSize={{ base: 'md', md: 'x-large' }} mb={4} textAlign="center" >{article.title}</Heading>
         <Image src={article.imageUrl || 'https://via.placeholder.com/150'} alt={article.title} borderRadius="md" mb={4} w="100%" />
         <HStack mb={4} justifyContent="space-between">
           <Text>by {article.author}</Text>
@@ -308,17 +317,17 @@ if (!user) {
         <Text fontSize="lg" mb={4}>{article.description}</Text>
 
         <HStack spacing={3} mt={4}>
-          <IconButton as="a" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" icon={<FaFacebook />} colorScheme="facebook" />
-          <IconButton as="a" href={`https://twitter.com/intent/tweet?url=${shareUrl}`} target="_blank" icon={<FaTwitter />} colorScheme="twitter" />
-          <IconButton as="a" href={`https://api.whatsapp.com/send?text=${shareUrl}`} target="_blank" icon={<FaWhatsapp />} colorScheme="whatsapp" />
-          <IconButton as="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" icon={<FaLinkedin />} colorScheme="linkedin" />
+          <IconButton as="a" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} background="transparent" target="_blank" icon={<FaFacebook />}/>
+          <IconButton as="a" href={`https://twitter.com/intent/tweet?url=${shareUrl}`} background="transparent" target="_blank" icon={<FaTwitter />} />
+          <IconButton as="a" href={`https://api.whatsapp.com/send?text=${shareUrl}`} background="transparent" target="_blank" icon={<FaWhatsapp />}  />
+          <IconButton as="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} background="transparent" target="_blank" icon={<FaLinkedin />}  />
         </HStack>
 
         <Divider my={6} />
 
         <HStack spacing={4} mt={4}>
-          <Button leftIcon={<FaThumbsUp />} colorScheme="green" onClick={handleLike}>{likes}</Button>
-          <Button leftIcon={<FaThumbsDown />} colorScheme="red" onClick={handleDislike}>{dislikes}</Button>
+          <Button leftIcon={<FaThumbsUp />}  background="transparent" onClick={handleLike}>{likes}</Button>
+          <Button leftIcon={<FaThumbsDown />}  background="transparent" onClick={handleDislike}>{dislikes}</Button>
         </HStack>
 
         {currentUser && article.userId === currentUser.uid && (
@@ -359,7 +368,7 @@ if (!user) {
               </FormControl>
               <FormControl>
                 <FormLabel>Description</FormLabel>
-                <Textarea value={editedArticle.description} onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}  />
+                <Textarea value={editedArticle.description}  onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}  />
               </FormControl>
               <FormControl>
               <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">

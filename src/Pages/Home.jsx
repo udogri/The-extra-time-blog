@@ -253,7 +253,7 @@ fetchedArticles.topNews = randomTopNews;
           <Heading size="xl" mb={4}>
             {articles.topNews.title}
           </Heading>
-          <Text mb={4}>
+          <Text mb={4} noOfLines={2}>
             {articles.topNews.description || articles.topNews.content}
           </Text>
           <Button

@@ -279,9 +279,6 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
 >
   {image ? (
     <Box>
-      <Text fontSize="sm" color="gray.600" mb={2}>
-        {image.name}
-      </Text>
       <Image
         src={URL.createObjectURL(image)}
         alt="Preview"

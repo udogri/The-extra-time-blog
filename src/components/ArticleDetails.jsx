@@ -297,7 +297,7 @@ if (!user) {
 
   return (
     <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="center">
-      <Box w="100%" maxW="800px" border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
+      <Box w="100%"  border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
         <Heading size="xl" mb={4}>{article.title}</Heading>
         <Image src={article.imageUrl || 'https://via.placeholder.com/150'} alt={article.title} borderRadius="md" mb={4} w="100%" />
         <HStack mb={4} justifyContent="space-between">

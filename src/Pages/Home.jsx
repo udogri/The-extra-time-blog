@@ -65,23 +65,24 @@ const HomePage = () => {
         }
 
         // Fetch "Top News" separately
-        const topNewsQuery = query(
-          collection(db, 'articles'),
-          where('category', '==', 'Top News')
-        );
-        const topNewsSnapshot = await getDocs(topNewsQuery);
-        const topNewsArticles = topNewsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+const topNewsQuery = query(
+  collection(db, 'articles'),
+  where('category', '==', 'Top News')
+);
+const topNewsSnapshot = await getDocs(topNewsQuery);
+const topNewsArticles = topNewsSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
 
-        // Randomize Top News if multiple articles exist
-        const randomTopNews =
-          topNewsArticles.length > 1
-            ? topNewsArticles[Math.floor(Math.random() * topNewsArticles.length)]
-            : topNewsArticles[0] || null;
+// Randomize Top News if multiple articles exist
+const randomTopNews =
+  topNewsArticles.length > 1
+    ? topNewsArticles[Math.floor(Math.random() * topNewsArticles.length)]
+    : topNewsArticles[0] || null;
 
-        fetchedArticles.topNews = randomTopNews;
+fetchedArticles.topNews = randomTopNews;
+
 
         // Update sorted categories (only ones with articles)
         setArticles(fetchedArticles);
@@ -247,7 +248,6 @@ const HomePage = () => {
             borderRadius="md"
             mb={4}
             objectFit="cover"
-            boxSize="300px"
             w="100%"
           />
           <Heading size="xl" mb={4}>

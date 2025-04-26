@@ -155,6 +155,7 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
         status: 'success',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
 
       // Reset form fields
@@ -171,6 +172,7 @@ const unsubscribe = onAuthStateChanged(auth, (user) => {
         status: 'error',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
     } finally {
       setIsLoading(false);

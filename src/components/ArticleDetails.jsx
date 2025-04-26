@@ -359,7 +359,7 @@ if (!user) {
               </FormControl>
               <FormControl>
                 <FormLabel>Description</FormLabel>
-                <Textarea value={editedArticle.description} onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })} />
+                <Textarea value={editedArticle.description} onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}  />
               </FormControl>
               <FormControl>
               <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">

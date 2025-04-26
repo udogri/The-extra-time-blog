@@ -123,21 +123,32 @@ const Navbar = ({ isAuthenticated }) => {
       </Flex>
 
       {isOpen && (
-        <Box pb={4} display={{ md: 'none' }}>
-          <Stack as="nav" spacing={4}>
-            {links.map((link) => (
-              <NavLink key={link.name} name={link.name} path={link.path} />
-            ))}
-            <Button
-              size="sm"
-              colorScheme={isAuthenticated ? 'red' : 'blue'}
-              onClick={handleAuthClick}
-            >
-              {isAuthenticated ? 'Logout' : 'Login'}
-            </Button>
-          </Stack>
-        </Box>
-      )}
+  <Box
+    position="absolute"
+    top="63px" /* adjust depending on your Navbar height */
+    left="0"
+    width="100%"
+    bg="teal.500"
+    zIndex="10"
+    display={{ md: 'none' }}
+    px={4}
+    py={4}
+  >
+    <Stack as="nav" spacing={4}>
+      {links.map((link) => (
+        <NavLink key={link.name} name={link.name} path={link.path} />
+      ))}
+      <Button
+        size="sm"
+        colorScheme={isAuthenticated ? 'red' : 'blue'}
+        onClick={handleAuthClick}
+      >
+        {isAuthenticated ? 'Logout' : 'Login'}
+      </Button>
+    </Stack>
+  </Box>
+)}
+
     </Box>
   );
 };

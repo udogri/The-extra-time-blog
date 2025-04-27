@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Heading,
   Text,
   Button,
@@ -9,9 +8,7 @@ import {
   useToast,
   Spinner,
   Image,
-  Flex,
   HStack,
-  Divider,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -147,7 +144,7 @@ fetchedArticles.topNews = randomTopNews;
           className="scroll-container"
           p={4}
         >
-          {articlesForCategory.slice(0, loadedCount).map((article) => (
+          {[...articlesForCategory].reverse().slice(0, loadedCount).map((article) => (
             <Box
               key={article.id}
               p={4}

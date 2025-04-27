@@ -54,6 +54,33 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Scrollbar customization for .scroll-container */
+.scroll-container {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #cbd5e0 transparent; /* scrollbar thumb color and track color */
+}
+
+/* For Webkit browsers (Chrome, Edge, Safari) */
+.scroll-container::-webkit-scrollbar {
+  height: 6px; /* default small height */
+  transition: height 0.3s ease;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent; /* invisible track */
+}
+
+/* Hide scrollbar by default */
+.scroll-container:not(:hover)::-webkit-scrollbar-thumb {
+  background-color: transparent; /* make thumb invisible when not hovering */
+}
+
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

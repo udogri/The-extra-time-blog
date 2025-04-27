@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Heading,
@@ -28,9 +28,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db, app } from '../firebaseConfig';
-import { FaRegTrashCan } from "react-icons/fa6";
 import { FaFacebook, FaTwitter, FaWhatsapp, FaThumbsUp, FaThumbsDown, FaLinkedin } from "react-icons/fa";
-import firebase from 'firebase/compat/app';
 
 const ArticleDetails = () => {
   const [article, setArticle] = useState(null);
@@ -57,48 +55,48 @@ const ArticleDetails = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const fetchArticle = async () => {
-      try {
-        const docRef = doc(db, 'articles', articleId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setArticle(data);
-          setLikes(data.likes || 0);
-          setDislikes(data.dislikes || 0);
-          setEditedArticle({
-            title: data.title,
-            description: data.description,
-            imageUrl: data.imageUrl,
-          });
-        } else {
-          toast({
-            title: 'Article not found.',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-            position: 'top',
-          });
-        }
-      } catch (error) {
+  const fetchArticle = async () => {
+    try {
+      const docRef = doc(db, 'articles', articleId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setArticle(data);
+        setLikes(data.likes || 0);
+        setDislikes(data.dislikes || 0);
+        setEditedArticle({
+          title: data.title,
+          description: data.description,
+          imageUrl: data.imageUrl,
+        });
+      } else {
         toast({
-          title: 'Error fetching article.',
-          description: error.message,
+          title: 'Article not found.',
           status: 'error',
           duration: 3000,
           isClosable: true,
           position: 'top',
         });
-      } finally {
-        setLoading(false);
       }
-    };
-
-    if (articleId) {
-      fetchArticle();
+    } catch (error) {
+      toast({
+        title: 'Error fetching article.',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+    } finally {
+      setLoading(false);
     }
-  }, [articleId, toast]);
+  };
+
+  if (articleId) {
+    fetchArticle();
+  }
+
+  
 
   const handleDeleteArticle = async () => {
     if (!currentUser || currentUser.uid !== article.authorId) {
@@ -178,6 +176,7 @@ if (!user) {
     } finally {
       setIsUpdating(false);
     }
+    fetchArticle()
   };
 
   const handleLike = async () => {
@@ -285,6 +284,10 @@ if (!user) {
       console.log('Dropped file:', file);
     }
   };
+
+  useEffect(() => {
+    fetchArticle()
+  }, [articleId, toast]);
 
   if (loading) {
     return (

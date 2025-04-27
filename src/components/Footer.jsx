@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Box, 
   Text, 
@@ -22,6 +21,7 @@ const Footer = () => {
       status: 'success',
       duration: 5000,
       isClosable: true,
+      position: 'top',
     });
   };
 

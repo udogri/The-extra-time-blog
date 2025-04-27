@@ -33,6 +33,8 @@ const About = () => {
         p={8}
         borderRadius="lg"
         boxShadow="xl"
+        m="50px"
+
       >
         <VStack spacing={6}>
           {/* Avatar Section */}
@@ -76,36 +78,35 @@ const About = () => {
               <IconButton
                 aria-label="Facebook"
                 icon={<FaFacebook />}
-                colorScheme="facebook"
+                background="transparent"
               />
             </Link>
             <Link href="https://twitter.com" isExternal>
               <IconButton
                 aria-label="Twitter"
                 icon={<FaTwitter />}
-                colorScheme="twitter"
+                background="transparent"
               />
             </Link>
             <Link href="https://linkedin.com" isExternal>
               <IconButton
                 aria-label="LinkedIn"
                 icon={<FaLinkedin />}
-                colorScheme="linkedin"
+                background="transparent"
               />
             </Link>
             <Link href="https://github.com" isExternal>
               <IconButton
                 aria-label="GitHub"
                 icon={<FaGithub />}
-                colorScheme="gray"
+                background="transparent"
               />
             </Link>
             <Link href="https://instagram.com" isExternal>
               <IconButton
                 aria-label="Instagram"
                 icon={<FaInstagram />}
-                bg="pink.400"
-                _hover={{ bg: 'pink.500' }}
+                background="transparent"
               />
             </Link>
           </HStack>

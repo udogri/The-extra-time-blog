@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   VStack,
@@ -38,9 +37,9 @@ const About = () => {
       >
         <VStack spacing={6}>
           {/* Avatar Section */}
-          <Avatar size="xl" name="Your Name" src="https://via.placeholder.com/150" />
+          <Avatar size="xl" name="Extra Time" src="https://via.placeholder.com/150" />
           <Heading as="h1" size="lg" textAlign="center">
-            About Me
+            About us
           </Heading>
           <Text fontSize="md" color={textColor} textAlign="center">
           Welcome to <strong>Extra Time Blog</strong>, your go-to source for the latest and most reliable news

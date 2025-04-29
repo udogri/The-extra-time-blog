@@ -99,7 +99,18 @@ const ArticleDetails = () => {
   
 
   const handleDeleteArticle = async () => {
-    if (!currentUser || currentUser.uid !== article.authorId) {
+    if (!article) {
+      toast({
+        title: 'Article not found.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+      return;
+    }
+  
+    if (!currentUser || currentUser.uid !== article.userId) {
       toast({
         title: 'Unauthorized action.',
         status: 'error',
@@ -109,7 +120,7 @@ const ArticleDetails = () => {
       });
       return;
     }
-
+  
     try {
       setIsDeleting(true);
       await deleteDoc(doc(db, 'articles', articleId));
@@ -118,6 +129,7 @@ const ArticleDetails = () => {
         status: 'success',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       navigate('/');
     } catch (error) {
@@ -134,6 +146,7 @@ const ArticleDetails = () => {
       onClose();
     }
   };
+  
 
   const handleUpdate = async () => {
     const user = auth.currentUser;
@@ -308,16 +321,15 @@ if (!user) {
   const shareUrl = window.location.href;
 
   return (
-    <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="center">
-      <Box w="100%"  border="1px solid" borderColor="gray.200" p={8} borderRadius="md" bg="white">
+    <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="left">
         <Heading fontSize={{ base: 'md', md: 'x-large' }} mb={4} textAlign="center" >{article.title}</Heading>
         <Image src={article.imageUrl || 'https://via.placeholder.com/150'} alt={article.title} borderRadius="md" mb={4} w="100%" />
         <HStack mb={4} justifyContent="space-between">
-          <Text>by {article.author}</Text>
-          <Text fontSize="sm" color="gray.500">{new Date(article.date).toLocaleDateString()}</Text>
+          <Text fontSize={{ base: 'sm', md: 'lg' }}>by {article.author}</Text>
+          <Text fontSize={{ base: 'sm', md: 'lg' }} color="gray.500">{new Date(article.date).toLocaleDateString()}</Text>
         </HStack>
         <Divider my={4} />
-        <Text fontSize="lg" mb={4}>{article.description}</Text>
+        <Text fontSize={{ base: 'sm', md: 'lg' }} mb={4}>{article.description}</Text>
 
         <HStack spacing={3} mt={4}>
           <IconButton as="a" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} background="transparent" target="_blank" icon={<FaFacebook />}/>
@@ -341,7 +353,6 @@ if (!user) {
             </HStack>
           </Box>
         )}
-      </Box>
 
       {/* Delete Confirmation Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>

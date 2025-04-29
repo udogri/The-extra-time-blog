@@ -23,18 +23,9 @@ const About = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      px={4}
+      p="30px"
     >
-      <Box
-        maxW="700px"
-        w="100%"
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="xl"
-        m="50px"
-
-      >
+      
         <VStack spacing={6}>
           {/* Avatar Section */}
           <Avatar size="xl" name="Extra Time" src="https://via.placeholder.com/150" />
@@ -110,7 +101,6 @@ const About = () => {
             </Link>
           </HStack>
         </VStack>
-      </Box>
     </Box>
   );
 };

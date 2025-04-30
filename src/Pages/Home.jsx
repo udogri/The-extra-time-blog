@@ -239,15 +239,17 @@ fetchedArticles.topNews = randomTopNews;
           textAlign="center"
 
         >
+        <Box display={{ base: 'grid', md: 'flex' }}>
           <Image
             src={articles.topNews.imageUrl || 'https://via.placeholder.com/150'}
             alt={articles.topNews.title}
             borderRadius="md"
             mb={4}
             objectFit="cover"
-            w="100%"
+            w={{ base: '100%', md: '50%' }}
           />
-          <Heading fontSize={{ base: 'md', md: 'x-large' }} mb={4}>
+          <VStack p="8px">
+          <Heading fontSize={{ base: 'md', md: '5xl', lg: '6xl' }} mb={4}>
             {articles.topNews.title}
           </Heading>
           <Text mb={4} noOfLines={2}>
@@ -260,6 +262,8 @@ fetchedArticles.topNews = randomTopNews;
           >
             Read Article
           </Button>
+          </VStack>
+          </Box>
         </Box>
       )}
 

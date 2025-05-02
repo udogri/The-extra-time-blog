@@ -255,6 +255,9 @@ fetchedArticles.topNews = randomTopNews;
           <Text mb={4} noOfLines={2}>
             {articles.topNews.description || articles.topNews.content}
           </Text>
+          <Text fontSize="sm" color="red.700" textAlign="left">
+                {articles.topNews.author} | {new Date(articles.topNews.date).toLocaleDateString()}
+              </Text>
           <Button
             size="md"
             colorScheme="teal"

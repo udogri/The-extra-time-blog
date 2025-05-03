@@ -249,7 +249,7 @@ fetchedArticles.topNews = randomTopNews;
             w={{ base: '100%', md: '50%' }}
           />
           <VStack p="8px">
-          <Heading fontSize={{ base: 'md', md: '5xl', lg: '6xl' }} mb={4}>
+          <Heading fontSize={{ base: 'md', md: '4xl', lg: '6xl' }} mb={4}>
             {articles.topNews.title}
           </Heading>
           <Text mb={4} noOfLines={2}>

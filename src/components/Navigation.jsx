@@ -112,6 +112,7 @@ const Navbar = ({ isAuthenticated }) => {
           
           <Menu>
   <MenuButton
+    display={{ base: 'none', md: 'flex' }}
     as={IconButton}
     icon={<MdLogout />}
     fontSize="24px"
@@ -142,9 +143,19 @@ const Navbar = ({ isAuthenticated }) => {
 </Menu>
           <IconButton
             size="md"
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            bg="transparent"
+            color="white"
+            _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+      outline: 'none', // Remove outline on hover
+    }}            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
             aria-label="Toggle Navigation"
-            display={{ md: 'none' }}
+            display={{ base: 'flex', md: 'none' }}
             onClick={isOpen ? onClose : onOpen}
           />
         </Flex>

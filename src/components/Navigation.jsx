@@ -5,6 +5,10 @@ import {
   Flex,
   HStack,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Stack,
   Text,
   useDisclosure,
@@ -13,6 +17,7 @@ import {
 import { NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { auth } from '../firebaseConfig'; // Ensure Firebase is correctly configured
+import { MdLogout } from 'react-icons/md';
 
 const Navbar = ({ isAuthenticated }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -102,16 +107,37 @@ const Navbar = ({ isAuthenticated }) => {
             ))}
           </HStack>
         </HStack>
-        <Flex alignItems="center">
-          <Button
-            size="sm"
-            colorScheme={isAuthenticated ? 'red' : 'blue'}
-            onClick={handleAuthClick}
-            mr={4}
-            display={{ base: 'none', md: 'flex' }}
-          >
-            {isAuthenticated ? 'Logout' : 'Login'}
-          </Button>
+          
+          <Menu>
+  <MenuButton
+    as={IconButton}
+    icon={<MdLogout />}
+    fontSize="24px"
+    color="white"
+    bg="transparent"
+    _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+      outline: 'none', // Remove outline on hover
+    }}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
+  />
+  <MenuList bg="teal.500" border="none">
+    <MenuItem
+      onClick={handleAuthClick}
+      bg="teal.500"
+      _active={{ outline: 'none' }}
+      _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      }}
+      color="white"
+    >
+      Confirm Logout
+    </MenuItem>
+  </MenuList>
+</Menu>
           <IconButton
             size="md"
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
@@ -120,7 +146,6 @@ const Navbar = ({ isAuthenticated }) => {
             onClick={isOpen ? onClose : onOpen}
           />
         </Flex>
-      </Flex>
 
       {isOpen && (
   <Box
@@ -138,13 +163,33 @@ const Navbar = ({ isAuthenticated }) => {
       {links.map((link) => (
         <NavLink key={link.name} name={link.name} path={link.path} />
       ))}
-      <Button
-        size="sm"
-        colorScheme={isAuthenticated ? 'red' : 'blue'}
-        onClick={handleAuthClick}
-      >
-        {isAuthenticated ? 'Logout' : 'Login'}
-      </Button>
+      <Menu>
+  <MenuButton
+    as={IconButton}
+    icon={<MdLogout />}
+    fontSize="24px"
+    color="white"
+    bg="transparent"
+    _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+    }}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
+  />
+  <MenuList bg="#34495e" border="none">
+    <MenuItem
+      onClick={handleAuthClick}
+      bg="#34495e"
+      _hover={{ bg: '#2c3e50', color: 'white' }}
+      color="white"
+    >
+      Confirm Logout
+    </MenuItem>
+  </MenuList>
+</Menu>
     </Stack>
   </Box>
 )}

@@ -51,6 +51,7 @@ const Navbar = ({ isAuthenticated }) => {
           status: 'success',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
         navigate('/login'); // Redirect to the login page
       } catch (error) {
@@ -61,6 +62,7 @@ const Navbar = ({ isAuthenticated }) => {
           status: 'error',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
       }
     } else {
@@ -174,16 +176,19 @@ const Navbar = ({ isAuthenticated }) => {
       transform: 'scale(1.2)',
       transition: 'transform 0.2s ease-in-out',
       bg: 'transparent',
+      outline: 'none', // Remove outline on hover
     }}
     _focus={{ boxShadow: 'none', bg: 'transparent' }}
     _active={{ bg: 'transparent' }}
     _expanded={{ bg: 'transparent' }} // when dropdown is open
   />
-  <MenuList bg="#34495e" border="none">
+  <MenuList bg="teal.500" border="none">
     <MenuItem
       onClick={handleAuthClick}
-      bg="#34495e"
-      _hover={{ bg: '#2c3e50', color: 'white' }}
+      bg="teal.500"
+      _active={{ outline: 'none' }}
+      _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      }}
       color="white"
     >
       Confirm Logout

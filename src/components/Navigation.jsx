@@ -132,8 +132,9 @@ const Navbar = ({ isAuthenticated }) => {
     <MenuItem
       onClick={handleAuthClick}
       bg="teal.500"
-      _active={{ outline: 'none' }}
+      _active={{ outline: 'none', bg: 'transparent' }}
       _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      
       }}
       color="white"
     >
@@ -197,8 +198,9 @@ const Navbar = ({ isAuthenticated }) => {
     <MenuItem
       onClick={handleAuthClick}
       bg="teal.500"
-      _active={{ outline: 'none' }}
+      _active={{ outline: 'none', bg: 'transparent' }}
       _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      
       }}
       color="white"
     >

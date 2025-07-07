@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Image, Text, VStack } from '@chakra-ui/react';
+import NoNetwork from '../assets/Questions-amico.svg'; // Adjust the path as necessary
 
 const NoNewsAvailable = ({ category }) => {
   return (
@@ -7,10 +8,9 @@ const NoNewsAvailable = ({ category }) => {
       display="flex"
       alignItems="center"
       justifyContent="center"
-      minHeight="300px"
+      minHeight="100vh"
       bg="gray.50"
       borderRadius="md"
-      border="1px solid"
       borderColor="gray.200"
       boxShadow="sm"
       p={6}
@@ -19,17 +19,19 @@ const NoNewsAvailable = ({ category }) => {
     >
       <VStack spacing={4}>
         <Image
-          src="https://via.placeholder.com/150/gray/FFFFFF/?text=No+News" // Replace with your custom illustration/image URL
+          src={NoNetwork} // Replace with your custom illustration/image URL
           alt="No News"
-          maxW="200px"
+          w={{base:"200px", md: "300px"}}
           borderRadius="md"
-          boxShadow="base"
         />
-        <Text fontSize="lg" fontWeight="bold" color="gray.600">
-          No {category} news available
+        <Text fontSize={{base:"20px", md: "50px"}} fontWeight="bold" color="gray.600">
+          Oops
         </Text>
-        <Text fontSize="sm" color="gray.500">
-          Please check back later for updates.
+        <Text fontSize={{base:"12px", md: "15px"}} color="gray.500">
+          Something went wrong,
+        </Text>
+        <Text fontSize="15px" color="gray.500">
+          Please try again later.
         </Text>
       </VStack>
     </Box>

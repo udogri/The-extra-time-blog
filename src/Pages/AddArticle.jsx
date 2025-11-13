@@ -1,331 +1,266 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from "react";
 import {
   Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
   Button,
   Heading,
-  VStack,
+  Input,
+  Textarea,
   Select,
   useToast,
   Spinner,
-  Text,
+  VStack,
   Image,
-} from '@chakra-ui/react';
-import { v4 as uuidv4 } from 'uuid';
-import { setDoc, doc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // For navigation
-import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
-
+  Text,
+  HStack,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { v4 as uuidv4 } from "uuid";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const categories = [
-  'Top News',
-  'Latest News',
-  'Trending News',
-  'Sports News',
-  'Business News',
-  'Local News',
-  'International News',
+  "Top News",
+  "Latest News",
+  "Trending News",
+  "Sports News",
+  "Business News",
+  "Local News",
+  "International News",
 ];
 
 const AddArticle = () => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
-  const [userId, setUserId] = useState(null); // Store user ID
+  const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
-  const navigate = useNavigate(); 
   const [authChecked, setAuthChecked] = useState(false);
+  const toast = useToast();
+  const navigate = useNavigate();
+  const fileInputRef = useRef();
 
+  const bg = useColorModeValue("gray.50", "gray.800");
+  const cardBg = useColorModeValue("white", "gray.900");
+  const textColor = useColorModeValue("gray.700", "gray.100");
 
-  // Get the authenticated user's ID
+  // Check authentication
   useEffect(() => {
     const auth = getAuth();
-    console.log('Checking auth...');
-const unsubscribe = onAuthStateChanged(auth, (user) => {
-  console.log('USER:', user);
-
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
       } else {
-        // Don't navigate immediately, let UI update first
-        setTimeout(() => {
-          toast({
-            title: 'Authentication Required',
-            description: 'Please log in to access this page.',
-            status: 'warning',
-            duration: 5000,
-            isClosable: true,
-            position: 'top',
-          });
-          navigate('/login');
-        }, 0);
+        toast({
+          title: "Login required",
+          description: "Please sign in to create a post.",
+          status: "warning",
+          position: "top",
+        });
+        navigate("/login");
       }
-      setAuthChecked(true); // Auth state has been determined
+      setAuthChecked(true);
     });
-  
     return () => unsubscribe();
   }, [navigate, toast]);
-  
-  
-  
 
   const handleImageUpload = async () => {
     if (!image) return null;
-
     const formData = new FormData();
-    formData.append('image', image);
-
-    try {
-      const response = await axios.post(
-        `https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a`,
-        formData
-      );
-      return response.data.data.url;
-    } catch (error) {
-      console.error('Error uploading image to ImgBB:', error);
-      toast({
-        title: 'Image Upload Failed',
-        description: 'Could not upload the image. Please try again.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-      return null;
-    }
+    formData.append("image", image);
+    const res = await axios.post(
+      `https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a`,
+      formData
+    );
+    return res.data.data.url;
   };
 
   const handleSubmit = async () => {
-    if (!title || !author || !description || !category) {
+    if (!title || !content || !category) {
       toast({
-        title: 'Missing Fields',
-        description: 'Please fill out all fields before submitting.',
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-      return;
-    }
-
-    if (!userId) {
-      toast({
-        title: 'Unauthorized',
-        description: 'User authentication failed. Please log in again.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
+        title: "Missing fields",
+        description: "Please complete all fields before publishing.",
+        status: "warning",
+        position: "top",
       });
       return;
     }
 
     setIsLoading(true);
-
     try {
       const imageUrl = await handleImageUpload();
-      const articleId = uuidv4(); 
-
-      const articleData = {
+      const articleId = uuidv4();
+      await setDoc(doc(db, "articles", articleId), {
         title,
         author,
-        description,
+        description: content,
         category,
         imageUrl,
         date: new Date().toISOString(),
         articleId,
-        userId, // ✅ Include the userId in the article data
+        userId,
         likes: 0,
         dislikes: 0,
-      };
-
-      await setDoc(doc(db, 'articles', articleId), articleData);
-
-      toast({
-        title: 'Article Added',
-        description: 'Your article has been successfully added.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
       });
 
-      // Reset form fields
-      setTitle('');
-      setAuthor('');
-      setDescription('');
-      setCategory('');
-      setImage(null);
-    } catch (error) {
-      console.error('Error adding article:', error);
       toast({
-        title: 'Submission Failed',
-        description: 'An error occurred while adding the article.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
+        title: "Post published",
+        description: "Your story has been shared successfully.",
+        status: "success",
+        position: "top",
+      });
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "Something went wrong while publishing.",
+        status: "error",
+        position: "top",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleFileDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      // Do something with the file, like uploading or preview
-      console.log('Dropped file:', file);
-    }
-  };
-  
-
   if (!authChecked) {
     return (
-      <Box minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Box h="100vh" display="flex" alignItems="center" justifyContent="center">
         <Spinner size="xl" />
       </Box>
     );
   }
-  
 
   return (
     <Box
-      width="100vw"
       minH="100vh"
+      bg={bg}
       display="flex"
       justifyContent="center"
-      p={4}
-      alignItems="center"
-      bg="gray.100"
+      py={{ base: 6, md: 10 }}
+      px={{ base: 3, md: 6 }}
     >
       <Box
-        maxW="600px"
         w="100%"
-        p={6}
-        bg="white"
-        borderRadius="md"
-        boxShadow="lg"
-        m="20px"
+        maxW="900px"
+        bg={cardBg}
+        borderRadius="2xl"
+        boxShadow="md"
+        overflow="hidden"
       >
-        <Heading mb={6} textAlign="center">
-          Add Article
-        </Heading>
-        <VStack spacing={4}>
-          <FormControl isRequired>
-            <FormLabel>Title</FormLabel>
+        {/* Cover Image Section */}
+        <Box
+          position="relative"
+          h={{ base: "200px", md: "320px" }}
+          bg="gray.100"
+          cursor="pointer"
+          onClick={() => fileInputRef.current.click()}
+          _hover={{ opacity: 0.9 }}
+          transition="all 0.2s ease"
+        >
+          {image ? (
+            <Image
+              src={URL.createObjectURL(image)}
+              alt="cover"
+              w="100%"
+              h="100%"
+              objectFit="cover"
+            />
+          ) : (
+            <Box
+              h="100%"
+              display="flex"
+              flexDir="column"
+              alignItems="center"
+              justifyContent="center"
+              color="gray.500"
+              fontWeight="medium"
+            >
+              <Text fontSize="lg">Click to upload a cover image</Text>
+              <Text fontSize="sm">PNG, JPG, or JPEG (max 5MB)</Text>
+            </Box>
+          )}
+          <Input
+            type="file"
+            accept="image/*"
+            display="none"
+            ref={fileInputRef}
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+        </Box>
+
+        {/* Editor Section */}
+        <Box p={{ base: 5, md: 10 }}>
+          <VStack align="stretch" spacing={6}>
+            {/* Category + Author */}
+            <HStack
+              spacing={4}
+              flexWrap="wrap"
+              justifyContent={{ base: "center", md: "space-between" }}
+            >
+              <Select
+                placeholder="Select category"
+                w={{ base: "100%", sm: "48%", md: "200px" }}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {categories.map((cat) => (
+                  <option key={cat}>{cat}</option>
+                ))}
+              </Select>
+
+              <Input
+                placeholder="Author name"
+                w={{ base: "100%", sm: "48%", md: "200px" }}
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+            </HStack>
+
+            {/* Title Field */}
             <Input
-              placeholder="Enter article title"
+              placeholder="Enter your post title..."
+              variant="unstyled"
+              fontSize={{ base: "2xl", md: "3xl" }}
+              fontWeight="bold"
+              color={textColor}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Author</FormLabel>
-            <Input
-              placeholder="Enter author name"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Description</FormLabel>
+
+            {/* Body Editor */}
             <Textarea
-              placeholder="Enter article description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Start writing your story..."
+              variant="unstyled"
+              minH="300px"
+              resize="vertical"
+              fontSize="lg"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              _placeholder={{ color: "gray.400" }}
             />
-          </FormControl>
-          <FormControl isRequired>
-  <FormLabel>Category</FormLabel>
-  <Select
-    placeholder="Select category"
-    value={category}
-    onChange={(e) => setCategory(e.target.value)}
-    fontSize={{ base: '12px', md: 'md' }} // responsive font size
-  >
-    {categories.map((cat) => (
-      <option key={cat} value={cat}>
-        {cat}
-      </option>
-    ))}
-  </Select>
-</FormControl>
 
-          <FormControl>
-          <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
-  Upload Image
-</FormLabel>
-
-<Box
-  p={6}
-  border="2px dashed"
-  borderColor="gray.300"
-  borderRadius="md"
-  textAlign="center"
-  cursor="pointer"
-  bg="gray.50"
-  _hover={{ bg: 'gray.100' }}
-  onClick={() => document.getElementById('fileInput').click()}
-  onDragOver={(e) => e.preventDefault()}
-  onDrop={handleFileDrop}
->
-  {image ? (
-    <Box>
-      <Image
-        src={URL.createObjectURL(image)}
-        alt="Preview"
-        borderRadius="lg"
-        boxSize={{ base: "200px", md: "250px" }}
-        objectFit="cover"
-        boxShadow="md"
-        border="1px solid"
-        borderColor="gray.200"
-        mx="auto"
-      />
-    </Box>
-  ) : (
-    <Box>
-      <Text fontSize="md" color="gray.500">
-        Drag & drop an image here, or <strong>click to select</strong>
-      </Text>
-    </Box>
-  )}
-</Box>
-
-<Input
-  id="fileInput"
-  type="file"
-  accept="image/*"
-  display="none"
-  onChange={(e) => setImage(e.target.files[0])}
-/>
-
-</FormControl>
-
-          <Button
-            colorScheme="teal"
-            onClick={handleSubmit}
-            isLoading={isLoading}
-            w="full"
-          >
-            Submit Article
-          </Button>
-        </VStack>
+            {/* Publish Button */}
+            <Box textAlign={{ base: "center", md: "right" }}>
+              <Button
+                colorScheme="teal"
+                size="lg"
+                px={8}
+                isLoading={isLoading}
+                onClick={handleSubmit}
+              >
+                Publish
+              </Button>
+            </Box>
+          </VStack>
+        </Box>
       </Box>
     </Box>
   );
 };
-
-
 
 export default AddArticle;

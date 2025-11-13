@@ -206,14 +206,14 @@ const HomePage = () => {
         return <NetworkError onRetry={() => window.location.reload()} />;
     }
 
-    if (
-        !loading &&
-        !networkError &&
-        sortedCategories.length === 0 &&
-        !articles.topNews
-    ) {
-        return <NoNewsAvailable />;
-    }
+    // if (
+    //     !loading &&
+    //     !networkError &&
+    //     sortedCategories.length === 0 &&
+    //     !articles.topNews
+    // ) {
+    //     return <NoNewsAvailable />;
+    // }
 
     return (
         <Box

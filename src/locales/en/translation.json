@@ -1,0 +1,12 @@
+{
+  "home": "Home",
+  "addArticle": "Add Article",
+  "contactUs": "Contact Us",
+  "about": "About",
+  "blogTitle": "Extra Time Blog",
+  "loggedOut": "Logged out",
+  "loggedOutDescription": "You have successfully logged out.",
+  "error": "Error",
+  "logoutErrorDescription": "Failed to log out. Please try again.",
+  "confirmLogout": "Confirm Logout"
+}

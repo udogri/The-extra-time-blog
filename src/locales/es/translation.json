@@ -1,0 +1,12 @@
+{
+  "home": "Inicio",
+  "addArticle": "Añadir Artículo",
+  "contactUs": "Contáctanos",
+  "about": "Acerca de",
+  "blogTitle": "Blog Tiempo Extra",
+  "loggedOut": "Sesión cerrada",
+  "loggedOutDescription": "Has cerrado sesión correctamente.",
+  "error": "Error",
+  "logoutErrorDescription": "Error al cerrar sesión. Por favor, inténtalo de nuevo.",
+  "confirmLogout": "Confirmar cierre de sesión"
+}

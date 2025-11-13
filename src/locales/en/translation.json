@@ -8,5 +8,17 @@
   "loggedOutDescription": "You have successfully logged out.",
   "error": "Error",
   "logoutErrorDescription": "Failed to log out. Please try again.",
-  "confirmLogout": "Confirm Logout"
+  "confirmLogout": "Confirm Logout",
+  "latestNews": "Latest News",
+  "trendingNews": "Trending News",
+  "sportsNews": "Sports News",
+  "businessNews": "Business News",
+  "localNews": "Local News",
+  "internationalNews": "International News",
+  "topNews": "Top News",
+  "errorFetchingArticles": "Error fetching articles.",
+  "viewMore": "View More",
+  "readArticle": "Read Article",
+  "loading": "Loading...",
+  "noNewsAvailable": "No news available."
 }

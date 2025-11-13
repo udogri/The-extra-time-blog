@@ -13,12 +13,11 @@ import {
   Text,
   useDisclosure,
   useToast,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import { NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { auth } from '../firebaseConfig'; // Ensure Firebase is correctly configured
 import { MdLogout } from 'react-icons/md';
-import { auth } from '../firebaseConfig';
 
 const Navbar = ({ isAuthenticated }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -26,6 +25,9 @@ const Navbar = ({ isAuthenticated }) => {
   const navigate = useNavigate();
   const toast = useToast();
   const [mounted, setMounted] = useState(false);
+
+  
+
 
   const links = [
     { name: 'Home', path: '/' },
@@ -35,11 +37,12 @@ const Navbar = ({ isAuthenticated }) => {
   ];
 
   const handleLinkClick = () => {
-    if (isOpen) onClose(); // Close mobile menu
+    if (isOpen) onClose(); // Close menu on mobile
   };
 
   const handleAuthClick = async () => {
     if (isAuthenticated) {
+      // Handle logout
       try {
         await auth.signOut();
         toast({
@@ -50,7 +53,7 @@ const Navbar = ({ isAuthenticated }) => {
           isClosable: true,
           position: 'top',
         });
-        navigate('/login');
+        navigate('/login'); // Redirect to the login page
       } catch (error) {
         console.error('Logout error:', error);
         toast({
@@ -63,32 +66,26 @@ const Navbar = ({ isAuthenticated }) => {
         });
       }
     } else {
-      navigate('/login');
+      navigate('/login'); // Redirect to login
     }
   };
 
   const NavLink = ({ name, path }) => {
     const isActive = location.pathname === path;
-    const activeBg = useColorModeValue('teal.600', 'teal.700');
     return (
       <RouterLink
         to={path}
         onClick={handleLinkClick}
         style={{
-          padding: '10px 18px',
-          borderRadius: '8px',
+          padding: '8px 16px',
+          borderRadius: '4px',
           textAlign: 'center',
+          backgroundColor: isActive ? 'gray.800' : 'transparent',
           textDecoration: 'none',
-          fontWeight: 500,
-          transition: 'all 0.2s ease-in-out',
-          fontSize: '15px',
-          backgroundColor: isActive ? activeBg : 'transparent',
-          color: isActive ? 'white' : 'white',
+          fontWeight: isActive ? 'bold' : 'normal',
+          fontSize: {base:"12px", md: "15px"}
         }}
-        onMouseEnter={(e) => (e.target.style.backgroundColor = activeBg)}
-        onMouseLeave={(e) =>
-          (e.target.style.backgroundColor = isActive ? activeBg : 'transparent')
-        }
+        
       >
         {name}
       </RouterLink>
@@ -100,118 +97,122 @@ const Navbar = ({ isAuthenticated }) => {
   }, []);
 
   return (
-    <Box
-      bg="teal.500"
-      px={{ base: 4, md: 8 }}
-      color="white"
-      w="100%"
-      boxShadow="sm"
-      position="relative"
-      zIndex={20}
-    >
+    
+    <Box bg="teal.500" px={4} color="white" w="100%" minWidth="100vw">
       <Flex h={16} alignItems="center" justifyContent="space-between">
         <HStack spacing={8} alignItems="center">
-          <Text
-            fontSize={{ base: '18px', md: '24px' }}
-            cursor="pointer"
-            fontWeight="bold"
-            onClick={() => navigate('/')}
-            _hover={{ color: 'teal.100', transition: '0.3s' }}
-          >
+          <Text fontSize={{base:"15px", md: "20px"}} cursor="pointer" fontWeight="bold" onClick={() => navigate(`/`)}>
             Extra Time Blog
           </Text>
-
-          <HStack
-            as="nav"
-            align="center"
-            spacing={4}
-            display={{ base: 'none', md: 'flex' }}
-          >
+          <HStack as="nav" align="center" spacing={4} display={{ base: 'none', md: 'flex' }}>
             {links.map((link) => (
               <NavLink key={link.name} name={link.name} path={link.path} />
             ))}
           </HStack>
         </HStack>
-
-        <HStack spacing={4}>
+          
           <Menu>
-            <MenuButton
-              display={{ base: 'none', md: 'flex' }}
-              as={IconButton}
-              icon={<MdLogout />}
-              fontSize="24px"
-              bg="transparent"
-              _hover={{ transform: 'scale(1.2)', bg: 'teal.600' }}
-              _focus={{ boxShadow: 'none' }}
-              _active={{ bg: 'teal.600' }}
-            />
-            <MenuList bg="teal.500" border="none">
-              <MenuItem
-                onClick={handleAuthClick}
-                bg="teal.500"
-                _hover={{ bg: 'teal.600', color: 'white' }}
-              >
-                Confirm Logout
-              </MenuItem>
-            </MenuList>
-          </Menu>
-
+  <MenuButton
+    display={{ base: 'none', md: 'flex' }}
+    as={IconButton}
+    icon={<MdLogout />}
+    fontSize="24px"
+    color="white"
+    bg="transparent"
+    _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+      outline: 'none', // Remove outline on hover
+    }}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
+  />
+  <MenuList bg="teal.500" border="none">
+    <MenuItem
+      onClick={handleAuthClick}
+      bg="teal.500"
+      _active={{ outline: 'none', bg: 'transparent' }}
+      _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      
+      }}
+      color="white"
+    >
+      Confirm Logout
+    </MenuItem>
+  </MenuList>
+</Menu>
           <IconButton
             size="md"
             bg="transparent"
             color="white"
-            _hover={{ transform: 'scale(1.2)', bg: 'teal.600' }}
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+      outline: 'none', // Remove outline on hover
+    }}            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
             aria-label="Toggle Navigation"
             display={{ base: 'flex', md: 'none' }}
             onClick={isOpen ? onClose : onOpen}
-            _focus={{ boxShadow: 'none' }}
           />
-        </HStack>
-      </Flex>
+        </Flex>
 
       {isOpen && (
-        <Box
-          position="absolute"
-          top="64px"
-          left="0"
-          width="100%"
-          bg="teal.500"
-          zIndex="10"
-          display={{ md: 'none' }}
-          px={4}
-          py={4}
-          borderTop="1px solid rgba(255,255,255,0.2)"
-        >
-          <Stack as="nav" spacing={4}>
-            {links.map((link) => (
-              <NavLink key={link.name} name={link.name} path={link.path} />
-            ))}
+  <Box
+    position="absolute"
+    top="63px" /* adjust depending on your Navbar height */
+    left="0"
+    width="100%"
+    bg="teal.500"
+    zIndex="10"
+    display={{ md: 'none' }}
+    px={4}
+    py={4}
+  >
+    <Stack as="nav" spacing={4}>
+      {links.map((link) => (
+        <NavLink key={link.name} name={link.name} path={link.path} />
+      ))}
+      <Menu>
+  <MenuButton
+    as={IconButton}
+    icon={<MdLogout />}
+    fontSize="24px"
+    color="white"
+    bg="transparent"
+    _hover={{
+      transform: 'scale(1.2)',
+      transition: 'transform 0.2s ease-in-out',
+      bg: 'transparent',
+      outline: 'none', // Remove outline on hover
+    }}
+    _focus={{ boxShadow: 'none', bg: 'transparent' }}
+    _active={{ bg: 'transparent' }}
+    _expanded={{ bg: 'transparent' }} // when dropdown is open
+  />
+  <MenuList bg="teal.500" border="none">
+    <MenuItem
+      onClick={handleAuthClick}
+      bg="teal.500"
+      _active={{ outline: 'none', bg: 'transparent' }}
+      _hover={{  color: 'gray.800', outline: 'none', // Remove outline on hover
+      
+      }}
+      color="white"
+    >
+      Confirm Logout
+    </MenuItem>
+  </MenuList>
+</Menu>
+    </Stack>
+  </Box>
+)}
 
-            <Menu>
-              <MenuButton
-                as={Button}
-                leftIcon={<MdLogout />}
-                bg="transparent"
-                color="white"
-                _hover={{ bg: 'teal.600' }}
-                _focus={{ boxShadow: 'none' }}
-              >
-                Logout
-              </MenuButton>
-              <MenuList bg="teal.500" border="none">
-                <MenuItem
-                  onClick={handleAuthClick}
-                  bg="teal.500"
-                  _hover={{ bg: 'teal.600', color: 'white' }}
-                >
-                  Confirm Logout
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </Stack>
-        </Box>
-      )}
     </Box>
   );
 };

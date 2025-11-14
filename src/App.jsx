@@ -9,6 +9,7 @@ import ArticleDetails from './components/ArticleDetails';
 import ContactUs from './Pages/ContactUs';
 import LoginSignup from './Pages/LoginSignup';
 import ScrollToTop from './components/ScrollToTop';
+import Profile from './Pages/Profile';
 import { auth } from './firebaseConfig';
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/about" element={<About />} />
             <Route path="/articledetails/:articleId" element={<ArticleDetails isAuthenticated={isAuthenticated} />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/login" element={<LoginSignup />} />
         </Routes>

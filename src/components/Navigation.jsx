@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -18,22 +18,20 @@ import { NavLink as RouterLink, useNavigate, useLocation } from 'react-router-do
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { auth } from '../firebaseConfig'; // Ensure Firebase is correctly configured
 import { MdLogout } from 'react-icons/md';
+import PropTypes from 'prop-types';
 
 const Navbar = ({ isAuthenticated }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
-  const [mounted, setMounted] = useState(false);
-
-  
-
 
   const links = [
     { name: 'Home', path: '/' },
     { name: 'Add Article', path: '/add-article' },
     { name: 'Contact Us', path: '/contact' },
     { name: 'About', path: '/about' },
+    { name: 'Profile', path: '/profile', authRequired: true },
   ];
 
   const handleLinkClick = () => {
@@ -92,9 +90,14 @@ const Navbar = ({ isAuthenticated }) => {
     );
   };
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  NavLink.propTypes = {
+    name: PropTypes.string.isRequired,
+    path: PropTypes.string.isRequired,
+  };
+
+  Navbar.propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+  };
 
   return (
     
@@ -106,7 +109,9 @@ const Navbar = ({ isAuthenticated }) => {
           </Text>
           <HStack as="nav" align="center" spacing={4} display={{ base: 'none', md: 'flex' }}>
             {links.map((link) => (
-              <NavLink key={link.name} name={link.name} path={link.path} />
+              (!link.authRequired || isAuthenticated) && (
+                <NavLink key={link.name} name={link.name} path={link.path} />
+              )
             ))}
           </HStack>
         </HStack>
@@ -176,7 +181,9 @@ const Navbar = ({ isAuthenticated }) => {
   >
     <Stack as="nav" spacing={4}>
       {links.map((link) => (
-        <NavLink key={link.name} name={link.name} path={link.path} />
+        (!link.authRequired || isAuthenticated) && (
+          <NavLink key={link.name} name={link.name} path={link.path} />
+        )
       ))}
       <Menu>
   <MenuButton

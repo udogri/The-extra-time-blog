@@ -345,14 +345,14 @@ if (!user) {
           <Button leftIcon={<FaThumbsDown />}  background="transparent" onClick={handleDislike}>{dislikes}</Button>
         </HStack>
 
-        {currentUser && article.userId === currentUser.uid && (
+        {/* {currentUser && article.userId === currentUser.uid && (
           <Box mt={6}>
             <HStack spacing={4} justifyContent="space-between">
               <Button colorScheme="blue" onClick={onEditOpen}>Edit</Button>
               <Button colorScheme="red" onClick={onOpen}>Delete</Button>
             </HStack>
           </Box>
-        )}
+        )} */}
 
       {/* Delete Confirmation Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>

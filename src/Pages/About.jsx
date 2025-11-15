@@ -122,9 +122,7 @@ const About = () => {
           ))}
         </HStack>
 
-        <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mt={{ base: 4, md: 6 }}>
-          © {new Date().getFullYear()} Extra Time Blog — All Rights Reserved.
-        </Text>
+        
       </Box>
     </Box>
   );

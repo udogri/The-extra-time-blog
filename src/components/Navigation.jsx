@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -8,44 +9,11 @@ import {
   Text,
   useDisclosure,
   useToast,
-  chakra,
-  Slide,
-} from "@chakra-ui/react";
-import { NavLink as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import { auth } from "../firebaseConfig";
-import PropTypes from "prop-types";
-
-const ModernNavLink = ({ name, path, isActive, onClick }) => {
-  return (
-    <chakra.div
-      onClick={onClick}
-      position="relative"
-      cursor="pointer"
-      px={2}
-      fontSize="15px"
-      fontWeight={isActive ? "bold" : "medium"}
-      color="white"
-      transition="0.25s ease"
-      _hover={{ color: "white" }}
-    >
-      <RouterLink to={path}>{name}</RouterLink>
-
-      {/* Animated underline */}
-      <chakra.span
-        position="absolute"
-        left="0"
-        bottom="-3px"
-        width={isActive ? "100%" : "0"}
-        height="2px"
-        bg="white"
-        borderRadius="2px"
-        transition="width 0.25s ease"
-        _groupHover={{ width: "100%" }}
-      />
-    </chakra.div>
-  );
-};
+} from '@chakra-ui/react';
+import { NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { auth } from '../firebaseConfig';
+import PropTypes from 'prop-types';
 
 const Navbar = ({ isAuthenticated }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -54,72 +22,116 @@ const Navbar = ({ isAuthenticated }) => {
   const toast = useToast();
 
   const links = [
-    { name: "Home", path: "/" },
-    { name: "Add Article", path: "/add-article" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "About", path: "/about" },
-    { name: "Profile", path: "/profile", authRequired: true },
+    { name: 'Home', path: '/' },
+    { name: 'Contact Us', path: '/contact' },
+    { name: 'About', path: '/about' },
+    { name: 'Profile', path: '/profile'},
   ];
+
+  const handleLinkClick = () => {
+    if (isOpen) onClose();
+  };
 
   const handleAuthClick = async () => {
     if (isAuthenticated) {
       try {
         await auth.signOut();
         toast({
-          title: "Logged out",
-          description: "You have successfully logged out.",
-          status: "success",
-          duration: 2500,
+          title: 'Logged out',
+          description: 'You have successfully logged out.',
+          status: 'success',
+          duration: 3000,
           isClosable: true,
-          position: "top",
+          position: 'top',
         });
-        navigate("/login");
-      } catch {
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout error:', error);
         toast({
-          title: "Error",
-          description: "Failed to log out. Please try again.",
-          status: "error",
-          duration: 2500,
+          title: 'Error',
+          description: 'Failed to log out. Please try again.',
+          status: 'error',
+          duration: 3000,
           isClosable: true,
-          position: "top",
+          position: 'top',
         });
       }
     } else {
-      navigate("/login");
+      navigate('/login');
     }
   };
 
+  // CHAKRA-UI BASED NAVLINK WITH ANIMATED UNDERLINE
+  const NavItem = ({ name, path }) => {
+    const isActive = location.pathname === path;
+
+    return (
+      <Box
+        as={RouterLink}
+        to={path}
+        onClick={handleLinkClick}
+        position="relative"
+        px={4}
+        py={2}
+        fontSize={{ base: "14px", md: "16px" }}
+        textAlign="center"
+        color="white"
+        fontWeight={isActive ? "bold" : "normal"}
+        textDecoration="none"
+        _after={{
+          content: '""',
+          position: "absolute",
+          left: "0",
+          bottom: "-2px",
+          width: isActive ? "100%" : "0%",
+          height: "2px",
+          bg: "white",
+          transition: "width 0.3s ease",
+        }}
+        _hover={{
+          _after: { width: "100%" },
+        }}
+      >
+        {name}
+      </Box>
+    );
+  };
+
+  NavItem.propTypes = {
+    name: PropTypes.string.isRequired,
+    path: PropTypes.string.isRequired,
+  };
+
   return (
-    <Box bg="teal.600" px={4} w="100%" minW="100vw"   zIndex="999" boxShadow="md">
-      <Flex h="70px" alignItems="center" justifyContent="space-between">
-        {/* Logo */}
+    <Box bg="teal.500" px={4} color="white" w="100%" minWidth="100vw">
+      <Flex h={16} alignItems="center" justifyContent="space-between">
+
         <Text
-          fontSize={{ base: "16px", md: "20px" }}
-          fontWeight="bold"
-          color="white"
+          fontSize={{ base: "15px", md: "22px" }}
           cursor="pointer"
-          onClick={() => navigate("/")}
+          fontWeight="bold"
+          onClick={() => navigate('/')}
         >
           Extra Time Blog
         </Text>
 
-        {/* Desktop links */}
-        <HStack spacing={6} display={{ base: "none", md: "flex" }}>
+        {/* DESKTOP NAV LINKS - CENTERED */}
+        <HStack
+          as="nav"
+          spacing={6}
+          display={{ base: 'none', md: 'flex' }}
+          justifyContent="center"
+          flex="1"
+        >
           {links.map(
             (link) =>
               (!link.authRequired || isAuthenticated) && (
-                <chakra.div key={link.name} role="group">
-                  <ModernNavLink
-                    name={link.name}
-                    path={link.path}
-                    isActive={location.pathname === link.path}
-                  />
-                </chakra.div>
+                <NavItem key={link.name} name={link.name} path={link.path} />
               )
           )}
         </HStack>
 
-        {/* Desktop login/logout */}
+        {/* DESKTOP LOGIN / LOGOUT BUTTON */}
         <Button
           display={{ base: "none", md: "flex" }}
           bg="white"
@@ -137,41 +149,48 @@ const Navbar = ({ isAuthenticated }) => {
           {isAuthenticated ? "Logout" : "Login"}
         </Button>
 
-        {/* Mobile hamburger */}
+        {/* MOBILE MENU TOGGLE */}
         <IconButton
           size="md"
           bg="transparent"
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          display={{ base: "flex", md: "none" }}
           color="white"
+          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+          _focus={{ boxShadow: "none" }}
+          aria-label="Toggle Navigation"
+          display={{ base: "flex", md: "none" }}
           onClick={isOpen ? onClose : onOpen}
         />
       </Flex>
 
-      {/* Mobile Menu */}
-      <Slide direction="top" in={isOpen}>
-        <Box bg="teal.600" px={6} py={4} display={{ md: "none" }}>
-          <Stack spacing={4}>
+      {/* MOBILE MENU */}
+      {isOpen && (
+        <Box
+          position="absolute"
+          top="64px"           // height of navbar
+          left="0"
+          width="100%"
+          bg="teal.500"
+          px={4}
+          py={4}
+          zIndex="999"
+          display={{ md: 'none' }}
+        >
+
+          <Stack as="nav" spacing={4} align="center">
             {links.map(
               (link) =>
                 (!link.authRequired || isAuthenticated) && (
-                  <chakra.div key={link.name} onClick={onClose} role="group">
-                    <ModernNavLink
-                      name={link.name}
-                      path={link.path}
-                      isActive={location.pathname === link.path}
-                    />
-                  </chakra.div>
+                  <NavItem key={link.name} name={link.name} path={link.path} />
                 )
             )}
 
+            {/* MOBILE LOGIN / LOGOUT */}
             <Button
               bg="white"
               color="teal.700"
               fontWeight="bold"
               borderRadius="full"
               py={6}
-              _hover={{ bg: "gray.200" }}
               onClick={() => {
                 onClose();
                 handleAuthClick();
@@ -181,13 +200,9 @@ const Navbar = ({ isAuthenticated }) => {
             </Button>
           </Stack>
         </Box>
-      </Slide>
+      )}
     </Box>
   );
-};
-
-Navbar.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 export default Navbar;

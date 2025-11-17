@@ -39,6 +39,7 @@ import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from "fi
 import { db, auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Questions from "../assets/Questions-amico.svg";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -139,13 +140,44 @@ const Profile = () => {
       </Box>
     );
 
-  if (!user)
-    return (
-      <Box textAlign="center" mt={10}>
-        <Heading>You’re not logged in</Heading>
-        <Text>Please login to view your profile.</Text>
-      </Box>
-    );
+    if (!user)
+      return (
+        <Box
+          minH="100vh"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+          px={6}
+        >
+          <Image
+            src={Questions}
+            alt="Sign in illustration"
+            maxW="300px"
+            mb={6}
+            opacity={0.9}
+          />
+    
+          <Heading size="lg" mb={2}>
+            You’re not signed in
+          </Heading>
+    
+          <Text fontSize="md" color="gray.600" maxW="320px" mb={5}>
+            Sign in to access your profile, manage your articles, and continue your journey.
+          </Text>
+    
+          <Button
+            colorScheme="teal"
+            size="md"
+            px={8}
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </Button>
+        </Box>
+      );
+    
 
   return (
     <Box maxW="1200px" mx="auto" p={4}>

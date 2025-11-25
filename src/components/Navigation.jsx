@@ -103,7 +103,7 @@ const Navbar = ({ isAuthenticated }) => {
   };
 
   return (
-    <Box bg="teal.500" px={4} color="white" w="100%" minWidth="100vw">
+    <Box bg="teal.500" px={4} color="white"  w="100vw" >
       <Flex h={16} alignItems="center" justifyContent="space-between">
 
         <Text

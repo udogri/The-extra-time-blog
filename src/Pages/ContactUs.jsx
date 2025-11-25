@@ -57,8 +57,9 @@ const ContactUs = () => {
   return (
     <Flex
       minH="100vh"
-      bgGradient="linear(to-br, teal.500, teal.700, gray.900)"
+      bgGradient="linear(to-br, teal.600, teal.700, gray.900)"
       justify="center"
+      w="100vw"
       align="center"
       p={{ base: 3, md: 6 }}
     >

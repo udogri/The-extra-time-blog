@@ -34,15 +34,15 @@ const Footer = () => {
           <Link href="/" fontSize={{base:"12px", md: "15px"}} _hover={{ textDecoration: 'underline', color: 'teal.300' }}>
             Home
           </Link>
-          <Link href="/add-article" fontSize={{base:"12px", md: "15px"}} _hover={{ textDecoration: 'underline', color: 'teal.300' }}>
-            Add Article
-          </Link>
           <Link href="/contact-us" fontSize={{base:"12px", md: "15px"}} _hover={{ textDecoration: 'underline', color: 'teal.300' }}>
             Contact Us
           </Link>
           <Link href="/about" fontSize={{base:"12px", md: "15px"}} _hover={{ textDecoration: 'underline', color: 'teal.300' }}>
             About
           </Link>
+          {/* <Link href="/add-article" fontSize={{base:"12px", md: "15px"}} _hover={{ textDecoration: 'underline', color: 'teal.300' }}>
+            Add Article
+          </Link> */}
         </HStack>
 
         {/* Subscribe to Newsletter */}

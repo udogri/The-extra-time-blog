@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// Updated Navbar.jsx
 import {
   Box,
   Button,
@@ -15,7 +15,7 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { auth } from '../firebaseConfig';
 import PropTypes from 'prop-types';
 
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,7 +25,8 @@ const Navbar = ({ isAuthenticated }) => {
     { name: 'Home', path: '/' },
     { name: 'Contact Us', path: '/contact' },
     { name: 'About', path: '/about' },
-    { name: 'Profile', path: '/profile'},
+    { name: 'Profile', path: '/profile' },
+    { name: 'Newsletter', action: onOpenNewsletter },
   ];
 
   const handleLinkClick = () => {
@@ -61,7 +62,6 @@ const Navbar = ({ isAuthenticated }) => {
     }
   };
 
-  // CHAKRA-UI BASED NAVLINK WITH ANIMATED UNDERLINE
   const NavItem = ({ name, path }) => {
     const isActive = location.pathname === path;
 
@@ -73,24 +73,24 @@ const Navbar = ({ isAuthenticated }) => {
         position="relative"
         px={4}
         py={2}
-        fontSize={{ base: "14px", md: "16px" }}
+        fontSize={{ base: '12px', sm: '14px', md: '16px' }}
         textAlign="center"
-        color="white"
-        fontWeight={isActive ? "bold" : "normal"}
+        color="teal.500"
+        fontWeight={isActive ? 'bold' : 'normal'}
         textDecoration="none"
+        whiteSpace="nowrap"
+        _focus={{ boxShadow: 'none' }}
         _after={{
           content: '""',
-          position: "absolute",
-          left: "0",
-          bottom: "-2px",
-          width: isActive ? "100%" : "0%",
-          height: "2px",
-          bg: "white",
-          transition: "width 0.3s ease",
+          position: 'absolute',
+          left: 0,
+          bottom: '-2px',
+          width: isActive ? '100%' : '0%',
+          height: '2px',
+          bg: 'teal.500',
+          transition: 'width 0.3s ease',
         }}
-        _hover={{
-          _after: { width: "100%" },
-        }}
+        _hover={{ _after: { width: '100%' } }}
       >
         {name}
       </Box>
@@ -103,19 +103,28 @@ const Navbar = ({ isAuthenticated }) => {
   };
 
   return (
-    <Box bg="teal.500" px={4} color="white"  w="100vw" >
+    <Box
+      bg="white"
+      px={4}
+      color="white"
+      w="100vw"
+      boxShadow="2xl"
+      position="fixed"
+      zIndex="1000"
+    >
       <Flex h={16} alignItems="center" justifyContent="space-between">
-
         <Text
-          fontSize={{ base: "15px", md: "22px" }}
+          fontSize={{ base: '16px', sm: '18px', md: '22px' }}
           cursor="pointer"
           fontWeight="bold"
+          color="teal.500"
           onClick={() => navigate('/')}
+          whiteSpace="nowrap"
         >
           Extra Time Blog
         </Text>
 
-        {/* DESKTOP NAV LINKS - CENTERED */}
+        {/* Desktop Links */}
         <HStack
           as="nav"
           spacing={6}
@@ -123,71 +132,101 @@ const Navbar = ({ isAuthenticated }) => {
           justifyContent="center"
           flex="1"
         >
-          {links.map(
-            (link) =>
-              (!link.authRequired || isAuthenticated) && (
-                <NavItem key={link.name} name={link.name} path={link.path} />
-              )
+          {links.map((link) =>
+            link.path ? (
+              <NavItem key={link.name} name={link.name} path={link.path} />
+            ) : (
+              <Button
+                key={link.name}
+                onClick={() => {
+                  link.action();
+                  handleLinkClick();
+                }}
+                variant="ghost"
+                color="teal.500"
+                fontSize={{ base: '12px', sm: '14px', md: '16px' }}
+                _hover={{ bg: 'gray.100' }}
+                _focus={{ boxShadow: 'none' }}
+              >
+                {link.name}
+              </Button>
+            )
           )}
         </HStack>
 
-        {/* DESKTOP LOGIN / LOGOUT BUTTON */}
+        {/* Desktop Login/Logout */}
         <Button
-          display={{ base: "none", md: "flex" }}
-          bg="white"
-          color="teal.700"
+          display={{ base: 'none', md: 'flex' }}
+          bg="teal.500"
+          color="white"
           fontWeight="bold"
           px={5}
           borderRadius="full"
           _hover={{
-            transform: "translateY(-2px)",
-            bg: "gray.100",
+            transform: 'translateY(-2px)',
+            bg: 'gray.100',
           }}
           transition="0.25s"
           onClick={handleAuthClick}
+          _focus={{ boxShadow: 'none' }}
         >
-          {isAuthenticated ? "Logout" : "Login"}
+          {isAuthenticated ? 'Logout' : 'Login'}
         </Button>
 
-        {/* MOBILE MENU TOGGLE */}
+        {/* Mobile Menu Toggle */}
         <IconButton
           size="md"
           bg="transparent"
-          color="white"
+          color="teal.500"
           icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          _focus={{ boxShadow: "none" }}
+          _focus={{ boxShadow: 'none' }}
           aria-label="Toggle Navigation"
-          display={{ base: "flex", md: "none" }}
+          display={{ base: 'flex', md: 'none' }}
           onClick={isOpen ? onClose : onOpen}
         />
       </Flex>
 
-      {/* MOBILE MENU */}
+      {/* Mobile Menu */}
       {isOpen && (
         <Box
           position="absolute"
-          top="64px"           // height of navbar
+          top="64px"
           left="0"
           width="100%"
-          bg="teal.500"
+          bg="white"
           px={4}
           py={4}
           zIndex="999"
           display={{ md: 'none' }}
         >
-
           <Stack as="nav" spacing={4} align="center">
-            {links.map(
-              (link) =>
-                (!link.authRequired || isAuthenticated) && (
-                  <NavItem key={link.name} name={link.name} path={link.path} />
-                )
+            {links.map((link) =>
+              link.action ? (
+                <Box
+                  key={link.name}
+                  onClick={() => {
+                    link.action();
+                    handleLinkClick();
+                  }}
+                  px={4}
+                  py={2}
+                  cursor="pointer"
+                  color="teal.500"
+                  fontSize={{ base: '14px', sm: '15px' }}
+                  _hover={{ textDecoration: 'underline' }}
+                  _focus={{ boxShadow: 'none' }}
+                  whiteSpace="nowrap"
+                >
+                  {link.name}
+                </Box>
+              ) : (
+                <NavItem key={link.name} name={link.name} path={link.path} />
+              )
             )}
 
-            {/* MOBILE LOGIN / LOGOUT */}
             <Button
-              bg="white"
-              color="teal.700"
+              bg="teal.500"
+              color="white"
               fontWeight="bold"
               borderRadius="full"
               py={6}
@@ -195,14 +234,20 @@ const Navbar = ({ isAuthenticated }) => {
                 onClose();
                 handleAuthClick();
               }}
+              _focus={{ boxShadow: 'none' }}
             >
-              {isAuthenticated ? "Logout" : "Login"}
+              {isAuthenticated ? 'Logout' : 'Login'}
             </Button>
           </Stack>
         </Box>
       )}
     </Box>
   );
+};
+
+Navbar.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  onOpenNewsletter: PropTypes.func.isRequired,
 };
 
 export default Navbar;

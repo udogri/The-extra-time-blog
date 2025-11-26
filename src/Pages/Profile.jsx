@@ -135,7 +135,7 @@ const Profile = () => {
 
   if (loading)
     return (
-      <Box   display="flex" justifyContent="center" alignItems="center">
+      <Box   display="flex" mt="70px" w="100vw" justifyContent="center"  alignItems="center">
         <Spinner size="xl" />
       </Box>
     );
@@ -145,6 +145,7 @@ const Profile = () => {
         <Box
           minH="100vh"
           display="flex"
+          w="100vw"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
@@ -180,7 +181,7 @@ const Profile = () => {
     
 
   return (
-    <Box mx="auto" p={4}>
+    <Box mx="auto" p={4} >
       {/* User Info + Add Article Button */}
       <VStack spacing={3} mb={6} textAlign="center">
         <Heading size="lg">My Profile</Heading>

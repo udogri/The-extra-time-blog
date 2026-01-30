@@ -75,7 +75,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
         py={2}
         fontSize={{ base: '12px', sm: '14px', md: '16px' }}
         textAlign="center"
-        color="teal.500"
+        color="white"
         fontWeight={isActive ? 'bold' : 'normal'}
         textDecoration="none"
         whiteSpace="nowrap"
@@ -90,7 +90,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
           bg: 'teal.500',
           transition: 'width 0.3s ease',
         }}
-        _hover={{ _after: { width: '100%' } }}
+        _hover={{ _after: { width: '100%' }, color: 'teal.500' }}
       >
         {name}
       </Box>
@@ -104,7 +104,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
 
   return (
     <Box
-      bg="white"
+      bg="gray.800"
       px={4}
       color="white"
       w="100vw"
@@ -117,7 +117,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
           fontSize={{ base: '16px', sm: '18px', md: '22px' }}
           cursor="pointer"
           fontWeight="bold"
-          color="teal.500"
+          color="white"
           onClick={() => navigate('/')}
           whiteSpace="nowrap"
         >
@@ -145,7 +145,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
                 variant="ghost"
                 color="teal.500"
                 fontSize={{ base: '12px', sm: '14px', md: '16px' }}
-                _hover={{ bg: 'gray.100' }}
+                _hover={{ bg: 'teal.500' }}
                 _focus={{ boxShadow: 'none' }}
               >
                 {link.name}
@@ -193,7 +193,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
           top="64px"
           left="0"
           width="100%"
-          bg="white"
+          bg="grey.800"
           px={4}
           py={4}
           zIndex="999"

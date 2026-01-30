@@ -28,7 +28,7 @@ const Layout = ({ isAuthenticated }) => {
       )}
 
       {/* PAGE CONTENT */}
-      <Box flex="1" mt={!isLoginPage ? "70px" : "0"}>
+      <Box flex="1" mt={!isLoginPage ? "60px" : "0"}>
         <Outlet />
       </Box>
 

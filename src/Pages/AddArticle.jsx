@@ -139,6 +139,7 @@ const AddArticle = () => {
     <Box
       minH="100vh"
       bg={bg}
+      w="100vw"
       display="flex"
       justifyContent="center"
       py={{ base: 6, md: 10 }}

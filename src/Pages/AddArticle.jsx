@@ -129,7 +129,7 @@ const AddArticle = () => {
 
   if (!authChecked) {
     return (
-      <Box h="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Box h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="center">
         <Spinner size="xl" />
       </Box>
     );

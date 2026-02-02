@@ -143,7 +143,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
                   handleLinkClick();
                 }}
                 variant="ghost"
-                color="teal.500"
+                color="black.500"
                 fontSize={{ base: '12px', sm: '14px', md: '16px' }}
                 _hover={{ bg: 'teal.500' }}
                 _focus={{ boxShadow: 'none' }}

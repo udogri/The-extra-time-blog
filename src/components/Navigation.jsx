@@ -1,4 +1,3 @@
-// Updated Navbar.jsx
 import {
   Box,
   Button,
@@ -23,39 +22,22 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
 
   const links = [
     { name: 'Home', path: '/' },
-    { name: 'Contact Us', path: '/contact' },
+    { name: 'Contact', path: '/contact' },
     { name: 'About', path: '/about' },
     { name: 'Profile', path: '/profile' },
     { name: 'Newsletter', action: onOpenNewsletter },
   ];
 
-  const handleLinkClick = () => {
-    if (isOpen) onClose();
-  };
+  const handleLinkClick = () => { if (isOpen) onClose(); };
 
   const handleAuthClick = async () => {
     if (isAuthenticated) {
       try {
         await auth.signOut();
-        toast({
-          title: 'Logged out',
-          description: 'You have successfully logged out.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
+        toast({ title: 'Signed out', status: 'success', duration: 3000, isClosable: true, position: 'top' });
         navigate('/login');
-      } catch (error) {
-        console.error('Logout error:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to log out. Please try again.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
+      } catch {
+        toast({ title: 'Error signing out', status: 'error', duration: 3000, isClosable: true, position: 'top' });
       }
     } else {
       navigate('/login');
@@ -64,122 +46,131 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
 
   const NavItem = ({ name, path }) => {
     const isActive = location.pathname === path;
-
     return (
       <Box
         as={RouterLink}
         to={path}
         onClick={handleLinkClick}
         position="relative"
-        px={4}
+        px={1}
         py={2}
-        fontSize={{ base: '12px', sm: '14px', md: '16px' }}
-        textAlign="center"
-        color="white"
-        fontWeight={isActive ? 'bold' : 'normal'}
+        fontSize="sm"
+        letterSpacing="0.06em"
+        textTransform="uppercase"
+        fontWeight="500"
+        color={isActive ? 'white' : 'whiteAlpha.600'}
         textDecoration="none"
         whiteSpace="nowrap"
+        transition="color 0.2s"
+        _hover={{ color: 'white', textDecoration: 'none' }}
         _focus={{ boxShadow: 'none' }}
         _after={{
           content: '""',
           position: 'absolute',
           left: 0,
-          bottom: '-2px',
+          bottom: '-1px',
           width: isActive ? '100%' : '0%',
-          height: '2px',
-          bg: 'teal.500',
-          transition: 'width 0.3s ease',
+          height: '1px',
+          bg: 'teal.400',
+          transition: 'width 0.25s ease',
         }}
-        _hover={{ _after: { width: '100%' }, color: 'teal.500' }}
+        sx={{ '&:hover::after': { width: '100%' } }}
       >
         {name}
       </Box>
     );
   };
 
-  NavItem.propTypes = {
-    name: PropTypes.string.isRequired,
-    path: PropTypes.string.isRequired,
-  };
+  NavItem.propTypes = { name: PropTypes.string.isRequired, path: PropTypes.string.isRequired };
 
   return (
     <Box
-      bg="gray.800"
-      px={4}
+      bg="gray.950"
+      borderBottom="1px solid"
+      borderColor="whiteAlpha.100"
+      px={6}
       color="white"
       w="100vw"
-      boxShadow="2xl"
       position="fixed"
       zIndex="1000"
+      backdropFilter="blur(12px)"
+      sx={{ bg: 'rgba(10,10,10,0.92)' }}
     >
-      <Flex h={16} alignItems="center" justifyContent="space-between">
+      <Flex h="60px" alignItems="center" justifyContent="space-between" maxW="1200px" mx="auto">
+        {/* Wordmark */}
         <Text
-          fontSize={{ base: '16px', sm: '18px', md: '22px' }}
-          cursor="pointer"
-          fontWeight="bold"
+          fontSize={{ base: 'sm', md: 'md' }}
+          fontWeight="700"
+          letterSpacing="0.12em"
+          textTransform="uppercase"
           color="white"
+          cursor="pointer"
           onClick={() => navigate('/')}
           whiteSpace="nowrap"
+          _hover={{ color: 'teal.400' }}
+          transition="color 0.2s"
         >
-          Extra Time Blog
+          Extra Time
+          <Box as="span" color="teal.400" ml={1}>·</Box>
         </Text>
 
         {/* Desktop Links */}
-        <HStack
-          as="nav"
-          spacing={6}
-          display={{ base: 'none', md: 'flex' }}
-          justifyContent="center"
-          flex="1"
-        >
+        <HStack as="nav" spacing={7} display={{ base: 'none', md: 'flex' }}>
           {links.map((link) =>
             link.path ? (
               <NavItem key={link.name} name={link.name} path={link.path} />
             ) : (
-              <Button
+              <Box
                 key={link.name}
-                onClick={() => {
-                  link.action();
-                  handleLinkClick();
-                }}
-                variant="ghost"
-                color="black.500"
-                fontSize={{ base: '12px', sm: '14px', md: '16px' }}
-                _hover={{ bg: 'teal.500' }}
-                _focus={{ boxShadow: 'none' }}
+                onClick={() => { link.action(); handleLinkClick(); }}
+                position="relative"
+                px={1}
+                py={2}
+                fontSize="sm"
+                letterSpacing="0.06em"
+                textTransform="uppercase"
+                fontWeight="500"
+                color="whiteAlpha.600"
+                cursor="pointer"
+                transition="color 0.2s"
+                _hover={{ color: 'white' }}
               >
                 {link.name}
-              </Button>
+              </Box>
             )
           )}
         </HStack>
 
-        {/* Desktop Login/Logout */}
-        <Button
-          display={{ base: 'none', md: 'flex' }}
-          bg="teal.500"
-          color="white"
-          fontWeight="bold"
-          px={5}
-          borderRadius="full"
-          _hover={{
-            transform: 'translateY(-2px)',
-            bg: 'gray.100',
-          }}
-          transition="0.25s"
-          onClick={handleAuthClick}
-          _focus={{ boxShadow: 'none' }}
-        >
-          {isAuthenticated ? 'Logout' : 'Login'}
-        </Button>
+        {/* CTA */}
+        <HStack spacing={3} display={{ base: 'none', md: 'flex' }}>
+          <Button
+            size="sm"
+            variant="outline"
+            borderColor="whiteAlpha.300"
+            color="white"
+            fontSize="xs"
+            letterSpacing="0.08em"
+            textTransform="uppercase"
+            fontWeight="600"
+            px={5}
+            borderRadius="full"
+            _hover={{ bg: 'whiteAlpha.100', borderColor: 'teal.400', color: 'teal.400' }}
+            transition="all 0.2s"
+            onClick={handleAuthClick}
+            _focus={{ boxShadow: 'none' }}
+          >
+            {isAuthenticated ? 'Sign Out' : 'Sign In'}
+          </Button>
+        </HStack>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Toggle */}
         <IconButton
-          size="md"
+          size="sm"
           bg="transparent"
-          color="teal.500"
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+          color="whiteAlpha.700"
+          icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={4} h={4} />}
           _focus={{ boxShadow: 'none' }}
+          _hover={{ bg: 'whiteAlpha.100' }}
           aria-label="Toggle Navigation"
           display={{ base: 'flex', md: 'none' }}
           onClick={isOpen ? onClose : onOpen}
@@ -190,32 +181,31 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
       {isOpen && (
         <Box
           position="absolute"
-          top="64px"
+          top="60px"
           left="0"
           width="100%"
-          bg="grey.800"
-          px={4}
-          py={4}
+          bg="rgba(10,10,10,0.97)"
+          backdropFilter="blur(16px)"
+          borderBottom="1px solid"
+          borderColor="whiteAlpha.100"
+          px={6}
+          py={6}
           zIndex="999"
           display={{ md: 'none' }}
         >
-          <Stack as="nav" spacing={4} align="center">
+          <Stack as="nav" spacing={5} align="flex-start">
             {links.map((link) =>
               link.action ? (
                 <Box
                   key={link.name}
-                  onClick={() => {
-                    link.action();
-                    handleLinkClick();
-                  }}
-                  px={4}
-                  py={2}
+                  onClick={() => { link.action(); handleLinkClick(); }}
+                  fontSize="sm"
+                  letterSpacing="0.08em"
+                  textTransform="uppercase"
+                  fontWeight="500"
+                  color="whiteAlpha.700"
                   cursor="pointer"
-                  color="teal.500"
-                  fontSize={{ base: '14px', sm: '15px' }}
-                  _hover={{ textDecoration: 'underline' }}
-                  _focus={{ boxShadow: 'none' }}
-                  whiteSpace="nowrap"
+                  _hover={{ color: 'white' }}
                 >
                   {link.name}
                 </Box>
@@ -223,20 +213,23 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
                 <NavItem key={link.name} name={link.name} path={link.path} />
               )
             )}
-
             <Button
-              bg="teal.500"
-              color="white"
-              fontWeight="bold"
+              size="sm"
+              variant="outline"
+              borderColor="teal.500"
+              color="teal.400"
+              fontSize="xs"
+              letterSpacing="0.08em"
+              textTransform="uppercase"
+              fontWeight="600"
+              px={6}
               borderRadius="full"
-              py={6}
-              onClick={() => {
-                onClose();
-                handleAuthClick();
-              }}
-              _focus={{ boxShadow: 'none' }}
+              mt={2}
+              _hover={{ bg: 'teal.500', color: 'white' }}
+              transition="all 0.2s"
+              onClick={() => { onClose(); handleAuthClick(); }}
             >
-              {isAuthenticated ? 'Logout' : 'Login'}
+              {isAuthenticated ? 'Sign Out' : 'Sign In'}
             </Button>
           </Stack>
         </Box>

@@ -1,45 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  VStack,
-  Spinner,
-  Image,
-  Badge,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  IconButton,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  SimpleGrid,
-} from "@chakra-ui/react";
-import { HiDotsVertical } from "react-icons/hi";
-import { MdCreate } from "react-icons/md";
-import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import Questions from "../assets/Questions-amico.svg";
+  Box, Heading, Text, Button, VStack, Spinner, Image, Badge,
+  HStack, Menu, MenuButton, MenuList, MenuItem,
+  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader,
+  AlertDialogBody, AlertDialogFooter,
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
+  ModalBody, ModalFooter, FormControl, FormLabel, Input, Textarea,
+  SimpleGrid, Avatar, Divider, IconButton,
+} from '@chakra-ui/react';
+import { HiDotsVertical } from 'react-icons/hi';
+import { MdAdd } from 'react-icons/md';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -49,7 +24,6 @@ const Profile = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editedArticle, setEditedArticle] = useState({});
   const [isUpdating, setIsUpdating] = useState(false);
-
   const cancelRef = useRef();
   const navigate = useNavigate();
 
@@ -65,52 +39,42 @@ const Profile = () => {
   const fetchUserArticles = async (uid) => {
     setLoading(true);
     try {
-      const q = query(collection(db, "articles"), where("userId", "==", uid));
+      const q = query(collection(db, 'articles'), where('userId', '==', uid));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       data.sort((a, b) => new Date(b.date) - new Date(a.date));
       setArticles(data);
     } catch (error) {
-      console.error("Error loading profile articles:", error);
+      console.error('Error loading profile articles:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const openDeleteModal = (post) => setPostToDelete(post);
   const confirmDelete = async () => {
     try {
-      await deleteDoc(doc(db, "articles", postToDelete.id));
+      await deleteDoc(doc(db, 'articles', postToDelete.id));
       setArticles((prev) => prev.filter((item) => item.id !== postToDelete.id));
     } catch (error) {
-      console.error("Error deleting article:", error);
+      console.error('Error deleting article:', error);
     } finally {
       setPostToDelete(null);
     }
   };
 
-  const openEditModal = (article) => {
-    setEditedArticle(article);
-    setIsEditOpen(true);
-  };
-
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const articleRef = doc(db, "articles", editedArticle.id);
+      const articleRef = doc(db, 'articles', editedArticle.id);
       await updateDoc(articleRef, {
         title: editedArticle.title,
         description: editedArticle.description,
-        imageUrl: editedArticle.imageUrl || "",
+        imageUrl: editedArticle.imageUrl || '',
       });
-
-      setArticles((prev) =>
-        prev.map((a) => (a.id === editedArticle.id ? editedArticle : a))
-      );
-
+      setArticles((prev) => prev.map((a) => (a.id === editedArticle.id ? editedArticle : a)));
       setIsEditOpen(false);
     } catch (error) {
-      console.error("Error updating article:", error);
+      console.error('Error updating article:', error);
     } finally {
       setIsUpdating(false);
     }
@@ -133,160 +97,172 @@ const Profile = () => {
     reader.readAsDataURL(file);
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <Box   display="flex" mt="70px" w="100vw" justifyContent="center"  alignItems="center">
-        <Spinner size="xl" />
+      <Box minH="100vh"  display="flex" justifyContent="center" alignItems="center">
+        <Spinner size="lg" color="teal.500" thickness="3px" />
       </Box>
     );
+  }
 
-    if (!user)
-      return (
-        <Box
-          minH="100vh"
-          display="flex"
-          w="100vw"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          textAlign="center"
-          px={6}
-        >
-          <Image
-            src={Questions}
-            alt="Sign in illustration"
-            maxW="300px"
-            mb={6}
-            opacity={0.9}
-          />
-    
-          <Heading size="lg" mb={2}>
-            You’re not signed in
-          </Heading>
-    
-          <Text fontSize="md" color="gray.600" maxW="320px" mb={5}>
-            Sign in to access your profile, manage your articles, and continue your journey.
-          </Text>
-    
-          <Button
-            colorScheme="teal"
-            size="md"
-            px={8}
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
+  if (!user) {
+    return (
+      <Box minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" textAlign="center" px={6} bg="gray.50">
+        <Box w="80px" h="80px" borderRadius="full" bg="gray.100" display="flex" alignItems="center" justifyContent="center" mb={6}>
+          <Text fontSize="2xl">👤</Text>
         </Box>
-      );
-    
+        <Heading size="md" mb={2} fontWeight="700" letterSpacing="-0.02em">You're not signed in</Heading>
+        <Text fontSize="sm" color="gray.500" maxW="280px" mb={6} lineHeight="1.6">
+          Sign in to manage your articles and access your profile.
+        </Text>
+        <Button colorScheme="teal" size="md" px={8} borderRadius="full" onClick={() => navigate('/login')}>
+          Sign In
+        </Button>
+      </Box>
+    );
+  }
+
+  const initials = user.email ? user.email.slice(0, 2).toUpperCase() : '??';
 
   return (
-    <Box mx="auto" p={4} >
-      {/* User Info + Add Article Button */}
-      <VStack spacing={3} mb={6} textAlign="center">
-        <Heading size="lg">My Profile</Heading>
-        <Text fontSize="md" color="gray.600">
-          Email: <strong>{user.email}</strong>
-        </Text>
-        <Badge colorScheme="teal">{articles.length} Articles Posted</Badge>
+    <Box minH="100vh" bg="gray.50" pb={16}>
+      <Box  mx="auto" px={{ base: 4, md: 8 }} pt={8}>
 
-        <Button
-          mt={2}
-          colorScheme="teal"
-          leftIcon={<MdCreate />}
-          onClick={() => navigate("/add-article")}
-        >
-          Add New Article
-        </Button>
-      </VStack>
-
-      {/* Articles Grid */}
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} w="100%">
-  {articles.length === 0 ? (
-    <Text textAlign="center" fontSize="lg" gridColumn="1 / -1">
-      You haven't posted any articles yet.
-    </Text>
-  ) : (
-    articles.map((article) => (
-      <Box
-        key={article.id}
-        p={4}
-        border="1px solid"
-        borderColor="gray.300"
-        rounded="md"
-        bg="white"
-        position="relative"
-      >
-        {/* Menu */}
-        <Menu>
-  <MenuButton
-    as={Box} // Use Box so no default button styles
-    position="absolute"
-    top="25px"
-    right="20px"
-    cursor="pointer"
-    _hover={{ color: "gray.400" }} // slight color change on hover
-  >
-    <HiDotsVertical color="white" size={20} />
-  </MenuButton>
-  <MenuList>
-    <MenuItem onClick={() => openEditModal(article)}>Edit Article</MenuItem>
-    <MenuItem onClick={() => openDeleteModal(article)} color="red">
-      Delete Article
-    </MenuItem>
-  </MenuList>
-</Menu>
-
-
-        <Image
-          src={article.imageUrl || "https://picsum.photos/400"}
-          alt={article.title}
-          borderRadius="md"
-          mb={4}
-          objectFit="cover"
-          w="100%"
-          maxH="250px"
-        />
-
-        <Heading size="md" noOfLines={2}>
-          {article.title}
-        </Heading>
-
-        <Text fontSize="sm" color="gray.600" noOfLines={2} mt={2}>
-          {article.description || article.content}
-        </Text>
-
-        <HStack justifyContent="space-between" mt={3}>
-          <Text fontSize="sm" color="red.700">
-            {article.author} • {new Date(article.date).toLocaleDateString()}
-          </Text>
-
-          {/* Read Article Button */}
-          <Button size="sm" colorScheme="teal" onClick={() => navigate(`/articledetails/${article.id}`)}>
-            Read Article
+        {/* Profile Header */}
+        <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={6} mb={8} display="flex" alignItems="center" gap={5} flexWrap="wrap">
+          <Avatar name={user.email} size="lg" bg="teal.500" color="white" />
+          <Box flex="1">
+            <Heading size="sm" fontWeight="700" letterSpacing="-0.01em" color="gray.900">{user.displayName || 'Your Profile'}</Heading>
+            <Text fontSize="sm" color="gray.500" mt={0.5}>{user.email}</Text>
+            <HStack mt={2} spacing={3}>
+              <Badge colorScheme="teal" variant="subtle" fontSize="xs" px={2} py={0.5} borderRadius="full">
+                {articles.length} {articles.length === 1 ? 'Article' : 'Articles'}
+              </Badge>
+            </HStack>
+          </Box>
+          <Button
+            leftIcon={<MdAdd size={16} />}
+            colorScheme="teal"
+            size="sm"
+            borderRadius="full"
+            px={5}
+            fontWeight="600"
+            fontSize="sm"
+            onClick={() => navigate('/add-article')}
+          >
+            New Article
           </Button>
+        </Box>
+
+        {/* Divider label */}
+        <HStack mb={5} spacing={3}>
+          <Heading size="sm" fontWeight="700" letterSpacing="-0.01em" color="gray.700">My Articles</Heading>
+          <Divider />
         </HStack>
+
+        {/* Articles Grid */}
+        {articles.length === 0 ? (
+          <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center">
+            <Text fontSize="2xl" mb={3}>✍️</Text>
+            <Text fontWeight="600" color="gray.700" mb={1}>No articles yet</Text>
+            <Text fontSize="sm" color="gray.400" mb={5}>Share your first story with the world.</Text>
+            <Button colorScheme="teal" size="sm" borderRadius="full" onClick={() => navigate('/add-article')}>
+              Write Something
+            </Button>
+          </Box>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+            {articles.map((article) => (
+              <Box
+                key={article.id}
+                bg="white"
+                borderRadius="xl"
+                border="1px solid"
+                borderColor="gray.100"
+                overflow="hidden"
+                position="relative"
+                _hover={{ boxShadow: 'md', borderColor: 'gray.200' }}
+                transition="all 0.2s"
+              >
+                {/* 3-dot menu */}
+                <Menu>
+                  <MenuButton
+                    as={IconButton}
+                    icon={<HiDotsVertical size={15} />}
+                    variant="ghost"
+                    size="xs"
+                    position="absolute"
+                    top={3}
+                    right={3}
+                    zIndex={2}
+                    color="white"
+                    bg="blackAlpha.300"
+                    _hover={{ bg: 'blackAlpha.500' }}
+                    aria-label="Options"
+                  />
+                  <MenuList fontSize="sm" shadow="lg" borderColor="gray.100">
+                    <MenuItem icon={<FiEdit2 size={13} />} onClick={() => { setEditedArticle(article); setIsEditOpen(true); }}>
+                      Edit Article
+                    </MenuItem>
+                    <MenuItem icon={<FiTrash2 size={13} />} color="red.500" onClick={() => setPostToDelete(article)}>
+                      Delete Article
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+
+                <Image
+                  src={article.imageUrl || 'https://picsum.photos/400/200'}
+                  alt={article.title}
+                  w="100%"
+                  h="180px"
+                  objectFit="cover"
+                />
+
+                <Box p={4}>
+                  <Badge colorScheme="teal" variant="subtle" fontSize="9px" px={2} py={0.5} borderRadius="full" mb={2} letterSpacing="0.05em">
+                    {article.category}
+                  </Badge>
+                  <Heading size="sm" noOfLines={2} fontWeight="700" letterSpacing="-0.01em" color="gray.800" mb={2}>
+                    {article.title}
+                  </Heading>
+                  <Text fontSize="xs" color="gray.500" noOfLines={2} lineHeight="1.5" mb={4}>
+                    {article.description || article.content}
+                  </Text>
+                  <HStack justify="space-between" align="center">
+                    <Text fontSize="xs" color="gray.400">
+                      {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </Text>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      colorScheme="teal"
+                      fontWeight="600"
+                      fontSize="xs"
+                      onClick={() => navigate(`/articledetails/${article.id}`)}
+                    >
+                      Read →
+                    </Button>
+                  </HStack>
+                </Box>
+              </Box>
+            ))}
+          </SimpleGrid>
+        )}
       </Box>
-    ))
-  )}
-</SimpleGrid>
 
-
-      {/* Delete Confirmation Modal */}
-      <AlertDialog isOpen={!!postToDelete} leastDestructiveRef={cancelRef} onClose={() => setPostToDelete(null)}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Article
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure you want to delete "<strong>{postToDelete?.title}</strong>"? This action cannot be undone.
+      {/* Delete Confirmation */}
+      <AlertDialog isOpen={!!postToDelete} leastDestructiveRef={cancelRef} onClose={() => setPostToDelete(null)} isCentered>
+        <AlertDialogOverlay backdropFilter="blur(4px)">
+          <AlertDialogContent borderRadius="xl" border="1px solid" borderColor="gray.100">
+            <AlertDialogHeader fontSize="md" fontWeight="700" pb={2}>Delete Article</AlertDialogHeader>
+            <AlertDialogBody fontSize="sm" color="gray.600">
+              Are you sure you want to delete <strong>"{postToDelete?.title}"</strong>? This cannot be undone.
             </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setPostToDelete(null)}>
+            <AlertDialogFooter gap={2}>
+              <Button ref={cancelRef} onClick={() => setPostToDelete(null)} size="sm" variant="ghost">
                 Cancel
               </Button>
-              <Button colorScheme="red" ml={3} onClick={confirmDelete}>
+              <Button colorScheme="red" size="sm" onClick={confirmDelete} borderRadius="full">
                 Delete
               </Button>
             </AlertDialogFooter>
@@ -294,86 +270,69 @@ const Profile = () => {
         </AlertDialogOverlay>
       </AlertDialog>
 
-      {/* Edit Article Modal */}
-      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit Article</ModalHeader>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} isCentered size="md">
+        <ModalOverlay backdropFilter="blur(4px)" />
+        <ModalContent borderRadius="xl">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Edit Article</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Title</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.05em" color="gray.500" textTransform="uppercase">Title</FormLabel>
                 <Input
-                  value={editedArticle.title || ""}
+                  value={editedArticle.title || ''}
                   onChange={(e) => setEditedArticle({ ...editedArticle, title: e.target.value })}
+                  size="sm"
+                  borderRadius="lg"
+                  focusBorderColor="teal.400"
                 />
               </FormControl>
               <FormControl>
-                <FormLabel>Description</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.05em" color="gray.500" textTransform="uppercase">Description</FormLabel>
                 <Textarea
-                  value={editedArticle.description || ""}
+                  value={editedArticle.description || ''}
                   onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}
+                  size="sm"
+                  borderRadius="lg"
+                  focusBorderColor="teal.400"
+                  rows={4}
+                  resize="none"
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
-                  Upload Image
-                </FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.05em" color="gray.500" textTransform="uppercase">Cover Image</FormLabel>
                 <Box
-                  p={6}
+                  p={5}
                   border="2px dashed"
-                  borderColor="gray.300"
-                  borderRadius="md"
+                  borderColor="gray.200"
+                  borderRadius="lg"
                   textAlign="center"
                   cursor="pointer"
                   bg="gray.50"
-                  _hover={{ bg: "gray.100" }}
-                  onClick={() => document.getElementById("fileInput").click()}
+                  _hover={{ borderColor: 'teal.300', bg: 'teal.50' }}
+                  onClick={() => document.getElementById('editFileInput').click()}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleFileDrop}
+                  transition="all 0.2s"
                 >
                   {editedArticle.imageUrl ? (
-                    <Box>
-                      <Text fontSize="sm" color="gray.500" mb={2}>
-                        Image Preview
-                      </Text>
-                      <Image
-                        src={editedArticle.imageUrl}
-                        alt="Preview"
-                        borderRadius="lg"
-                        boxSize={{ base: "200px", md: "250px" }}
-                        objectFit="cover"
-                        boxShadow="md"
-                        border="1px solid"
-                        borderColor="gray.200"
-                        mx="auto"
-                      />
-                    </Box>
+                    <Image src={editedArticle.imageUrl} alt="Preview" borderRadius="md" maxH="160px" mx="auto" objectFit="cover" />
                   ) : (
-                    <Box>
-                      <Text fontSize="md" color="gray.500">
-                        Drag & drop an image here, or <strong>click to select</strong>
-                      </Text>
-                    </Box>
+                    <VStack spacing={1}>
+                      <Text fontSize="sm" color="gray.400">Drop image here or <Text as="span" color="teal.500" fontWeight="600">browse</Text></Text>
+                      <Text fontSize="xs" color="gray.300">PNG, JPG up to 5MB</Text>
+                    </VStack>
                   )}
                 </Box>
-                <Input
-                  id="fileInput"
-                  type="file"
-                  accept="image/*"
-                  display="none"
-                  onChange={handleImageUpload}
-                />
+                <Input id="editFileInput" type="file" accept="image/*" display="none" onChange={handleImageUpload} />
               </FormControl>
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => setIsEditOpen(false)} variant="ghost">
-              Cancel
-            </Button>
-            <Button colorScheme="blue" onClick={handleUpdate} isLoading={isUpdating}>
-              Update
+          <ModalFooter gap={2}>
+            <Button onClick={() => setIsEditOpen(false)} variant="ghost" size="sm">Cancel</Button>
+            <Button colorScheme="teal" size="sm" onClick={handleUpdate} isLoading={isUpdating} borderRadius="full" px={6}>
+              Save Changes
             </Button>
           </ModalFooter>
         </ModalContent>

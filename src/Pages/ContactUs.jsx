@@ -1,184 +1,209 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  VStack,
-  Heading,
-  useToast,
-  HStack,
-  IconButton,
-  Text,
-  Flex,
-} from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa6";
+  Box, Button, FormControl, FormLabel, Input, Textarea, VStack,
+  Heading, useToast, HStack, IconButton, Text,
+} from '@chakra-ui/react';
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa6';
+
+const SOCIAL_LINKS = [
+  { Icon: FaTwitter, label: 'Twitter', href: '#' },
+  { Icon: FaLinkedin, label: 'LinkedIn', href: '#' },
+  { Icon: FaGithub, label: 'GitHub', href: '#' },
+  { Icon: FaFacebook, label: 'Facebook', href: '#' },
+  { Icon: FaInstagram, label: 'Instagram', href: '#' },
+];
 
 const ContactUs = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
+  const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+
   const handleSubmit = () => {
-    if (!name || !email || !message) {
-      toast({
-        title: "Missing Fields",
-        description: "Please fill out all fields before submitting.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-        position: "top",
-      });
+    if (!form.name || !form.email || !form.message) {
+      toast({ title: 'Please fill in all fields', status: 'warning', duration: 3000, isClosable: true, position: 'top' });
       return;
     }
-
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Message Sent",
-        description: "Thank you for contacting us. We’ll get back to you soon.",
-        status: "success",
-        duration: 4000,
-        isClosable: true,
-        position: "top",
-      });
-      setName("");
-      setEmail("");
-      setMessage("");
-    }, 2000);
+      toast({ title: 'Message sent', description: "We'll get back to you soon.", status: 'success', duration: 4000, isClosable: true, position: 'top' });
+      setForm({ name: '', email: '', message: '' });
+    }, 1500);
+  };
+
+  const inputStyles = {
+    size: 'md',
+    borderRadius: 'lg',
+    bg: 'gray.50',
+    border: '1px solid',
+    borderColor: 'gray.200',
+    focusBorderColor: 'teal.400',
+    _hover: { borderColor: 'gray.300' },
+    _placeholder: { color: 'gray.400', fontSize: 'sm' },
   };
 
   return (
-    <Flex
-      minH="100vh"
-      bgGradient="linear(to-br, teal.600, teal.700, gray.900)"
-      justify="center"
-      w="100vw"
-      align="center"
-      p={{ base: 3, md: 6 }}
-    >
-      <Flex
+    <Box minH="100vh" w="100vw" bg="gray.50" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
+      <Box
+        w="100%"
+        maxW="800px"
         bg="white"
         borderRadius="2xl"
-        boxShadow="2xl"
+        border="1px solid"
+        borderColor="gray.100"
+        boxShadow="xl"
         overflow="hidden"
-        w={{ base: "100%", sm: "95%", md: "850px" }}
-        flexDir={{ base: "column", md: "row" }}
+        display={{ base: 'block', md: 'flex' }}
       >
-        {/* Left Side - Form */}
-        <Box flex="1" p={{ base: 4, sm: 6, md: 10 }}>
-          <Heading
-            fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
-            textAlign="center"
-            mb={{ base: 4, md: 6 }}
-            color="teal.700"
-          >
-            Contact Us
+        {/* Left — Form */}
+        <Box flex="3" p={{ base: 6, md: 10 }}>
+          <Heading size="md" fontWeight="700" letterSpacing="-0.02em" color="gray.900" mb={1}>
+            Get in Touch
           </Heading>
+          <Text fontSize="sm" color="gray.500" mb={7}>
+            Have a question or partnership idea? We'd love to hear from you.
+          </Text>
 
-          <VStack spacing={{ base: 3, md: 5 }}>
-            <FormControl isRequired>
-              <FormLabel fontWeight="semibold" fontSize={{ base: "sm", md: "md" }}>
-                Your Name
+          <VStack spacing={4} align="stretch">
+            <FormControl>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
+                Name
               </FormLabel>
               <Input
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                focusBorderColor="teal.500"
-                size={{ base: "sm", md: "md" }}
+                placeholder="Your full name"
+                value={form.name}
+                onChange={handleChange('name')}
+                {...inputStyles}
               />
             </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel fontWeight="semibold" fontSize={{ base: "sm", md: "md" }}>
-                Email Address
+            <FormControl>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
+                Email
               </FormLabel>
               <Input
                 type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                focusBorderColor="teal.500"
-                size={{ base: "sm", md: "md" }}
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange('email')}
+                {...inputStyles}
               />
             </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel fontWeight="semibold" fontSize={{ base: "sm", md: "md" }}>
+            <FormControl>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
                 Message
               </FormLabel>
               <Textarea
-                placeholder="Write your message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                focusBorderColor="teal.500"
+                placeholder="Tell us what's on your mind…"
+                value={form.message}
+                onChange={handleChange('message')}
+                rows={5}
                 resize="none"
-                size={{ base: "sm", md: "md" }}
+                {...inputStyles}
               />
             </FormControl>
 
             <Button
               colorScheme="teal"
-              w="full"
-              size={{ base: "md", md: "lg" }}
+              size="md"
+              borderRadius="full"
+              fontWeight="600"
+              fontSize="sm"
+              letterSpacing="0.03em"
               isLoading={isLoading}
+              loadingText="Sending…"
               onClick={handleSubmit}
-              _hover={{ transform: "scale(1.02)" }}
-              transition="all 0.2s ease"
+              mt={1}
+              _hover={{ transform: 'translateY(-1px)', boxShadow: 'md' }}
+              transition="all 0.2s"
             >
               Send Message
             </Button>
           </VStack>
 
-          <HStack justify="center" mt={{ base: 4, md: 6 }} spacing={{ base: 2, md: 5 }} wrap="wrap">
-            {[FaFacebook, FaTwitter, FaLinkedin, FaGithub, FaInstagram].map((Icon, idx) => (
+          {/* Social Icons */}
+          <HStack spacing={1} mt={8}>
+            {SOCIAL_LINKS.map(({ Icon, label, href }) => (
               <IconButton
-                key={idx}
-                as={Link}
-                to="#"
-                icon={<Icon size={18} />}
-                aria-label="Social Link"
+                key={label}
+                as="a"
+                href={href}
+                icon={<Icon size={14} />}
+                aria-label={label}
                 variant="ghost"
-                size={{ base: "sm", md: "lg" }}
-                color="gray.600"
-                _hover={{
-                  color: "teal.500",
-                  transform: "translateY(-2px)",
-                }}
-                transition="all 0.2s ease"
+                size="sm"
+                color="gray.400"
+                borderRadius="full"
+                _hover={{ color: 'teal.500', bg: 'teal.50' }}
+                transition="all 0.2s"
               />
             ))}
           </HStack>
         </Box>
 
-        {/* Right Side - Illustration or Info */}
+        {/* Right — Info Panel */}
         <Box
-          flex="1"
-          bgGradient="linear(to-b, teal.600, teal.800)"
+          flex="2"
+          bg="gray.900"
           color="white"
           display="flex"
           flexDir="column"
-          alignItems="center"
-          justifyContent="center"
+          alignItems="flex-start"
+          justifyContent="flex-end"
           p={{ base: 6, md: 10 }}
-          textAlign="center"
+          minH={{ base: '200px', md: 'auto' }}
+          position="relative"
+          overflow="hidden"
         >
-          <Heading size={{ base: "md", md: "lg" }} mb={{ base: 2, md: 4 }}>
-            Let's Connect 🌍
-          </Heading>
-          <Text fontSize={{ base: "sm", md: "md" }} color="gray.100" maxW={{ base: "90%", md: "300px" }}>
-            Have questions, feedback, or partnership ideas? We’d love to hear from you.
-          </Text>
+          {/* Decorative circle */}
+          <Box
+            position="absolute"
+            top="-60px"
+            right="-60px"
+            w="200px"
+            h="200px"
+            borderRadius="full"
+            bg="teal.500"
+            opacity={0.12}
+          />
+          <Box
+            position="absolute"
+            bottom="-40px"
+            left="-40px"
+            w="150px"
+            h="150px"
+            borderRadius="full"
+            bg="teal.400"
+            opacity={0.08}
+          />
+
+          <Box position="relative" zIndex={1}>
+            <Box w="32px" h="2px" bg="teal.400" mb={5} borderRadius="full" />
+            <Heading size="md" fontWeight="700" letterSpacing="-0.02em" mb={3} lineHeight="1.3">
+              Let's build something together
+            </Heading>
+            <Text fontSize="sm" color="whiteAlpha.600" lineHeight="1.7" maxW="220px">
+              We're always open to thoughtful conversations, feedback, and new ideas.
+            </Text>
+
+            <VStack align="flex-start" spacing={3} mt={7}>
+              {[
+                { label: 'Email', value: 'hello@extratime.com' },
+                { label: 'Based in', value: 'Lagos, Nigeria' },
+              ].map(({ label, value }) => (
+                <Box key={label}>
+                  <Text fontSize="9px" color="teal.400" fontWeight="700" letterSpacing="0.1em" textTransform="uppercase">{label}</Text>
+                  <Text fontSize="sm" color="whiteAlpha.800">{value}</Text>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
         </Box>
-      </Flex>
-    </Flex>
+      </Box>
+    </Box>
   );
 };
 

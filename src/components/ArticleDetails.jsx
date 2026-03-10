@@ -1,448 +1,418 @@
 import { useState, useEffect } from 'react';
 import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  useToast,
-  Spinner,
-  IconButton,
-  Image,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Input,
-  VStack,
-  Textarea,
-  FormControl,
-  FormLabel,
-  useDisclosure,
-  HStack,
-  Divider,
+  Box, Heading, Text, Button, useToast, Spinner, IconButton,
+  Image, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
+  ModalBody, ModalFooter, Input, VStack, Textarea, FormControl,
+  FormLabel, useDisclosure, HStack, Divider, Badge, Flex,
 } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db, app } from '../firebaseConfig';
-import { FaFacebook, FaTwitter, FaWhatsapp, FaThumbsUp, FaThumbsDown, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
+import { FiThumbsUp, FiThumbsDown, FiArrowLeft } from 'react-icons/fi';
 
 const ArticleDetails = () => {
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [editedArticle, setEditedArticle] = useState({ title: '', description: '', imageUrl: '' });
+  const [article, setArticle]               = useState(null);
+  const [loading, setLoading]               = useState(true);
+  const [isDeleting, setIsDeleting]         = useState(false);
+  const [isUpdating, setIsUpdating]         = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const toast = useToast();
+  const [editedArticle, setEditedArticle]   = useState({ title: '', description: '', imageUrl: '' });
+  const [likes, setLikes]                   = useState(0);
+  const [dislikes, setDislikes]             = useState(0);
+  const [userReaction, setUserReaction]     = useState(null);
+  const [currentUser, setCurrentUser]       = useState(null);
+
+  const toast    = useToast();
   const navigate = useNavigate();
   const { articleId } = useParams();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
-  const [userReaction, setUserReaction] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const { isOpen: isEditOpen,   onOpen: onEditOpen,   onClose: onEditClose   } = useDisclosure();
   const auth = getAuth(app);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user || null);
-    });
-    return () => unsubscribe();
+    const unsub = onAuthStateChanged(auth, (user) => setCurrentUser(user || null));
+    return () => unsub();
   }, []);
 
-  const fetchArticle = async () => {
-    try {
-      const docRef = doc(db, 'articles', articleId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setArticle(data);
-        setLikes(data.likes || 0);
-        setDislikes(data.dislikes || 0);
-        setEditedArticle({
-          title: data.title,
-          description: data.description,
-          imageUrl: data.imageUrl,
-        });
-      } else {
-        toast({
-          title: 'Article not found.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
+  useEffect(() => {
+    if (!articleId) return;
+    const fetchArticle = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'articles', articleId));
+        if (snap.exists()) {
+          const data = snap.data();
+          setArticle(data);
+          setLikes(data.likes || 0);
+          setDislikes(data.dislikes || 0);
+          setEditedArticle({ title: data.title, description: data.description, imageUrl: data.imageUrl });
+        } else {
+          toast({ title: 'Article not found.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
+        }
+      } catch (err) {
+        toast({ title: 'Error fetching article.', description: err.message, status: 'error', duration: 3000, isClosable: true, position: 'top' });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      toast({
-        title: 'Error fetching article.',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
-    } finally {
-      setLoading(false);
+    };
+    fetchArticle();
+  }, [articleId]);
+
+  const handleReaction = async (type) => {
+    if (!articleId) return;
+    const ref    = doc(db, 'articles', articleId);
+    const update = {};
+    if (type === 'like') {
+      if (userReaction === 'liked') {
+        update.likes = increment(-1); setLikes((p) => p - 1); setUserReaction(null);
+      } else {
+        update.likes = increment(1);
+        if (userReaction === 'disliked') { update.dislikes = increment(-1); setDislikes((p) => p - 1); }
+        setLikes((p) => p + 1); setUserReaction('liked');
+      }
+    } else {
+      if (userReaction === 'disliked') {
+        update.dislikes = increment(-1); setDislikes((p) => p - 1); setUserReaction(null);
+      } else {
+        update.dislikes = increment(1);
+        if (userReaction === 'liked') { update.likes = increment(-1); setLikes((p) => p - 1); }
+        setDislikes((p) => p + 1); setUserReaction('disliked');
+      }
     }
+    try { await updateDoc(ref, update); } catch (e) { console.error(e); }
   };
 
-  if (articleId) {
-    fetchArticle();
-  }
-
-  
-
-  const handleDeleteArticle = async () => {
-    if (!article) {
-      toast({
-        title: 'Article not found.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+  const handleDelete = async () => {
+    if (!currentUser || currentUser.uid !== article?.userId) {
+      toast({ title: 'Unauthorized.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
       return;
     }
-  
-    if (!currentUser || currentUser.uid !== article.userId) {
-      toast({
-        title: 'Unauthorized action.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
-      return;
-    }
-  
     try {
       setIsDeleting(true);
       await deleteDoc(doc(db, 'articles', articleId));
-      toast({
-        title: 'Article deleted.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+      toast({ title: 'Article deleted.', status: 'success', duration: 3000, isClosable: true, position: 'top' });
       navigate('/');
-    } catch (error) {
-      toast({
-        title: 'Error deleting article.',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+    } catch (err) {
+      toast({ title: 'Error deleting.', description: err.message, status: 'error', duration: 3000, isClosable: true, position: 'top' });
     } finally {
       setIsDeleting(false);
-      onClose();
+      onDeleteClose();
     }
   };
-  
 
   const handleUpdate = async () => {
-    const user = auth.currentUser;
-if (!user) {
-  // Redirect to login or show an error message
-  toast({
-    title: 'Not Authenticated',
-    description: 'You need to be logged in to update an article.',
-    status: 'error',
-    duration: 3000,
-    isClosable: true,
-    position: 'top',
-  });
-  return;
-}
-
-
+    if (!auth.currentUser) {
+      toast({ title: 'Not signed in.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
+      return;
+    }
     try {
       setIsUpdating(true);
-      const docRef = doc(db, 'articles', articleId);
-      await updateDoc(docRef, { ...editedArticle });
+      await updateDoc(doc(db, 'articles', articleId), { ...editedArticle });
       setArticle(editedArticle);
-      toast({
-        title: 'Article updated.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+      toast({ title: 'Updated successfully.', status: 'success', duration: 3000, isClosable: true, position: 'top' });
       onEditClose();
-    } catch (error) {
-      toast({
-        title: 'Error updating article.',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+    } catch (err) {
+      toast({ title: 'Update failed.', description: err.message, status: 'error', duration: 3000, isClosable: true, position: 'top' });
     } finally {
       setIsUpdating(false);
-    }
-    fetchArticle()
-  };
-
-  const handleLike = async () => {
-    if (!articleId) return;
-
-    const articleRef = doc(db, "articles", articleId);
-
-    try {
-      const updateData = {};
-
-      if (userReaction === "liked") {
-        updateData.likes = increment(-1);
-        setLikes((prev) => prev - 1);
-        setUserReaction(null);
-      } else {
-        updateData.likes = increment(1);
-        if (userReaction === "disliked") {
-          updateData.dislikes = increment(-1);
-          setDislikes((prev) => prev - 1);
-        }
-        setLikes((prev) => prev + 1);
-        setUserReaction("liked");
-      }
-
-      await updateDoc(articleRef, updateData);
-    } catch (error) {
-      console.error("Error updating likes:", error);
-    }
-  };
-
-  const handleDislike = async () => {
-    if (!articleId) return;
-
-    const articleRef = doc(db, "articles", articleId);
-
-    try {
-      const updateData = {};
-
-      if (userReaction === "disliked") {
-        updateData.dislikes = increment(-1);
-        setDislikes((prev) => prev - 1);
-        setUserReaction(null);
-      } else {
-        updateData.dislikes = increment(1);
-        if (userReaction === "liked") {
-          updateData.likes = increment(-1);
-          setLikes((prev) => prev - 1);
-        }
-        setDislikes((prev) => prev + 1);
-        setUserReaction("disliked");
-      }
-
-      await updateDoc(articleRef, updateData);
-    } catch (error) {
-      console.error("Error updating dislikes:", error);
     }
   };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append('image', file);
     setUploadingImage(true);
-
     try {
-      const response = await fetch(
-        'https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a',
-        { method: 'POST', body: formData }
-      );
-      const data = await response.json();
-      if (data.success) {
-        const imageUrl = data.data.url;
-        setEditedArticle((prev) => ({ ...prev, imageUrl }));
-        toast({
-          title: 'Image uploaded successfully.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
-      } else {
-        throw new Error('Image upload failed');
-      }
-    } catch (error) {
-      toast({
-        title: 'Error uploading image.',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      });
+      const res  = await fetch('https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) setEditedArticle((prev) => ({ ...prev, imageUrl: data.data.url }));
+      else throw new Error('Upload failed');
+    } catch (err) {
+      toast({ title: 'Image upload failed.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
     } finally {
       setUploadingImage(false);
     }
   };
 
-  const handleFileDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      // Do something with the file, like uploading or preview
-      console.log('Dropped file:', file);
-    }
-  };
-
-  useEffect(() => {
-    fetchArticle()
-  }, [articleId, toast]);
-
   if (loading) {
     return (
-      <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
-        <Spinner size="xl" color="teal.500" />
+      <Box minH="100vh" minW="1400px" w="100%" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+        <VStack spacing={3}>
+          <Spinner size="lg" color="teal.500" thickness="3px" />
+          <Text fontSize="sm" color="gray.400" letterSpacing="0.04em">Loading article…</Text>
+        </VStack>
       </Box>
     );
   }
 
   if (!article) {
     return (
-      <Box p={8} textAlign="center">
-        <Heading size="lg">Article not found</Heading>
+      <Box minH="100vh" minW="1400px" w="100%" display="flex" flexDir="column" alignItems="center" justifyContent="center" bg="gray.50">
+        <Text fontSize="3xl" mb={4}>📭</Text>
+        <Heading size="md" mb={3} fontWeight="700">Article not found</Heading>
+        <Button size="sm" variant="ghost" color="gray.500" leftIcon={<FiArrowLeft size={13} />} onClick={() => navigate('/')}>
+          Back to Home
+        </Button>
       </Box>
     );
   }
 
   const shareUrl = window.location.href;
+  const isOwner  = currentUser && article.userId === currentUser.uid;
+  const readTime = article.description ? Math.ceil(article.description.split(' ').length / 200) : 1;
 
   return (
-    <Box p={8} bg="gray.50" minHeight="100vh" display="flex" flexDirection="column" alignItems="left">
-        <Heading fontSize={{ base: 'md', md: 'x-large' }} mb={4} textAlign="center" >{article.title}</Heading>
-        <Image src={article.imageUrl || 'https://via.placeholder.com/150'} alt={article.title} borderRadius="md" mb={4} w="100%" />
-        <HStack mb={4} justifyContent="space-between">
-          <Text fontSize={{ base: 'sm', md: 'lg' }}>by {article.author}</Text>
-          <Text fontSize={{ base: 'sm', md: 'lg' }} color="gray.500">{new Date(article.date).toLocaleDateString()}</Text>
+    <Box minH="100vh" bg="gray.50"  w="100%" overflowX="hidden" pb={24}>
+      <Box   px={{ base: 4, md: 8 }} pt={8}>
+
+        {/* Back */}
+        <Button
+          variant="ghost" size="sm" leftIcon={<FiArrowLeft size={13} />}
+          color="gray.400" fontSize="xs" mb={7}
+          onClick={() => navigate('/')}
+          _hover={{ color: 'gray.800' }}
+        >
+          Back to Home
+        </Button>
+
+        {/* Category + read-time */}
+        <HStack spacing={3} mb={4} flexWrap="wrap">
+          {article.category && (
+            <Badge colorScheme="teal" variant="subtle" fontSize="xs" px={3} py={1} borderRadius="full" letterSpacing="0.04em">
+              {article.category}
+            </Badge>
+          )}
+          <Text fontSize="xs" color="gray.400">{readTime} min read</Text>
         </HStack>
-        <Divider my={4} />
-        <Text fontSize={{ base: 'sm', md: 'lg' }} mb={4}>{article.description}</Text>
 
-        <HStack spacing={3} mt={4}>
-          <IconButton as="a" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} background="transparent" target="_blank" icon={<FaFacebook />}/>
-          <IconButton as="a" href={`https://twitter.com/intent/tweet?url=${shareUrl}`} background="transparent" target="_blank" icon={<FaTwitter />} />
-          <IconButton as="a" href={`https://api.whatsapp.com/send?text=${shareUrl}`} background="transparent" target="_blank" icon={<FaWhatsapp />}  />
-          <IconButton as="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} background="transparent" target="_blank" icon={<FaLinkedin />}  />
-        </HStack>
+        {/* Title */}
+        <Heading
+          fontSize={{ base: '2xl', md: '3xl' }}
+          fontWeight="700"
+          letterSpacing="-0.03em"
+          lineHeight="1.25"
+          color="gray.900"
+          mb={5}
+        >
+          {article.title}
+        </Heading>
 
-        <Divider my={6} />
+        {/* Author row */}
+        <Flex mb={7} justify="space-between" align="center" flexWrap="wrap" gap={3}>
+          <HStack spacing={3}>
+            <Box
+              w="38px" h="38px" borderRadius="full" bg="teal.500" flexShrink={0}
+              display="flex" alignItems="center" justifyContent="center"
+            >
+              <Text fontSize="sm" fontWeight="700" color="white">
+                {article.author?.slice(0, 1).toUpperCase() || 'A'}
+              </Text>
+            </Box>
+            <Box>
+              <Text fontSize="sm" fontWeight="600" color="gray.800" lineHeight="1.2">
+                {article.author || 'Anonymous'}
+              </Text>
+              <Text fontSize="xs" color="gray.400">
+                {new Date(article.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </Text>
+            </Box>
+          </HStack>
 
-        <HStack spacing={4} mt={4}>
-          <Button leftIcon={<FaThumbsUp />}  background="transparent" onClick={handleLike}>{likes}</Button>
-          <Button leftIcon={<FaThumbsDown />}  background="transparent" onClick={handleDislike}>{dislikes}</Button>
-        </HStack>
-
-        {/* {currentUser && article.userId === currentUser.uid && (
-          <Box mt={6}>
-            <HStack spacing={4} justifyContent="space-between">
-              <Button colorScheme="blue" onClick={onEditOpen}>Edit</Button>
-              <Button colorScheme="red" onClick={onOpen}>Delete</Button>
+          {isOwner && (
+            <HStack spacing={2}>
+              <Button size="xs" variant="outline" colorScheme="blue" borderRadius="full" fontSize="xs" px={4} onClick={onEditOpen}>
+                Edit
+              </Button>
+              <Button size="xs" variant="outline" colorScheme="red" borderRadius="full" fontSize="xs" px={4} onClick={onDeleteOpen}>
+                Delete
+              </Button>
             </HStack>
-          </Box>
-        )} */}
+          )}
+        </Flex>
 
-      {/* Delete Confirmation Modal */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Confirm Delete</ModalHeader>
+        {/* Cover image */}
+        {article.imageUrl && (
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            borderRadius="xl"
+            w="100%"
+            maxH="420px"
+            objectFit="cover"
+            mb={8}
+          />
+        )}
+
+        {/* Body */}
+        <Text
+          fontSize={{ base: 'sm', md: 'md' }}
+          lineHeight="1.9"
+          color="gray.700"
+          mb={10}
+          whiteSpace="pre-wrap"
+        >
+          {article.description}
+        </Text>
+
+        <Divider mb={7} borderColor="gray.200" />
+
+        {/* ── Reactions + Share ── */}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.100"
+          borderRadius="xl"
+          px={5}
+          py={4}
+          mb={6}
+        >
+          <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
+
+            {/* Like / Dislike */}
+            <HStack spacing={3}>
+              <Button
+                leftIcon={<FiThumbsUp size={14} />}
+                size="sm"
+                borderRadius="full"
+                px={5}
+                fontWeight="600"
+                fontSize="xs"
+                variant={userReaction === 'liked' ? 'solid' : 'outline'}
+                colorScheme={userReaction === 'liked' ? 'teal' : 'gray'}
+                onClick={() => handleReaction('like')}
+                _hover={{ transform: 'translateY(-1px)', boxShadow: 'sm' }}
+                transition="all 0.15s"
+              >
+                {likes} {likes === 1 ? 'Like' : 'Likes'}
+              </Button>
+
+              <Button
+                leftIcon={<FiThumbsDown size={14} />}
+                size="sm"
+                borderRadius="full"
+                px={5}
+                fontWeight="600"
+                fontSize="xs"
+                variant={userReaction === 'disliked' ? 'solid' : 'outline'}
+                colorScheme={userReaction === 'disliked' ? 'red' : 'gray'}
+                onClick={() => handleReaction('dislike')}
+                _hover={{ transform: 'translateY(-1px)', boxShadow: 'sm' }}
+                transition="all 0.15s"
+              >
+                {dislikes} {dislikes === 1 ? 'Dislike' : 'Dislikes'}
+              </Button>
+            </HStack>
+
+            {/* Share icons */}
+            <HStack spacing={1} align="center">
+              <Text fontSize="xs" color="gray.400" fontWeight="600" letterSpacing="0.05em" textTransform="uppercase" mr={2}>
+                Share
+              </Text>
+              {[
+                { Icon: FaTwitter,  href: `https://twitter.com/intent/tweet?url=${shareUrl}`,                label: 'Twitter',  hoverColor: '#1DA1F2' },
+                { Icon: FaFacebook, href: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,        label: 'Facebook', hoverColor: '#1877F2' },
+                { Icon: FaWhatsapp, href: `https://api.whatsapp.com/send?text=${shareUrl}`,                  label: 'WhatsApp', hoverColor: '#25D366' },
+                { Icon: FaLinkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, label: 'LinkedIn', hoverColor: '#0A66C2' },
+              ].map(({ Icon, href, label, hoverColor }) => (
+                <IconButton
+                  key={label}
+                  as="a"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  icon={<Icon size={14} />}
+                  aria-label={label}
+                  size="sm"
+                  variant="ghost"
+                  color="gray.400"
+                  borderRadius="full"
+                  _hover={{ color: hoverColor, bg: 'gray.100', transform: 'translateY(-1px)' }}
+                  transition="all 0.2s"
+                />
+              ))}
+            </HStack>
+          </Flex>
+        </Box>
+
+      </Box>
+
+      {/* ── Delete Confirmation ── */}
+      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered size="sm">
+        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.400" />
+        <ModalContent borderRadius="xl" border="1px solid" borderColor="gray.100">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Delete Article</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>Are you sure you want to delete this article?</ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button colorScheme="red" onClick={handleDeleteArticle} isLoading={isDeleting}>Delete</Button>
+          <ModalBody>
+            <Text fontSize="sm" color="gray.600" lineHeight="1.7">
+              Are you sure you want to permanently delete this article? This action cannot be undone.
+            </Text>
+          </ModalBody>
+          <ModalFooter gap={2}>
+            <Button variant="ghost" size="sm" onClick={onDeleteClose}>Cancel</Button>
+            <Button colorScheme="red" size="sm" borderRadius="full" px={5} onClick={handleDelete} isLoading={isDeleting}>
+              Delete
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Edit Modal */}
-      <Modal isOpen={isEditOpen} onClose={onEditClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit Article</ModalHeader>
+      {/* ── Edit Modal ── */}
+      <Modal isOpen={isEditOpen} onClose={onEditClose} isCentered size="md">
+        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.400" />
+        <ModalContent borderRadius="xl">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Edit Article</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Title</FormLabel>
-                <Input value={editedArticle.title} onChange={(e) => setEditedArticle({ ...editedArticle, title: e.target.value })} />
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                  Title
+                </FormLabel>
+                <Input
+                  value={editedArticle.title}
+                  onChange={(e) => setEditedArticle({ ...editedArticle, title: e.target.value })}
+                  size="sm" borderRadius="lg" focusBorderColor="teal.400"
+                />
               </FormControl>
               <FormControl>
-                <FormLabel>Description</FormLabel>
-                <Textarea value={editedArticle.description}  onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}  />
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                  Content
+                </FormLabel>
+                <Textarea
+                  value={editedArticle.description}
+                  onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}
+                  size="sm" borderRadius="lg" focusBorderColor="teal.400" rows={6} resize="none"
+                />
               </FormControl>
               <FormControl>
-              <FormLabel fontWeight="bold" fontSize="lg" color="gray.700">
-  Upload Image
-</FormLabel>
-
-<Box
-  p={6}
-  border="2px dashed"
-  borderColor="gray.300"
-  borderRadius="md"
-  textAlign="center"
-  cursor="pointer"
-  bg="gray.50"
-  _hover={{ bg: 'gray.100' }}
-  onClick={() => document.getElementById('fileInput').click()}
-  onDragOver={(e) => e.preventDefault()}
-  onDrop={handleFileDrop}
->
-  {editedArticle.imageUrl ? (
-    <Box>
-      <Text fontSize="sm" color="gray.500" mb={2}>
-        Image Preview
-      </Text>
-      <Image
-        src={editedArticle.imageUrl}
-        alt="Preview"
-        borderRadius="lg"
-        boxSize={{ base: "200px", md: "250px" }}
-        objectFit="cover"
-        boxShadow="md"
-        border="1px solid"
-        borderColor="gray.200"
-        mx="auto"
-      />
-    </Box>
-  ) : (
-    <Box>
-      <Text fontSize="md" color="gray.500">
-        Drag & drop an image here, or <strong>click to select</strong>
-      </Text>
-    </Box>
-  )}
-</Box>
-
-<Input
-  id="fileInput"
-  type="file"
-  accept="image/*"
-  display="none"
-  onChange={handleImageUpload}
-/>
-
-</FormControl>
-
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                  Cover Image
+                </FormLabel>
+                <Box
+                  p={5} border="2px dashed" borderColor="gray.200" borderRadius="lg"
+                  textAlign="center" cursor="pointer" bg="gray.50"
+                  _hover={{ borderColor: 'teal.300', bg: 'teal.50' }}
+                  onClick={() => document.getElementById('adEditFileInput').click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  transition="all 0.2s"
+                >
+                  {editedArticle.imageUrl
+                    ? <Image src={editedArticle.imageUrl} alt="Preview" borderRadius="md" maxH="150px"  objectFit="cover" />
+                    : <Text fontSize="sm" color="gray.400">Drop image or <Text as="span" color="teal.500" fontWeight="600">browse</Text></Text>
+                  }
+                </Box>
+                <Input id="adEditFileInput" type="file" accept="image/*" display="none" onChange={handleImageUpload} />
+              </FormControl>
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={onEditClose} variant="ghost">Cancel</Button>
-            <Button colorScheme="blue" onClick={handleUpdate} isLoading={isUpdating}>Update</Button>
+          <ModalFooter gap={2}>
+            <Button variant="ghost" size="sm" onClick={onEditClose}>Cancel</Button>
+            <Button colorScheme="teal" size="sm" borderRadius="full" px={6} onClick={handleUpdate} isLoading={isUpdating}>
+              Save Changes
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

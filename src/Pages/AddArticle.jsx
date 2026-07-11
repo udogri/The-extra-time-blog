@@ -12,8 +12,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { FiImage, FiX } from 'react-icons/fi';
 
 const categories = [
-  'Top News', 'Latest News', 'Trending News',
-  'Sports News', 'Business News', 'Local News', 'International News',
+  'Web Development', 'Graphic Design', 'Life & Hobbies', 'Tutorials'
 ];
 
 const AddArticle = () => {

@@ -1,0 +1,244 @@
+import { useState, useEffect } from 'react';
+import {
+  Box, Heading, Text, VStack, Spinner, useToast,
+  Input, Flex, SimpleGrid, Badge, Image, HStack
+} from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import NetworkError from '../components/NetworkError';
+import { FiSearch } from 'react-icons/fi';
+
+const categories = [
+  'Web Development', 'Graphic Design', 'Life & Hobbies', 'Tutorials'
+];
+
+const CATEGORY_COLORS = {
+  'Web Development': 'blue',
+  'Graphic Design': 'green',
+  'Life & Hobbies': 'purple',
+  'Tutorials': 'orange',
+};
+
+const Blog = () => {
+  const [articles, setArticles] = useState({});
+  const [sortedCategories, setSortedCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      setLoading(true);
+      setNetworkError(false);
+      try {
+        const fetchedArticles = {};
+        const categoriesWithArticles = [];
+
+        for (const category of categories) {
+          const categoryKey = category.toLowerCase().replace(/ /g, '');
+          const snap = await getDocs(collection(db, 'articles'));
+          const list = snap.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => item.category === category);
+            
+          if (list.length > 0) {
+            fetchedArticles[categoryKey] = list;
+            categoriesWithArticles.push(category);
+          }
+        }
+
+        setArticles(fetchedArticles);
+        setSortedCategories(categoriesWithArticles);
+      } catch (error) {
+        setNetworkError(true);
+        toast({ title: 'Error loading articles.', description: error.message, status: 'error', duration: 3000 });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticles();
+  }, [toast]);
+
+  // Unique list of articles for search queries
+  const allArticles = Object.values(articles).flat();
+  const uniqueArticles = Array.from(new Map(allArticles.map(item => [item.id, item])).values());
+  const filteredArticles = uniqueArticles.filter(article => 
+    article.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    article.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    article.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+        <VStack spacing={3}>
+          <Spinner size="lg" color="teal.500" thickness="3px" />
+          <Text fontSize="sm" color="gray.500">Loading blog feed…</Text>
+        </VStack>
+      </Box>
+    );
+  }
+
+  if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
+
+  return (
+    <Box minH="100vh" w="100vw" bg="gray.50" pt="100px" pb={20}>
+      <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
+        
+        {/* Page Title & Search Header */}
+        <Flex direction={{ base: 'column', md: 'row' }} align={{ base: 'flex-start', md: 'center' }} justify="space-between" mb={12} gap={6}>
+          <Box>
+            <Heading size="lg" fontWeight="800" color="gray.900" letterSpacing="-0.03em" mb={2}>
+              ✍️ The Writing Log
+            </Heading>
+            <Text fontSize="sm" color="gray.500">
+              Articles and logs covering web engineering, vector graphics, and lifestyle updates.
+            </Text>
+          </Box>
+
+          <Box maxW="360px" w="100%" position="relative">
+            <Input
+              placeholder="Search articles by title or keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="md"
+              bg="white"
+              borderRadius="full"
+              borderColor="gray.200"
+              focusBorderColor="teal.400"
+              fontSize="sm"
+              pl={10}
+            />
+            <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.400">
+              <FiSearch size={14} />
+            </Box>
+          </Box>
+        </Flex>
+
+        {/* Articles layout loop */}
+        {searchQuery ? (
+          <Box>
+            <Heading size="sm" fontWeight="700" mb={6} color="gray.500">
+              Filtered Search Results ({filteredArticles.length})
+            </Heading>
+            {filteredArticles.length === 0 ? (
+              <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={16} textAlign="center">
+                <Text fontSize="3xl" mb={4}>🔍</Text>
+                <Text fontWeight="700" color="gray.700">No matching articles found</Text>
+                <Text fontSize="sm" color="gray.450" mt={1}>Try checking another search term or keyphrase.</Text>
+              </Box>
+            ) : (
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+                {filteredArticles.map((article) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    color={CATEGORY_COLORS[article.category] || 'teal'}
+                    onClick={() => navigate(`/articledetails/${article.id}`)}
+                  />
+                ))}
+              </SimpleGrid>
+            )}
+          </Box>
+        ) : (
+          <VStack spacing={12} align="stretch">
+            {sortedCategories.map((category) => {
+              const categoryKey = category.toLowerCase().replace(/ /g, '');
+              const categoryArticles = articles[categoryKey] || [];
+              const color = CATEGORY_COLORS[category] || 'teal';
+
+              return (
+                <Box key={categoryKey}>
+                  {/* Section Title */}
+                  <HStack spacing={2.5} mb={5} align="center">
+                    <Box w="4px" h="20px" bg={`${color}.500`} borderRadius="full" />
+                    <Heading size="sm" fontWeight="800" color="gray.800" letterSpacing="-0.01em">
+                      {category}
+                    </Heading>
+                    <Badge colorScheme={color} variant="subtle" fontSize="10px" px={2.5} py={0.5} borderRadius="full">
+                      {categoryArticles.length}
+                    </Badge>
+                  </HStack>
+
+                  {/* Articles Grid */}
+                  <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+                    {[...categoryArticles].reverse().map((article) => (
+                      <ArticleCard
+                        key={article.id}
+                        article={article}
+                        color={color}
+                        onClick={() => navigate(`/articledetails/${article.id}`)}
+                      />
+                    ))}
+                  </SimpleGrid>
+                </Box>
+              );
+            })}
+          </VStack>
+        )}
+
+      </Box>
+    </Box>
+  );
+};
+
+// Sub-component presentation card
+const ArticleCard = ({ article, color = 'teal', onClick }) => (
+  <Box
+    bg="white"
+    borderRadius="xl"
+    border="1px solid"
+    borderColor="gray.100"
+    overflow="hidden"
+    cursor="pointer"
+    onClick={onClick}
+    boxShadow="sm"
+    _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
+    transition="all 0.2s"
+    display="flex"
+    flexDirection="column"
+    h="100%"
+  >
+    <Box position="relative" h="160px" overflow="hidden">
+      <Image
+        src={article.imageUrl || 'https://via.placeholder.com/400x200'}
+        alt={article.title}
+        w="100%"
+        h="100%"
+        objectFit="cover"
+      />
+      <Badge
+        position="absolute"
+        top={3}
+        left={3}
+        colorScheme={color}
+        fontSize="9px"
+        px={2.5}
+        py={0.5}
+        borderRadius="full"
+        letterSpacing="0.05em"
+      >
+        {article.category}
+      </Badge>
+    </Box>
+    <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
+      <VStack align="flex-start" spacing={2} mb={4}>
+        <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
+          {article.title}
+        </Text>
+        <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+          {article.description || article.content}
+        </Text>
+      </VStack>
+      <Text fontSize="10px" color="gray.400">
+        {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+      </Text>
+    </Box>
+  </Box>
+);
+
+export default Blog;

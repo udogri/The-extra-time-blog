@@ -5,14 +5,15 @@ import {
   ModalBody, ModalFooter, Input, VStack, Textarea, FormControl,
   FormLabel, useDisclosure, HStack, Divider, Badge, Flex,
 } from '@chakra-ui/react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { doc, getDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
+import { doc, getDoc, deleteDoc, updateDoc, increment, addDoc, collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { db, app } from '../firebaseConfig';
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
 import { FiThumbsUp, FiThumbsDown, FiArrowLeft } from 'react-icons/fi';
 
 const ArticleDetails = () => {
+  const { isAdmin, user: currentUser } = useOutletContext();
   const [article, setArticle]               = useState(null);
   const [loading, setLoading]               = useState(true);
   const [isDeleting, setIsDeleting]         = useState(false);
@@ -22,7 +23,12 @@ const ArticleDetails = () => {
   const [likes, setLikes]                   = useState(0);
   const [dislikes, setDislikes]             = useState(0);
   const [userReaction, setUserReaction]     = useState(null);
-  const [currentUser, setCurrentUser]       = useState(null);
+
+  // Comments state
+  const [comments, setComments]             = useState([]);
+  const [commentName, setCommentName]       = useState('');
+  const [commentText, setCommentText]       = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   const toast    = useToast();
   const navigate = useNavigate();
@@ -30,11 +36,6 @@ const ArticleDetails = () => {
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const { isOpen: isEditOpen,   onOpen: onEditOpen,   onClose: onEditClose   } = useDisclosure();
   const auth = getAuth(app);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => setCurrentUser(user || null));
-    return () => unsub();
-  }, []);
 
   useEffect(() => {
     if (!articleId) return;
@@ -47,6 +48,19 @@ const ArticleDetails = () => {
           setLikes(data.likes || 0);
           setDislikes(data.dislikes || 0);
           setEditedArticle({ title: data.title, description: data.description, imageUrl: data.imageUrl });
+
+          // Track article views in this session
+          const hasViewed = sessionStorage.getItem(`viewed_art_${articleId}`);
+          if (!hasViewed) {
+            sessionStorage.setItem(`viewed_art_${articleId}`, 'true');
+            try {
+              await updateDoc(doc(db, 'articles', articleId), {
+                views: increment(1)
+              });
+            } catch (viewErr) {
+              console.warn("Could not update article view count:", viewErr);
+            }
+          }
         } else {
           toast({ title: 'Article not found.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
         }
@@ -57,34 +71,114 @@ const ArticleDetails = () => {
       }
     };
     fetchArticle();
+
+    const fetchComments = async () => {
+      try {
+        const q = query(collection(db, 'articles', articleId, 'comments'), orderBy('date', 'desc'));
+        const snap = await getDocs(q);
+        const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setComments(list);
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+    };
+    fetchComments();
+
+    // Load reaction from localStorage
+    const saved = localStorage.getItem(`reaction_${articleId}`);
+    if (saved) {
+      setUserReaction(saved);
+    }
   }, [articleId]);
 
   const handleReaction = async (type) => {
     if (!articleId) return;
     const ref    = doc(db, 'articles', articleId);
     const update = {};
+    let newReaction = null;
+
     if (type === 'like') {
       if (userReaction === 'liked') {
-        update.likes = increment(-1); setLikes((p) => p - 1); setUserReaction(null);
+        update.likes = increment(-1);
+        setLikes((p) => p - 1);
+        newReaction = null;
       } else {
         update.likes = increment(1);
-        if (userReaction === 'disliked') { update.dislikes = increment(-1); setDislikes((p) => p - 1); }
-        setLikes((p) => p + 1); setUserReaction('liked');
+        if (userReaction === 'disliked') {
+          update.dislikes = increment(-1);
+          setDislikes((p) => p - 1);
+        }
+        setLikes((p) => p + 1);
+        newReaction = 'liked';
       }
     } else {
       if (userReaction === 'disliked') {
-        update.dislikes = increment(-1); setDislikes((p) => p - 1); setUserReaction(null);
+        update.dislikes = increment(-1);
+        setDislikes((p) => p - 1);
+        newReaction = null;
       } else {
         update.dislikes = increment(1);
-        if (userReaction === 'liked') { update.likes = increment(-1); setLikes((p) => p - 1); }
-        setDislikes((p) => p + 1); setUserReaction('disliked');
+        if (userReaction === 'liked') {
+          update.likes = increment(-1);
+          setLikes((p) => p - 1);
+        }
+        setDislikes((p) => p + 1);
+        newReaction = 'disliked';
       }
     }
-    try { await updateDoc(ref, update); } catch (e) { console.error(e); }
+
+    try {
+      await updateDoc(ref, update);
+      setUserReaction(newReaction);
+      if (newReaction) {
+        localStorage.setItem(`reaction_${articleId}`, newReaction);
+      } else {
+        localStorage.removeItem(`reaction_${articleId}`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    setIsSubmittingComment(true);
+    try {
+      const docRef = await addDoc(collection(db, 'articles', articleId, 'comments'), {
+        name: commentName.trim() || 'Anonymous Reader',
+        text: commentText.trim(),
+        date: new Date().toISOString()
+      });
+      const newComment = {
+        id: docRef.id,
+        name: commentName.trim() || 'Anonymous Reader',
+        text: commentText.trim(),
+        date: new Date().toISOString()
+      };
+      setComments((prev) => [newComment, ...prev]);
+      setCommentName('');
+      setCommentText('');
+      toast({ title: 'Comment posted!', status: 'success', duration: 2000, isClosable: true });
+    } catch (err) {
+      toast({ title: 'Error posting comment.', description: err.message, status: 'error', duration: 3000 });
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteDoc(doc(db, 'articles', articleId, 'comments', commentId));
+      setComments((prev) => prev.filter(c => c.id !== commentId));
+      toast({ title: 'Comment deleted.', status: 'success', duration: 2000 });
+    } catch (err) {
+      toast({ title: 'Error deleting comment.', description: err.message, status: 'error', duration: 3000 });
+    }
   };
 
   const handleDelete = async () => {
-    if (!currentUser || currentUser.uid !== article?.userId) {
+    if (!isAdmin) {
       toast({ title: 'Unauthorized.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
       return;
     }
@@ -102,8 +196,8 @@ const ArticleDetails = () => {
   };
 
   const handleUpdate = async () => {
-    if (!auth.currentUser) {
-      toast({ title: 'Not signed in.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
+    if (!isAdmin) {
+      toast({ title: 'Unauthorized.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
       return;
     }
     try {
@@ -139,7 +233,7 @@ const ArticleDetails = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" minW="1400px" w="100%" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+      <Box minH="100vh" w="100%" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
         <VStack spacing={3}>
           <Spinner size="lg" color="teal.500" thickness="3px" />
           <Text fontSize="sm" color="gray.400" letterSpacing="0.04em">Loading article…</Text>
@@ -150,7 +244,7 @@ const ArticleDetails = () => {
 
   if (!article) {
     return (
-      <Box minH="100vh" minW="1400px" w="100%" display="flex" flexDir="column" alignItems="center" justifyContent="center" bg="gray.50">
+      <Box minH="100vh" w="100%" display="flex" flexDir="column" alignItems="center" justifyContent="center" bg="gray.50">
         <Text fontSize="3xl" mb={4}>📭</Text>
         <Heading size="md" mb={3} fontWeight="700">Article not found</Heading>
         <Button size="sm" variant="ghost" color="gray.500" leftIcon={<FiArrowLeft size={13} />} onClick={() => navigate('/')}>
@@ -221,7 +315,7 @@ const ArticleDetails = () => {
             </Box>
           </HStack>
 
-          {isOwner && (
+          {isAdmin && (
             <HStack spacing={2}>
               <Button size="xs" variant="outline" colorScheme="blue" borderRadius="full" fontSize="xs" px={4} onClick={onEditOpen}>
                 Edit
@@ -335,6 +429,95 @@ const ArticleDetails = () => {
               ))}
             </HStack>
           </Flex>
+        </Box>
+
+        {/* ── Comments Section ── */}
+        <Box mt={10}>
+          <Heading size="md" mb={6} color="gray.900" fontWeight="700">
+            Comments ({comments.length})
+          </Heading>
+
+          {/* Comment Form */}
+          <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" mb={8}>
+            <form onSubmit={handleAddComment}>
+              <VStack spacing={4} align="stretch">
+                <FormControl>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">Your Name</FormLabel>
+                  <Input 
+                    placeholder="Enter your name (optional)" 
+                    value={commentName} 
+                    onChange={(e) => setCommentName(e.target.value)}
+                    size="sm"
+                    borderRadius="lg"
+                    focusBorderColor="teal.400"
+                  />
+                </FormControl>
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">Comment</FormLabel>
+                  <Textarea 
+                    placeholder="Write your comment here..." 
+                    value={commentText} 
+                    onChange={(e) => setCommentText(e.target.value)}
+                    size="sm"
+                    borderRadius="lg"
+                    focusBorderColor="teal.400"
+                    rows={4}
+                    resize="none"
+                  />
+                </FormControl>
+                <Button 
+                  type="submit" 
+                  colorScheme="teal" 
+                  size="sm" 
+                  borderRadius="full" 
+                  alignSelf="flex-start" 
+                  px={6}
+                  isLoading={isSubmittingComment}
+                >
+                  Post Comment
+                </Button>
+              </VStack>
+            </form>
+          </Box>
+
+          {/* Comments List */}
+          {comments.length === 0 ? (
+            <Text fontSize="sm" color="gray.400" textAlign="center" py={6}>
+              No comments yet. Be the first to share your thoughts!
+            </Text>
+          ) : (
+            <VStack spacing={4} align="stretch">
+              {comments.map((comment) => (
+                <Box key={comment.id} bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100">
+                  <Flex justify="space-between" align="flex-start">
+                    <HStack spacing={3}>
+                      <Box w="32px" h="32px" borderRadius="full" bg="teal.50" display="flex" alignItems="center" justifyContent="center">
+                        <Text fontSize="xs" fontWeight="700" color="teal.600">
+                          {comment.name?.slice(0, 1).toUpperCase() || 'R'}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Text fontSize="sm" fontWeight="600" color="gray.800">
+                          {comment.name || 'Anonymous Reader'}
+                        </Text>
+                        <Text fontSize="10px" color="gray.400">
+                          {comment.date ? new Date(comment.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                        </Text>
+                      </Box>
+                    </HStack>
+                    {isAdmin && (
+                      <Button size="xs" variant="ghost" colorScheme="red" borderRadius="full" onClick={() => handleDeleteComment(comment.id)}>
+                        Delete
+                      </Button>
+                    )}
+                  </Flex>
+                  <Text fontSize="sm" color="gray.600" mt={3} pl={11} lineHeight="1.6" whiteSpace="pre-wrap">
+                    {comment.text}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
+          )}
         </Box>
 
       </Box>

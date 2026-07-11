@@ -6,7 +6,7 @@ import NewsletterModal from './Newsletter';
 
 const Footer = lazy(() => import('./Footer'));
 
-const Layout = ({ isAuthenticated }) => {
+const Layout = ({ isAuthenticated, isAdmin, siteSettings, setSiteSettings, user }) => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
 
@@ -22,6 +22,8 @@ const Layout = ({ isAuthenticated }) => {
         <Box position="fixed" top="0" left="0" width="100%" zIndex="1000">
           <Navbar 
             isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
+            siteSettings={siteSettings}
             onOpenNewsletter={openNewsletter}   // << PASS THIS DOWN
           />
         </Box>
@@ -29,7 +31,7 @@ const Layout = ({ isAuthenticated }) => {
 
       {/* PAGE CONTENT */}
       <Box flex="1" mt={!isLoginPage ? "60px" : "0"}>
-        <Outlet />
+        <Outlet context={{ isAuthenticated, isAdmin, siteSettings, setSiteSettings, user }} />
       </Box>
 
       {/* FOOTER */}
@@ -41,7 +43,7 @@ const Layout = ({ isAuthenticated }) => {
             </Box>
           }
         >
-          <Footer />
+          <Footer siteSettings={siteSettings} />
         </Suspense>
       )}
 

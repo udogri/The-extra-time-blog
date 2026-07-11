@@ -3,13 +3,15 @@ import {
   VStack, Input, Button, Text, useToast, Box, HStack, Kbd,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 const NewsletterModal = ({ isOpen, onClose }) => {
   const [email, setEmail]       = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       toast({
         title: "Invalid email",
@@ -23,9 +25,30 @@ const NewsletterModal = ({ isOpen, onClose }) => {
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const emailClean = email.toLowerCase().trim();
+      const q = query(collection(db, "subscribers"), where("email", "==", emailClean));
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        toast({
+          title: "Already Subscribed! 💌",
+          description: "This email is already registered on our list.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+        setEmail("");
+        onClose();
+        return;
+      }
+
+      await addDoc(collection(db, "subscribers"), {
+        email: emailClean,
+        date: new Date().toISOString(),
+      });
+
       toast({
         title: "You're in! 🎉",
         description: "We'll send the best stories straight to your inbox.",
@@ -36,7 +59,18 @@ const NewsletterModal = ({ isOpen, onClose }) => {
       });
       setEmail("");
       onClose();
-    }, 1200);
+    } catch (error) {
+      toast({
+        title: "Error subscribing",
+        description: error.message,
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+        position: "top",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (e) => {

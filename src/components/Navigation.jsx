@@ -14,7 +14,7 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { auth } from '../firebaseConfig';
 import PropTypes from 'prop-types';
 
-const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
+const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,9 +22,10 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
 
   const links = [
     { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
     { name: 'About', path: '/about' },
-    { name: 'Profile', path: '/profile' },
+    ...(isAdmin ? [{ name: 'Dashboard', path: '/profile' }] : []),
     { name: 'Newsletter', action: onOpenNewsletter },
   ];
 
@@ -110,7 +111,7 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
           _hover={{ color: 'teal.400' }}
           transition="color 0.2s"
         >
-          Extra Time
+          {siteSettings?.title || 'Extra Time'}
           <Box as="span" color="teal.400" ml={1}>·</Box>
         </Text>
 
@@ -240,6 +241,8 @@ const Navbar = ({ isAuthenticated, onOpenNewsletter }) => {
 
 Navbar.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool,
+  siteSettings: PropTypes.object,
   onOpenNewsletter: PropTypes.func.isRequired,
 };
 

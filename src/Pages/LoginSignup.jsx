@@ -12,12 +12,14 @@ import {
   InputRightElement,
   useToast,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../firebaseConfig'; // Import Firebase Auth
 
 
 const LoginSignup = () => {
+  const [searchParams] = useSearchParams();
+  const allowSignup = searchParams.get('allowSignup') === 'true';
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +59,17 @@ const LoginSignup = () => {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
+        if (!allowSignup) {
+          toast({
+            title: 'Registration disabled',
+            description: 'New account registrations are disabled on this site.',
+            status: 'error',
+            duration: 4000,
+            isClosable: true,
+            position: 'top',
+          });
+          return;
+        }
         await createUserWithEmailAndPassword(auth, email, password);
       }
 
@@ -164,16 +177,18 @@ const LoginSignup = () => {
           </Button>
         </VStack>
 
-        <Text mt={4} textAlign="center">
-          {isLogin ? 'New here?' : 'Already have an account?'}{' '}
-          <Button
-            variant="link"
-            colorScheme="blue"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? 'Sign Up' : 'Login'}
-          </Button>
-        </Text>
+        {allowSignup && (
+          <Text mt={4} textAlign="center">
+            {isLogin ? 'New here?' : 'Already have an account?'}{' '}
+            <Button
+              variant="link"
+              colorScheme="blue"
+              onClick={() => setIsLogin(!isLogin)}
+            >
+              {isLogin ? 'Sign Up' : 'Login'}
+            </Button>
+          </Text>
+        )}
       </Box>
     </Box>
   );

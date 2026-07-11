@@ -4,6 +4,8 @@ import {
   Heading, useToast, HStack, IconButton, Text,
 } from '@chakra-ui/react';
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa6';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const SOCIAL_LINKS = [
   { Icon: FaTwitter, label: 'Twitter', href: '#' },
@@ -20,17 +22,27 @@ const ContactUs = () => {
 
   const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name || !form.email || !form.message) {
       toast({ title: 'Please fill in all fields', status: 'warning', duration: 3000, isClosable: true, position: 'top' });
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await addDoc(collection(db, 'messages'), {
+        name: form.name,
+        email: form.email,
+        message: form.message,
+        date: new Date().toISOString(),
+        read: false
+      });
       toast({ title: 'Message sent', description: "We'll get back to you soon.", status: 'success', duration: 4000, isClosable: true, position: 'top' });
       setForm({ name: '', email: '', message: '' });
-    }, 1500);
+    } catch (error) {
+      toast({ title: 'Error sending message', description: error.message, status: 'error', duration: 4000, isClosable: true, position: 'top' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const inputStyles = {

@@ -160,12 +160,9 @@ const Footer = ({ siteSettings }) => {
               <Text fontSize="sm" color="gray.300" fontWeight="600">
                 {siteSettings?.contactEmail || 'hello@creativedev.com'}
               </Text>
-              <Text fontSize="xs" color="gray.500" mt={1}>
-                Based in Nigeria
-              </Text>
             </Box>
             
-            <Box
+            {/* <Box
               px={3} py={1}
               borderRadius="full"
               border="1px solid"
@@ -177,7 +174,7 @@ const Footer = ({ siteSettings }) => {
             >
               <Box w="6px" h="6px" borderRadius="full" bg="teal.400" className="pulse-dot" />
               <Text fontSize="10px" color="teal.300" fontWeight="700" letterSpacing="0.05em">ALL SYSTEMS ACTIVE</Text>
-            </Box>
+            </Box> */}
           </VStack>
 
         </Flex>

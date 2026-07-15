@@ -140,11 +140,11 @@ const HomePage = () => {
             <VStack align="flex-start" spacing={4} flex="1">
               <Box>
                 <HStack spacing={2} mb={1}>
-                  <Heading size="lg" fontWeight="800" color="gray.900" letterSpacing="-0.03em">
+                  <Heading size="lg" fontWeight="600" color="gray.900" letterSpacing="-0.03em">
                     Hi, I'm {siteSettings?.bioName || 'Creative Dev'}
                   </Heading>
-                  <Badge colorScheme="purple" variant="solid" fontSize="10px" borderRadius="full" px={2} py={0.5}>
-                    Coder & Designer
+                  <Badge bg="#0b0f19" variant="solid" fontSize="10px" borderRadius="full" px={2} py={0.5}>
+                    Programmer & Designer
                   </Badge>
                 </HStack>
                 <Text fontSize="md" color="gray.600" lineHeight="1.6">
@@ -153,7 +153,7 @@ const HomePage = () => {
               </Box>
 
               {/* Skills Tags */}
-              <Box w="100%">
+              {/* <Box w="100%">
                 <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em" mb={2}>
                   Core Tech & Design Tools
                 </Text>
@@ -166,14 +166,16 @@ const HomePage = () => {
                   <Badge colorScheme="green" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Branding</Badge>
                   <Badge colorScheme="green" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Vector Graphics</Badge>
                 </Flex>
-              </Box>
+              </Box> */}
 
               {/* Action Buttons & Socials */}
               <Flex w="100%" justify="space-between" align="center" flexWrap="wrap" gap={4} pt={2}>
                 <HStack spacing={3}>
                   <Button
                     size="sm"
-                    colorScheme="teal"
+                    bg="#0b0f19"
+                    color="white"
+                    _hover={{ bg: 'gray.100', color: 'gray.900' }}
                     borderRadius="full"
                     leftIcon={<FiBookOpen />}
                     onClick={() => navigate('/blog')}
@@ -216,11 +218,54 @@ const HomePage = () => {
           </Flex>
         </Box>
 
-        {/* ── 2. PORTFOLIO SHOWCASE SECTION ── */}
+        {/* ── 3. LATEST ARTICLES SECTION ── */}
+        <Box mb={6}>
+          <Heading size="md" fontWeight="600" color="gray.900" letterSpacing="-0.02em" mb={6}>
+            Latest Articles
+          </Heading>
+
+          {latestArticles.length === 0 ? (
+            <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center">
+              <Text fontSize="2xl" mb={3}>✍️</Text>
+              <Text fontWeight="650" color="gray.700">No posts published yet</Text>
+              <Text fontSize="sm" color="gray.400" mt={1}>Check back later for tutorials and visual layouts!</Text>
+            </Box>
+          ) : (
+            <VStack spacing={8} align="stretch">
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+                {latestArticles.map((article) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    color={CATEGORY_COLORS[article.category] || 'teal'}
+                    onClick={() => navigate(`/articledetails/${article.id}`)}
+                  />
+                ))}
+              </SimpleGrid>
+              
+              <Center pt={4}>
+                <Button
+                  rightIcon={<FiArrowRight />}
+                  colorScheme="teal"
+                  variant="outline"
+                  borderRadius="full"
+                  px={8}
+                  size="sm"
+                  fontWeight="600"
+                  onClick={() => navigate('/blog')}
+                  _hover={{ bg: 'teal.50' }}
+                >
+                  View All Blog Posts
+                </Button>
+              </Center>
+            </VStack>
+          )}
+        </Box>
+
         <Box mb={16}>
           <Flex direction={{ base: 'column', sm: 'row' }} align={{ base: 'flex-start', sm: 'center' }} justify="space-between" mb={6} gap={4}>
-            <Heading size="md" fontWeight="800" color="gray.900" letterSpacing="-0.02em">
-              📁 Showcase Projects
+            <Heading size="md" fontWeight="600" color="gray.900" letterSpacing="-0.02em">
+              Projects
             </Heading>
             <HStack spacing={2} bg="gray.100" p={1} borderRadius="full">
               {['All', 'Web Development', 'Graphic Design'].map((filter) => (
@@ -309,50 +354,6 @@ const HomePage = () => {
               </Box>
             ))}
           </SimpleGrid>
-        </Box>
-
-        {/* ── 3. LATEST ARTICLES SECTION ── */}
-        <Box mb={6}>
-          <Heading size="md" fontWeight="800" color="gray.900" letterSpacing="-0.02em" mb={6}>
-            ✍️ Latest Articles
-          </Heading>
-
-          {latestArticles.length === 0 ? (
-            <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center">
-              <Text fontSize="2xl" mb={3}>✍️</Text>
-              <Text fontWeight="650" color="gray.700">No posts published yet</Text>
-              <Text fontSize="sm" color="gray.400" mt={1}>Check back later for tutorials and visual layouts!</Text>
-            </Box>
-          ) : (
-            <VStack spacing={8} align="stretch">
-              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
-                {latestArticles.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    color={CATEGORY_COLORS[article.category] || 'teal'}
-                    onClick={() => navigate(`/articledetails/${article.id}`)}
-                  />
-                ))}
-              </SimpleGrid>
-              
-              <Center pt={4}>
-                <Button
-                  rightIcon={<FiArrowRight />}
-                  colorScheme="teal"
-                  variant="outline"
-                  borderRadius="full"
-                  px={8}
-                  size="sm"
-                  fontWeight="600"
-                  onClick={() => navigate('/blog')}
-                  _hover={{ bg: 'teal.50' }}
-                >
-                  View All Blog Posts
-                </Button>
-              </Center>
-            </VStack>
-          )}
         </Box>
 
       </Box>

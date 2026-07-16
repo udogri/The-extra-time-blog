@@ -143,26 +143,28 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
         </HStack>
 
         {/* CTA */}
-        <HStack spacing={3} display={{ base: 'none', md: 'flex' }}>
-          <Button
-            size="sm"
-            variant="outline"
-            borderColor="whiteAlpha.300"
-            color="white"
-            fontSize="xs"
-            letterSpacing="0.08em"
-            textTransform="uppercase"
-            fontWeight="600"
-            px={5}
-            borderRadius="full"
-            _hover={{ bg: 'whiteAlpha.100', borderColor: 'teal.400', color: 'teal.400' }}
-            transition="all 0.2s"
-            onClick={handleAuthClick}
-            _focus={{ boxShadow: 'none' }}
-          >
-            {isAuthenticated ? 'Sign Out' : 'Sign In'}
-          </Button>
-        </HStack>
+        {isAuthenticated && (
+          <HStack spacing={3} display={{ base: 'none', md: 'flex' }}>
+            <Button
+              size="sm"
+              variant="outline"
+              borderColor="whiteAlpha.300"
+              color="white"
+              fontSize="xs"
+              letterSpacing="0.08em"
+              textTransform="uppercase"
+              fontWeight="600"
+              px={5}
+              borderRadius="full"
+              _hover={{ bg: 'whiteAlpha.100', borderColor: 'teal.400', color: 'teal.400' }}
+              transition="all 0.2s"
+              onClick={handleAuthClick}
+              _focus={{ boxShadow: 'none' }}
+            >
+              Sign Out
+            </Button>
+          </HStack>
+        )}
 
         {/* Mobile Toggle */}
         <IconButton
@@ -214,24 +216,26 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
                 <NavItem key={link.name} name={link.name} path={link.path} />
               )
             )}
-            <Button
-              size="sm"
-              variant="outline"
-              borderColor="teal.500"
-              color="teal.400"
-              fontSize="xs"
-              letterSpacing="0.08em"
-              textTransform="uppercase"
-              fontWeight="600"
-              px={6}
-              borderRadius="full"
-              mt={2}
-              _hover={{ bg: 'teal.500', color: 'white' }}
-              transition="all 0.2s"
-              onClick={() => { onClose(); handleAuthClick(); }}
-            >
-              {isAuthenticated ? 'Sign Out' : 'Sign In'}
-            </Button>
+            {isAuthenticated && (
+              <Button
+                size="sm"
+                variant="outline"
+                borderColor="teal.500"
+                color="teal.400"
+                fontSize="xs"
+                letterSpacing="0.08em"
+                textTransform="uppercase"
+                fontWeight="600"
+                px={6}
+                borderRadius="full"
+                mt={2}
+                _hover={{ bg: 'teal.500', color: 'white' }}
+                transition="all 0.2s"
+                onClick={() => { onClose(); handleAuthClick(); }}
+              >
+                Sign Out
+              </Button>
+            )}
           </Stack>
         </Box>
       )}

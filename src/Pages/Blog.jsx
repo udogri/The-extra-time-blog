@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box, Heading, Text, VStack, Spinner, useToast,
-  Input, Flex, SimpleGrid, Badge, Image, HStack
+  Input, Flex, Badge, Image, HStack
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
@@ -132,7 +133,7 @@ const Blog = () => {
                 <Text fontSize="sm" color="gray.450" mt={1}>Try checking another search term or keyphrase.</Text>
               </Box>
             ) : (
-              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+              <VStack spacing={6} align="stretch">
                 {filteredArticles.map((article) => (
                   <ArticleCard
                     key={article.id}
@@ -141,7 +142,7 @@ const Blog = () => {
                     onClick={() => navigate(`/articledetails/${article.id}`)}
                   />
                 ))}
-              </SimpleGrid>
+              </VStack>
             )}
           </Box>
         ) : (
@@ -164,8 +165,8 @@ const Blog = () => {
                     </Badge>
                   </HStack>
 
-                  {/* Articles Grid */}
-                  <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
+                  {/* Articles List */}
+                  <VStack spacing={6} align="stretch">
                     {[...categoryArticles].reverse().map((article) => (
                       <ArticleCard
                         key={article.id}
@@ -174,7 +175,7 @@ const Blog = () => {
                         onClick={() => navigate(`/articledetails/${article.id}`)}
                       />
                     ))}
-                  </SimpleGrid>
+                  </VStack>
                 </Box>
               );
             })}
@@ -187,58 +188,97 @@ const Blog = () => {
 };
 
 // Sub-component presentation card
-const ArticleCard = ({ article, color = 'teal', onClick }) => (
-  <Box
-    bg="white"
-    borderRadius="xl"
-    border="1px solid"
-    borderColor="gray.100"
-    overflow="hidden"
-    cursor="pointer"
-    onClick={onClick}
-    boxShadow="sm"
-    _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
-    transition="all 0.2s"
-    display="flex"
-    flexDirection="column"
-    h="100%"
-  >
-    <Box position="relative" h="160px" overflow="hidden">
-      <Image
-        src={article.imageUrl || 'https://via.placeholder.com/400x200'}
-        alt={article.title}
-        w="100%"
-        h="100%"
-        objectFit="cover"
-      />
-      <Badge
-        position="absolute"
-        top={3}
-        left={3}
-        colorScheme={color}
-        fontSize="9px"
-        px={2.5}
-        py={0.5}
-        borderRadius="full"
-        letterSpacing="0.05em"
-      >
-        {article.category}
-      </Badge>
-    </Box>
-    <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
-      <VStack align="flex-start" spacing={2} mb={4}>
-        <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
-          {article.title}
+const ArticleCard = ({ article, color = 'teal', onClick }) => {
+  const [imageError, setImageError] = useState(false);
+  const showImage = article.imageUrl && !imageError;
+
+  return (
+    <Flex
+      bg="white"
+      borderRadius="xl"
+      border="1px solid"
+      borderColor="gray.100"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      boxShadow="sm"
+      _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
+      transition="all 0.2s"
+      direction={{ base: 'column', md: 'row' }}
+      w="100%"
+    >
+      {showImage && (
+        <Box 
+          position="relative" 
+          w={{ base: '100%', md: '300px' }} 
+          minW={{ base: '100%', md: '300px' }} 
+          h={{ base: '200px', md: '200px' }} 
+          overflow="hidden"
+        >
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            w="100%"
+            h="100%"
+            objectFit="cover"
+            onError={() => setImageError(true)}
+          />
+          <Badge
+            position="absolute"
+            top={3}
+            left={3}
+            colorScheme={color}
+            fontSize="9px"
+            px={2.5}
+            py={0.5}
+            borderRadius="full"
+            letterSpacing="0.05em"
+          >
+            {article.category}
+          </Badge>
+        </Box>
+      )}
+      <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
+        <VStack align="flex-start" spacing={2} mb={4}>
+          {!showImage && (
+            <Badge
+              colorScheme={color}
+              fontSize="9px"
+              px={2.5}
+              py={0.5}
+              borderRadius="full"
+              letterSpacing="0.05em"
+            >
+              {article.category}
+            </Badge>
+          )}
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
+            {article.title}
+          </Text>
+          <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+            {article.description || article.content}
+          </Text>
+        </VStack>
+        <Text fontSize="10px" color="gray.400">
+          {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </Text>
-        <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
-          {article.description || article.content}
-        </Text>
-      </VStack>
-      <Text fontSize="10px" color="gray.400">
-        {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-      </Text>
-    </Box>
-  </Box>
-);
+      </Box>
+    </Flex>
+  );
+};
+
+ArticleCard.propTypes = {
+  article: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    content: PropTypes.string,
+    imageUrl: PropTypes.string,
+    category: PropTypes.string,
+    date: PropTypes.string,
+  }).isRequired,
+  color: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+};
 
 export default Blog;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box, Heading, Text, Button, VStack, useToast, Spinner,
   Image, HStack, Badge, Flex, SimpleGrid, Avatar, IconButton,
@@ -17,39 +18,6 @@ const CATEGORY_COLORS = {
   'Life & Hobbies': 'purple',
   'Tutorials': 'orange',
 };
-
-const MOCK_PROJECTS = [
-  {
-    id: 'mock-1',
-    title: 'Pixels & Code agency site',
-    description: 'A fully interactive agency landing page showcasing advanced React transitions, responsive layouts, and rich CSS graphic animations.',
-    type: 'Web Development',
-    techStack: ['React', 'Framer Motion', 'Chakra UI'],
-    githubUrl: 'https://github.com',
-    liveUrl: 'https://google.com',
-    imageUrl: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'mock-2',
-    title: 'Visual Identity & Branding Concept',
-    description: 'A comprehensive branding design mockup package including custom vector logo symbols, typographic hierarchy guidelines, and digital asset templates.',
-    type: 'Graphic Design',
-    techStack: ['Illustrator', 'Figma', 'Photoshop'],
-    githubUrl: '',
-    liveUrl: '',
-    imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 'mock-3',
-    title: 'Minimalist Content Management dashboard',
-    description: 'A lightweight CMS platform constructed for writing post logs and viewing contacts in real-time, backed by ImgBB and serverless database endpoints.',
-    type: 'Web Development',
-    techStack: ['JavaScript', 'Firestore', 'ImgBB API'],
-    githubUrl: 'https://github.com',
-    liveUrl: '',
-    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80',
-  }
-];
 
 const HomePage = () => {
   const { siteSettings } = useOutletContext();
@@ -87,10 +55,9 @@ const HomePage = () => {
     fetchHomeData();
   }, [toast]);
 
-  const projectsToDisplay = projects.length > 0 ? projects : MOCK_PROJECTS;
   const filteredProjects = activeProjectFilter === 'All'
-    ? projectsToDisplay
-    : projectsToDisplay.filter(p => p.type === activeProjectFilter);
+    ? projects
+    : projects.filter(p => p.type === activeProjectFilter);
 
   const dynamicSocials = [
     { Icon: FaTwitter,   label: "Twitter",   href: siteSettings?.socials?.twitter || "#", color: "#1DA1F2" },
@@ -141,7 +108,7 @@ const HomePage = () => {
               <Box>
                 <HStack spacing={2} mb={1}>
                   <Heading size="lg" fontWeight="600" color="gray.900" letterSpacing="-0.03em">
-                    Hi, I'm {siteSettings?.bioName || 'Creative Dev'}
+                    {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
                   </Heading>
                   <Badge bg="#0b0f19" variant="solid" fontSize="10px" borderRadius="full" px={2} py={0.5}>
                     Programmer & Designer
@@ -231,17 +198,15 @@ const HomePage = () => {
               <Text fontSize="sm" color="gray.400" mt={1}>Check back later for tutorials and visual layouts!</Text>
             </Box>
           ) : (
-            <VStack spacing={8} align="stretch">
-              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={6}>
-                {latestArticles.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    color={CATEGORY_COLORS[article.category] || 'teal'}
-                    onClick={() => navigate(`/articledetails/${article.id}`)}
-                  />
-                ))}
-              </SimpleGrid>
+            <VStack spacing={6} align="stretch">
+              {latestArticles.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  color={CATEGORY_COLORS[article.category] || 'teal'}
+                  onClick={() => navigate(`/articledetails/${article.id}`)}
+                />
+              ))}
               
               <Center pt={4}>
                 <Button
@@ -284,76 +249,88 @@ const HomePage = () => {
             </HStack>
           </Flex>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            {filteredProjects.map((proj) => (
-              <Box
-                key={proj.id}
-                bg="white"
-                borderRadius="xl"
-                border="1px solid"
-                borderColor="gray.100"
-                overflow="hidden"
-                boxShadow="sm"
-                _hover={{ transform: 'translateY(-3px)', boxShadow: 'md' }}
-                transition="all 0.2s"
-                display="flex"
-                flexDirection="column"
-              >
-                <Image 
-                  src={proj.imageUrl || 'https://via.placeholder.com/400x220'} 
-                  alt={proj.title}
-                  h="160px"
-                  w="100%"
-                  objectFit="cover"
-                />
-                <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
-                  <VStack align="flex-start" spacing={3}>
-                    <Badge colorScheme={proj.type === 'Web Development' ? 'blue' : 'green'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
-                      {proj.type}
-                    </Badge>
-                    <Heading size="xs" color="gray.800" fontWeight="700">
-                      {proj.title}
-                    </Heading>
-                    <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
-                      {proj.description}
-                    </Text>
-                  </VStack>
-                  
-                  <Box mt={4}>
-                    <Flex gap={1} flexWrap="wrap" mb={4}>
-                      {proj.techStack?.map((tool) => (
-                        <Badge key={tool} colorScheme="gray" variant="solid" fontSize="9px" px={1.5} py={0.2} borderRadius="md">
-                          {tool}
-                        </Badge>
-                      ))}
-                    </Flex>
+          {filteredProjects.length === 0 ? (
+            <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center" w="100%">
+              <Text fontSize="2xl" mb={3}>🚀</Text>
+              <Text fontWeight="650" color="gray.700">No projects published yet</Text>
+              <Text fontSize="sm" color="gray.400" mt={1}>Check back later for creative builds!</Text>
+            </Box>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+              {filteredProjects.map((proj) => (
+                <Box
+                  key={proj.id}
+                  bg="white"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor="gray.100"
+                  overflow="hidden"
+                  boxShadow="sm"
+                  _hover={{ transform: 'translateY(-3px)', boxShadow: 'md' }}
+                  transition="all 0.2s"
+                  display="flex"
+                  flexDirection="column"
+                >
+                  {proj.imageUrl && (
+                    <Image 
+                      src={proj.imageUrl} 
+                      alt={proj.title}
+                      h="160px"
+                      w="100%"
+                      objectFit="cover"
+                    />
+                  )}
+                  <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
+                    <VStack align="flex-start" spacing={3}>
+                      <Badge colorScheme={proj.type === 'Web Development' ? 'blue' : 'green'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
+                        {proj.type}
+                      </Badge>
+                      <Heading size="xs" color="gray.850" fontWeight="700">
+                        {proj.title}
+                      </Heading>
+                      <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+                        {proj.description}
+                      </Text>
+                    </VStack>
                     
-                    <Divider mb={3} />
-                    
-                    <HStack justify="space-between">
-                      {proj.githubUrl ? (
-                        <Button 
-                          as="a" href={proj.githubUrl} target="_blank" rel="noopener noreferrer"
-                          leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" colorScheme="gray" fontSize="10px"
-                        >
-                          Source Code
-                        </Button>
-                      ) : <Box />}
+                    <Box mt={4}>
+                      {proj.techStack && proj.techStack.length > 0 && (
+                        <Flex gap={1} flexWrap="wrap" mb={4}>
+                          {proj.techStack.map((tool) => (
+                            <Badge key={tool} colorScheme="gray" variant="solid" fontSize="9px" px={1.5} py={0.2} borderRadius="md">
+                              {tool}
+                            </Badge>
+                          ))}
+                        </Flex>
+                      )}
+                      
+                      <Divider mb={3} />
+                      
+                      <HStack justify="space-between">
+                        {proj.githubUrl ? (
+                          <Button 
+                            as="a" href={proj.githubUrl} target="_blank" rel="noopener noreferrer"
+                            leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" colorScheme="gray" fontSize="10px"
+                          >
+                            Source Code
+                          </Button>
+                        ) : <Box />}
 
-                      {proj.liveUrl ? (
-                        <Button 
-                          as="a" href={proj.liveUrl} target="_blank" rel="noopener noreferrer"
-                          rightIcon={<FiExternalLink size={12} />} size="xs" variant="solid" colorScheme="purple" fontSize="10px" borderRadius="full"
-                        >
-                          Live Demo
-                        </Button>
-                      ) : <Box />}
-                    </HStack>
+                        {proj.liveUrl ? (
+                          <Button 
+                            as="a" href={proj.liveUrl} target="_blank" rel="noopener noreferrer"
+                            rightIcon={<FiExternalLink size={12} />} size="xs" variant="solid" colorScheme="purple" fontSize="10px" borderRadius="full"
+                          >
+                            Live Demo
+                          </Button>
+                        ) : <Box />}
+                      </HStack>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            ))}
-          </SimpleGrid>
+              ))}
+            </SimpleGrid>
+          )}
         </Box>
 
       </Box>
@@ -361,58 +338,97 @@ const HomePage = () => {
   );
 };
 
-const ArticleCard = ({ article, color = 'teal', onClick }) => (
-  <Box
-    bg="white"
-    borderRadius="xl"
-    border="1px solid"
-    borderColor="gray.100"
-    overflow="hidden"
-    cursor="pointer"
-    onClick={onClick}
-    boxShadow="sm"
-    _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
-    transition="all 0.2s"
-    display="flex"
-    flexDirection="column"
-    h="100%"
-  >
-    <Box position="relative" h="140px" overflow="hidden">
-      <Image
-        src={article.imageUrl || 'https://via.placeholder.com/300x160'}
-        alt={article.title}
-        w="100%"
-        h="100%"
-        objectFit="cover"
-      />
-      <Badge
-        position="absolute"
-        top={3}
-        left={3}
-        colorScheme={color}
-        fontSize="9px"
-        px={2}
-        py={0.5}
-        borderRadius="full"
-        letterSpacing="0.05em"
-      >
-        {article.category}
-      </Badge>
-    </Box>
-    <Box p={4} flex="1" display="flex" flexDirection="column" justify="space-between">
-      <VStack align="flex-start" spacing={1.5} mb={3}>
-        <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
-          {article.title}
+const ArticleCard = ({ article, color = 'teal', onClick }) => {
+  const [imageError, setImageError] = useState(false);
+  const showImage = article.imageUrl && !imageError;
+
+  return (
+    <Flex
+      bg="white"
+      borderRadius="xl"
+      border="1px solid"
+      borderColor="gray.100"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      boxShadow="sm"
+      _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
+      transition="all 0.2s"
+      direction={{ base: 'column', md: 'row' }}
+      w="100%"
+    >
+      {showImage && (
+        <Box 
+          position="relative" 
+          w={{ base: '100%', md: '300px' }} 
+          minW={{ base: '100%', md: '300px' }} 
+          h={{ base: '200px', md: '200px' }} 
+          overflow="hidden"
+        >
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            w="100%"
+            h="100%"
+            objectFit="cover"
+            onError={() => setImageError(true)}
+          />
+          <Badge
+            position="absolute"
+            top={3}
+            left={3}
+            colorScheme={color}
+            fontSize="9px"
+            px={2.5}
+            py={0.5}
+            borderRadius="full"
+            letterSpacing="0.05em"
+          >
+            {article.category}
+          </Badge>
+        </Box>
+      )}
+      <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
+        <VStack align="flex-start" spacing={2} mb={4}>
+          {!showImage && (
+            <Badge
+              colorScheme={color}
+              fontSize="9px"
+              px={2.5}
+              py={0.5}
+              borderRadius="full"
+              letterSpacing="0.05em"
+            >
+              {article.category}
+            </Badge>
+          )}
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
+            {article.title}
+          </Text>
+          <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+            {article.description || article.content}
+          </Text>
+        </VStack>
+        <Text fontSize="10px" color="gray.400">
+          {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </Text>
-        <Text fontSize="xs" color="gray.500" noOfLines={2} lineHeight="1.5">
-          {article.description || article.content}
-        </Text>
-      </VStack>
-      <Text fontSize="10px" color="gray.400">
-        {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-      </Text>
-    </Box>
-  </Box>
-);
+      </Box>
+    </Flex>
+  );
+};
+
+ArticleCard.propTypes = {
+  article: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    content: PropTypes.string,
+    imageUrl: PropTypes.string,
+    category: PropTypes.string,
+    date: PropTypes.string,
+  }).isRequired,
+  color: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+};
 
 export default HomePage;

@@ -203,8 +203,7 @@ const ContactUs = () => {
 
             <VStack align="flex-start" spacing={3} mt={7}>
               {[
-                { label: 'Email', value: 'hello@extratime.com' },
-                { label: 'Based in', value: 'Lagos, Nigeria' },
+                { label: 'Email', value: 'oudogri@gmail.com' },
               ].map(({ label, value }) => (
                 <Box key={label}>
                   <Text fontSize="9px" color="teal.400" fontWeight="700" letterSpacing="0.1em" textTransform="uppercase">{label}</Text>

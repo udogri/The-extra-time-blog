@@ -17,7 +17,7 @@ const About = () => {
   ].filter(s => s.href && s.href !== '#');
 
   const frontendSkills = ["React.js", "JavaScript (ES6+)", "HTML5 & CSS3", "Chakra UI", "Framer Motion", "Vite", "React Router"];
-  const designSkills = ["UI/UX Design", "Figma", "Adobe Photoshop", "Adobe Illustrator", "Branding Assets", "Typography"];
+  const designSkills = ["Figma", "Adobe Photoshop", "Adobe Illustrator", "Branding Assets", "Typography"];
   const databaseSkills = ["Firebase Auth", "Firestore", "Git & GitHub", "REST APIs", "ImgBB integration"];
 
   return (

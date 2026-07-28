@@ -21,11 +21,11 @@ const About = () => {
   const databaseSkills = ["Firebase Auth", "Firestore", "Git & GitHub", "REST APIs", "ImgBB integration"];
 
   return (
-    <Box minH="100vh" bg="gray.50" overflowX="hidden" pt="80px" pb={16}>
+    <Box minH="100vh" bg="#0b0f19" overflowX="hidden" pt="80px" pb={16}>
       
       {/* Hero Intro */}
       <Box
-        bg="gray.900"
+        bg="#161e2e"
         position="relative"
         overflow="hidden"
         width="100vw"
@@ -33,6 +33,8 @@ const About = () => {
         transform="translateX(-50%)"
         py={{ base: 12, md: 16 }}
         textAlign="center"
+        borderBottom="1px solid"
+        borderColor="whiteAlpha.100"
         mb={10}
       >
         <Box position="absolute" top="-50px" left="-50px" w="240px" h="240px" borderRadius="full" bg="purple.500" opacity={0.08} pointerEvents="none" />
@@ -47,7 +49,7 @@ const About = () => {
           <Heading fontSize={{ base: "3xl", md: "4xl" }} fontWeight="800" color="white" mb={4} letterSpacing="-0.03em">
             Hi, I'm <Box as="span" color="teal.400">{siteSettings?.bioName || "Creative Developer"}</Box>
           </Heading>
-          <Text fontSize="sm" color="whiteAlpha.700" lineHeight="1.7" maxW="520px" mx="auto">
+          <Text fontSize="sm" color="gray.400" lineHeight="1.7" maxW="520px" mx="auto">
             {siteSettings?.description || "Frontend Web Developer with a passion for creative visual design, UI components, and sharing thoughts on life and coding."}
           </Text>
         </Box>
@@ -58,7 +60,7 @@ const About = () => {
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
           
           {/* Main Card: Avatar and bio */}
-          <Box gridColumn={{ base: "span 1", md: "span 2" }} bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Box gridColumn={{ base: "span 1", md: "span 2" }} bg="#161e2e" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" boxShadow="2xl">
             <Flex direction={{ base: "column", sm: "row" }} gap={6} align={{ base: "center", sm: "flex-start" }}>
               <Avatar 
                 src={siteSettings?.avatarUrl || ""} 
@@ -71,41 +73,41 @@ const About = () => {
               <VStack align="flex-start" spacing={3} flex="1">
                 <HStack spacing={2}>
                   <Box w="3px" h="14px" bg="teal.500" borderRadius="full" />
-                  <Text fontSize="xs" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color="teal.500">
+                  <Text fontSize="xs" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color="teal.400">
                     My Story
                   </Text>
                 </HStack>
-                <Text fontSize="sm" color="gray.600" lineHeight="1.7">
+                <Text fontSize="sm" color="gray.400" lineHeight="1.7">
                   {siteSettings?.bioText || "I build responsive, clean, and interactive interfaces. Focused on React and frontend architectures, I balance full-time web development with creative graphics design, layouts, and lifestyle writing."}
                 </Text>
               </VStack>
             </Flex>
 
-            <Divider my={6} />
+            <Divider borderColor="whiteAlpha.100" my={6} />
 
             {/* Creative Philosophy */}
-            <Heading size="xs" color="gray.800" textTransform="uppercase" letterSpacing="0.05em" mb={3} display="flex" alignItems="center" gap={2}>
-              <FiTrendingUp color="#319795" /> My Philosophy
+            <Heading size="xs" color="white" textTransform="uppercase" letterSpacing="0.05em" mb={3} display="flex" alignItems="center" gap={2}>
+              <FiTrendingUp color="#14b8a6" /> My Philosophy
             </Heading>
-            <Text fontSize="xs" color="gray.500" lineHeight="1.6">
+            <Text fontSize="xs" color="gray.400" lineHeight="1.6">
               I believe software development shouldn't just be about complex engineering. It should be visually pleasing, accessible, and delightful to interact with. By merging frontend expertise with graphics design tools, I aim to craft pixel-perfect websites that feel natural and alive.
             </Text>
           </Box>
 
           {/* Socials & Contact Info */}
-          <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm" display="flex" flexDirection="column" justify="space-between">
+          <Box bg="#161e2e" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" boxShadow="2xl" display="flex" flexDirection="column" justify="space-between">
             <VStack align="stretch" spacing={5}>
               <Box>
-                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em" mb={2}>
+                <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.05em" mb={2}>
                   Email Contact
                 </Text>
-                <Text fontSize="sm" fontWeight="600" color="gray.700">
+                <Text fontSize="sm" fontWeight="600" color="white">
                   {siteSettings?.contactEmail || "hello@creativedev.com"}
                 </Text>
               </Box>
               
               <Box>
-                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em" mb={3}>
+                <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.05em" mb={3}>
                   Interests & Hobbies
                 </Text>
                 <Flex gap={1} flexWrap="wrap">
@@ -119,8 +121,8 @@ const About = () => {
             </VStack>
 
             <Box pt={6}>
-              <Divider mb={4} />
-              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em" mb={2} textAlign="center">
+              <Divider borderColor="whiteAlpha.100" mb={4} />
+              <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase" letterSpacing="0.05em" mb={2} textAlign="center">
                 Let's Connect
               </Text>
               <HStack justify="center" spacing={2}>
@@ -137,7 +139,7 @@ const About = () => {
                     variant="ghost"
                     color="gray.400"
                     borderRadius="full"
-                    _hover={{ color, bg: "gray.50" }}
+                    _hover={{ color, bg: "whiteAlpha.100" }}
                   />
                 ))}
               </HStack>
@@ -147,8 +149,8 @@ const About = () => {
         </SimpleGrid>
 
         {/* ── Skills Matrix Section ── */}
-        <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
-          <Heading size="sm" mb={6} color="gray.850" fontWeight="700" letterSpacing="-0.01em">
+        <Box bg="#161e2e" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" boxShadow="2xl">
+          <Heading size="sm" mb={6} color="white" fontWeight="700" letterSpacing="-0.01em">
             ⚡ Skills Inventory
           </Heading>
 
@@ -157,12 +159,12 @@ const About = () => {
             {/* Frontend */}
             <VStack align="stretch" spacing={3}>
               <HStack spacing={2}>
-                <FiCode color="#3182ce" />
-                <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Frontend Dev</Text>
+                <FiCode color="#14b8a6" />
+                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase">Frontend Dev</Text>
               </HStack>
               <Flex gap={1.5} flexWrap="wrap">
                 {frontendSkills.map(skill => (
-                  <Badge key={skill} colorScheme="blue" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
+                  <Badge key={skill} colorScheme="teal" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
                     {skill}
                   </Badge>
                 ))}
@@ -172,12 +174,12 @@ const About = () => {
             {/* Design */}
             <VStack align="stretch" spacing={3}>
               <HStack spacing={2}>
-                <FiFeather color="#38a169" />
-                <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Graphic Design</Text>
+                <FiFeather color="#8b5cf6" />
+                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase">Graphic Design</Text>
               </HStack>
               <Flex gap={1.5} flexWrap="wrap">
                 {designSkills.map(skill => (
-                  <Badge key={skill} colorScheme="green" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
+                  <Badge key={skill} colorScheme="purple" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
                     {skill}
                   </Badge>
                 ))}
@@ -187,12 +189,12 @@ const About = () => {
             {/* Tools */}
             <VStack align="stretch" spacing={3}>
               <HStack spacing={2}>
-                <FiCpu color="#805ad5" />
-                <Text fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Workflow & Data</Text>
+                <FiCpu color="#14b8a6" />
+                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase">Workflow & Data</Text>
               </HStack>
               <Flex gap={1.5} flexWrap="wrap">
                 {databaseSkills.map(skill => (
-                  <Badge key={skill} colorScheme="purple" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
+                  <Badge key={skill} colorScheme="teal" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
                     {skill}
                   </Badge>
                 ))}

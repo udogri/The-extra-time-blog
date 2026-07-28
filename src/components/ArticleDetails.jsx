@@ -220,7 +220,8 @@ const ArticleDetails = () => {
     formData.append('image', file);
     setUploadingImage(true);
     try {
-      const res  = await fetch('https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a', { method: 'POST', body: formData });
+      const imgBbKey = import.meta.env.VITE_IMGBB_API_KEY;
+      const res  = await fetch(`https://api.imgbb.com/1/upload?key=${imgBbKey}`, { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) setEditedArticle((prev) => ({ ...prev, imageUrl: data.data.url }));
       else throw new Error('Upload failed');
@@ -233,9 +234,9 @@ const ArticleDetails = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100%" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+      <Box minH="100vh" w="100%" display="flex" justifyContent="center" alignItems="center" bg="#0b0f19">
         <VStack spacing={3}>
-          <Spinner size="lg" color="teal.500" thickness="3px" />
+          <Spinner size="lg" color="teal.400" thickness="3px" />
           <Text fontSize="sm" color="gray.400" letterSpacing="0.04em">Loading article…</Text>
         </VStack>
       </Box>
@@ -244,10 +245,10 @@ const ArticleDetails = () => {
 
   if (!article) {
     return (
-      <Box minH="100vh" w="100%" display="flex" flexDir="column" alignItems="center" justifyContent="center" bg="gray.50">
+      <Box minH="100vh" w="100%" display="flex" flexDir="column" alignItems="center" justifyContent="center" bg="#0b0f19">
         <Text fontSize="3xl" mb={4}>📭</Text>
-        <Heading size="md" mb={3} fontWeight="700">Article not found</Heading>
-        <Button size="sm" variant="ghost" color="gray.500" leftIcon={<FiArrowLeft size={13} />} onClick={() => navigate('/')}>
+        <Heading size="md" mb={3} fontWeight="700" color="white">Article not found</Heading>
+        <Button size="sm" variant="ghost" color="gray.400" leftIcon={<FiArrowLeft size={13} />} onClick={() => navigate('/')} _hover={{ bg: 'whiteAlpha.100', color: 'white' }}>
           Back to Home
         </Button>
       </Box>
@@ -259,15 +260,15 @@ const ArticleDetails = () => {
   const readTime = article.description ? Math.ceil(article.description.split(' ').length / 200) : 1;
 
   return (
-    <Box minH="100vh" bg="gray.50"  w="100%" overflowX="hidden" pb={24}>
-      <Box   px={{ base: 4, md: 8 }} pt={8}>
+    <Box minH="100vh" bg="#0b0f19" w="100%" overflowX="hidden" pb={24}>
+      <Box px={{ base: 4, md: 8 }} pt={8}>
 
         {/* Back */}
         <Button
           variant="ghost" size="sm" leftIcon={<FiArrowLeft size={13} />}
           color="gray.400" fontSize="xs" mb={7}
           onClick={() => navigate('/')}
-          _hover={{ color: 'gray.800' }}
+          _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
         >
           Back to Home
         </Button>
@@ -279,7 +280,7 @@ const ArticleDetails = () => {
               {article.category}
             </Badge>
           )}
-          <Text fontSize="xs" color="gray.400">{readTime} min read</Text>
+          <Text fontSize="xs" color="gray.500">{readTime} min read</Text>
         </HStack>
 
         {/* Title */}
@@ -288,7 +289,7 @@ const ArticleDetails = () => {
           fontWeight="700"
           letterSpacing="-0.03em"
           lineHeight="1.25"
-          color="gray.900"
+          color="white"
           mb={5}
         >
           {article.title}
@@ -306,10 +307,10 @@ const ArticleDetails = () => {
               </Text>
             </Box>
             <Box>
-              <Text fontSize="sm" fontWeight="600" color="gray.800" lineHeight="1.2">
+              <Text fontSize="sm" fontWeight="600" color="white" lineHeight="1.2">
                 {article.author || 'Anonymous'}
               </Text>
-              <Text fontSize="xs" color="gray.400">
+              <Text fontSize="xs" color="gray.500">
                 {new Date(article.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </Text>
             </Box>
@@ -317,7 +318,7 @@ const ArticleDetails = () => {
 
           {isAdmin && (
             <HStack spacing={2}>
-              <Button size="xs" variant="outline" colorScheme="blue" borderRadius="full" fontSize="xs" px={4} onClick={onEditOpen}>
+              <Button size="xs" variant="outline" colorScheme="purple" borderRadius="full" fontSize="xs" px={4} onClick={onEditOpen}>
                 Edit
               </Button>
               <Button size="xs" variant="outline" colorScheme="red" borderRadius="full" fontSize="xs" px={4} onClick={onDeleteOpen}>
@@ -344,24 +345,25 @@ const ArticleDetails = () => {
         <Text
           fontSize={{ base: 'sm', md: 'md' }}
           lineHeight="1.9"
-          color="gray.700"
+          color="gray.300"
           mb={10}
           whiteSpace="pre-wrap"
         >
           {article.description}
         </Text>
 
-        <Divider mb={7} borderColor="gray.200" />
+        <Divider mb={7} borderColor="whiteAlpha.100" />
 
         {/* ── Reactions + Share ── */}
         <Box
-          bg="white"
+          bg="#161e2e"
           border="1px solid"
-          borderColor="gray.100"
+          borderColor="whiteAlpha.100"
           borderRadius="xl"
           px={5}
           py={4}
           mb={6}
+          boxShadow="2xl"
         >
           <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
 
@@ -375,9 +377,11 @@ const ArticleDetails = () => {
                 fontWeight="600"
                 fontSize="xs"
                 variant={userReaction === 'liked' ? 'solid' : 'outline'}
-                colorScheme={userReaction === 'liked' ? 'teal' : 'gray'}
+                colorScheme={userReaction === 'liked' ? 'teal' : 'whiteAlpha'}
+                color={userReaction === 'liked' ? 'white' : 'gray.300'}
+                borderColor={userReaction === 'liked' ? 'teal.500' : 'whiteAlpha.200'}
                 onClick={() => handleReaction('like')}
-                _hover={{ transform: 'translateY(-1px)', boxShadow: 'sm' }}
+                _hover={{ transform: 'translateY(-1px)', bg: userReaction === 'liked' ? 'teal.600' : 'whiteAlpha.100' }}
                 transition="all 0.15s"
               >
                 {likes} {likes === 1 ? 'Like' : 'Likes'}
@@ -391,9 +395,11 @@ const ArticleDetails = () => {
                 fontWeight="600"
                 fontSize="xs"
                 variant={userReaction === 'disliked' ? 'solid' : 'outline'}
-                colorScheme={userReaction === 'disliked' ? 'red' : 'gray'}
+                colorScheme={userReaction === 'disliked' ? 'red' : 'whiteAlpha'}
+                color={userReaction === 'disliked' ? 'white' : 'gray.300'}
+                borderColor={userReaction === 'disliked' ? 'red.500' : 'whiteAlpha.200'}
                 onClick={() => handleReaction('dislike')}
-                _hover={{ transform: 'translateY(-1px)', boxShadow: 'sm' }}
+                _hover={{ transform: 'translateY(-1px)', bg: userReaction === 'disliked' ? 'red.600' : 'whiteAlpha.100' }}
                 transition="all 0.15s"
               >
                 {dislikes} {dislikes === 1 ? 'Dislike' : 'Dislikes'}
@@ -402,7 +408,7 @@ const ArticleDetails = () => {
 
             {/* Share icons */}
             <HStack spacing={1} align="center">
-              <Text fontSize="xs" color="gray.400" fontWeight="600" letterSpacing="0.05em" textTransform="uppercase" mr={2}>
+              <Text fontSize="xs" color="gray.500" fontWeight="600" letterSpacing="0.05em" textTransform="uppercase" mr={2}>
                 Share
               </Text>
               {[
@@ -423,7 +429,7 @@ const ArticleDetails = () => {
                   variant="ghost"
                   color="gray.400"
                   borderRadius="full"
-                  _hover={{ color: hoverColor, bg: 'gray.100', transform: 'translateY(-1px)' }}
+                  _hover={{ color: hoverColor, bg: 'whiteAlpha.100', transform: 'translateY(-1px)' }}
                   transition="all 0.2s"
                 />
               ))}
@@ -433,34 +439,46 @@ const ArticleDetails = () => {
 
         {/* ── Comments Section ── */}
         <Box mt={10}>
-          <Heading size="md" mb={6} color="gray.900" fontWeight="700">
+          <Heading size="md" mb={6} color="white" fontWeight="700">
             Comments ({comments.length})
           </Heading>
 
           {/* Comment Form */}
-          <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" mb={8}>
+          <Box bg="#161e2e" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" mb={8} boxShadow="2xl">
             <form onSubmit={handleAddComment}>
               <VStack spacing={4} align="stretch">
                 <FormControl>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">Your Name</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.400" textTransform="uppercase">Your Name</FormLabel>
                   <Input 
                     placeholder="Enter your name (optional)" 
                     value={commentName} 
                     onChange={(e) => setCommentName(e.target.value)}
                     size="sm"
                     borderRadius="lg"
+                    bg="#0b0f19"
+                    color="white"
+                    border="1px solid"
+                    borderColor="whiteAlpha.100"
                     focusBorderColor="teal.400"
+                    _hover={{ borderColor: 'whiteAlpha.300' }}
+                    _placeholder={{ color: 'gray.550' }}
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">Comment</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.400" textTransform="uppercase">Comment</FormLabel>
                   <Textarea 
                     placeholder="Write your comment here..." 
                     value={commentText} 
                     onChange={(e) => setCommentText(e.target.value)}
                     size="sm"
                     borderRadius="lg"
+                    bg="#0b0f19"
+                    color="white"
+                    border="1px solid"
+                    borderColor="whiteAlpha.100"
                     focusBorderColor="teal.400"
+                    _hover={{ borderColor: 'whiteAlpha.300' }}
+                    _placeholder={{ color: 'gray.550' }}
                     rows={4}
                     resize="none"
                   />
@@ -482,36 +500,36 @@ const ArticleDetails = () => {
 
           {/* Comments List */}
           {comments.length === 0 ? (
-            <Text fontSize="sm" color="gray.400" textAlign="center" py={6}>
+            <Text fontSize="sm" color="gray.500" textAlign="center" py={6}>
               No comments yet. Be the first to share your thoughts!
             </Text>
           ) : (
             <VStack spacing={4} align="stretch">
               {comments.map((comment) => (
-                <Box key={comment.id} bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100">
+                <Box key={comment.id} bg="#161e2e" p={5} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" boxShadow="2xl">
                   <Flex justify="space-between" align="flex-start">
                     <HStack spacing={3}>
-                      <Box w="32px" h="32px" borderRadius="full" bg="teal.50" display="flex" alignItems="center" justifyContent="center">
-                        <Text fontSize="xs" fontWeight="700" color="teal.600">
+                      <Box w="32px" h="32px" borderRadius="full" bg="teal.950" display="flex" alignItems="center" justifyContent="center">
+                        <Text fontSize="xs" fontWeight="700" color="teal.300">
                           {comment.name?.slice(0, 1).toUpperCase() || 'R'}
                         </Text>
                       </Box>
                       <Box>
-                        <Text fontSize="sm" fontWeight="600" color="gray.800">
+                        <Text fontSize="sm" fontWeight="600" color="white">
                           {comment.name || 'Anonymous Reader'}
                         </Text>
-                        <Text fontSize="10px" color="gray.400">
+                        <Text fontSize="10px" color="gray.500">
                           {comment.date ? new Date(comment.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
                         </Text>
                       </Box>
                     </HStack>
                     {isAdmin && (
-                      <Button size="xs" variant="ghost" colorScheme="red" borderRadius="full" onClick={() => handleDeleteComment(comment.id)}>
+                      <Button size="xs" variant="ghost" colorScheme="red" color="red.400" _hover={{ bg: 'whiteAlpha.100' }} borderRadius="full" onClick={() => handleDeleteComment(comment.id)}>
                         Delete
                       </Button>
                     )}
                   </Flex>
-                  <Text fontSize="sm" color="gray.600" mt={3} pl={11} lineHeight="1.6" whiteSpace="pre-wrap">
+                  <Text fontSize="sm" color="gray.300" mt={3} pl={11} lineHeight="1.6" whiteSpace="pre-wrap">
                     {comment.text}
                   </Text>
                 </Box>
@@ -524,17 +542,17 @@ const ArticleDetails = () => {
 
       {/* ── Delete Confirmation ── */}
       <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered size="sm">
-        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.400" />
-        <ModalContent borderRadius="xl" border="1px solid" borderColor="gray.100">
-          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Delete Article</ModalHeader>
-          <ModalCloseButton />
+        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.700" />
+        <ModalContent bg="#161e2e" color="white" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1} color="white">Delete Article</ModalHeader>
+          <ModalCloseButton color="gray.400" _hover={{ color: 'white' }} />
           <ModalBody>
-            <Text fontSize="sm" color="gray.600" lineHeight="1.7">
+            <Text fontSize="sm" color="gray.400" lineHeight="1.7">
               Are you sure you want to permanently delete this article? This action cannot be undone.
             </Text>
           </ModalBody>
           <ModalFooter gap={2}>
-            <Button variant="ghost" size="sm" onClick={onDeleteClose}>Cancel</Button>
+            <Button variant="ghost" color="gray.400" _hover={{ bg: 'whiteAlpha.100', color: 'white' }} size="sm" onClick={onDeleteClose}>Cancel</Button>
             <Button colorScheme="red" size="sm" borderRadius="full" px={5} onClick={handleDelete} isLoading={isDeleting}>
               Delete
             </Button>
@@ -544,47 +562,66 @@ const ArticleDetails = () => {
 
       {/* ── Edit Modal ── */}
       <Modal isOpen={isEditOpen} onClose={onEditClose} isCentered size="md">
-        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.400" />
-        <ModalContent borderRadius="xl">
-          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Edit Article</ModalHeader>
-          <ModalCloseButton />
+        <ModalOverlay backdropFilter="blur(4px)" bg="blackAlpha.700" />
+        <ModalContent bg="#161e2e" color="white" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1} color="white">Edit Article</ModalHeader>
+          <ModalCloseButton color="gray.400" _hover={{ color: 'white' }} />
           <ModalBody>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.400" textTransform="uppercase">
                   Title
                 </FormLabel>
                 <Input
                   value={editedArticle.title}
                   onChange={(e) => setEditedArticle({ ...editedArticle, title: e.target.value })}
-                  size="sm" borderRadius="lg" focusBorderColor="teal.400"
+                  size="sm"
+                  borderRadius="lg"
+                  bg="#0b0f19"
+                  color="white"
+                  borderColor="whiteAlpha.100"
+                  focusBorderColor="teal.400"
+                  _hover={{ borderColor: 'whiteAlpha.300' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.400" textTransform="uppercase">
                   Content
                 </FormLabel>
                 <Textarea
                   value={editedArticle.description}
                   onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}
-                  size="sm" borderRadius="lg" focusBorderColor="teal.400" rows={6} resize="none"
+                  size="sm"
+                  borderRadius="lg"
+                  bg="#0b0f19"
+                  color="white"
+                  borderColor="whiteAlpha.100"
+                  focusBorderColor="teal.400"
+                  _hover={{ borderColor: 'whiteAlpha.300' }}
+                  rows={6}
+                  resize="none"
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase">
+                <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.400" textTransform="uppercase">
                   Cover Image
                 </FormLabel>
                 <Box
-                  p={5} border="2px dashed" borderColor="gray.200" borderRadius="lg"
-                  textAlign="center" cursor="pointer" bg="gray.50"
-                  _hover={{ borderColor: 'teal.300', bg: 'teal.50' }}
+                  p={5}
+                  border="2px dashed"
+                  borderColor="whiteAlpha.200"
+                  borderRadius="lg"
+                  textAlign="center"
+                  cursor="pointer"
+                  bg="#0b0f19"
+                  _hover={{ borderColor: 'teal.300', bg: 'whiteAlpha.50' }}
                   onClick={() => document.getElementById('adEditFileInput').click()}
                   onDragOver={(e) => e.preventDefault()}
                   transition="all 0.2s"
                 >
                   {editedArticle.imageUrl
-                    ? <Image src={editedArticle.imageUrl} alt="Preview" borderRadius="md" maxH="150px"  objectFit="cover" />
-                    : <Text fontSize="sm" color="gray.400">Drop image or <Text as="span" color="teal.500" fontWeight="600">browse</Text></Text>
+                    ? <Image src={editedArticle.imageUrl} alt="Preview" borderRadius="md" maxH="150px" objectFit="cover" mx="auto" />
+                    : <Text fontSize="sm" color="gray.500">Drop image or <Text as="span" color="teal.400" fontWeight="600">browse</Text></Text>
                   }
                 </Box>
                 <Input id="adEditFileInput" type="file" accept="image/*" display="none" onChange={handleImageUpload} />
@@ -592,7 +629,7 @@ const ArticleDetails = () => {
             </VStack>
           </ModalBody>
           <ModalFooter gap={2}>
-            <Button variant="ghost" size="sm" onClick={onEditClose}>Cancel</Button>
+            <Button variant="ghost" color="gray.400" _hover={{ bg: 'whiteAlpha.100', color: 'white' }} size="sm" onClick={onEditClose}>Cancel</Button>
             <Button colorScheme="teal" size="sm" borderRadius="full" px={6} onClick={handleUpdate} isLoading={isUpdating}>
               Save Changes
             </Button>

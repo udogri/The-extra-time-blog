@@ -14,7 +14,7 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { auth } from '../firebaseConfig';
 import PropTypes from 'prop-types';
 
-const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) => {
+const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
 
   return (
     <Box
-      bg="gray.950"
+      bg="#0b0f19"
       borderBottom="1px solid"
       borderColor="whiteAlpha.100"
       px={6}
@@ -95,7 +95,7 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
       position="fixed"
       zIndex="1000"
       backdropFilter="blur(12px)"
-      sx={{ bg: 'rgba(10,10,10,0.92)' }}
+      sx={{ bg: 'rgba(11,15,25,0.92)' }}
     >
       <Flex h="60px" alignItems="center" justifyContent="space-between" maxW="1200px" mx="auto">
         {/* Wordmark */}
@@ -111,7 +111,7 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
           _hover={{ color: 'teal.400' }}
           transition="color 0.2s"
         >
-          {siteSettings?.title || 'Extra Time'}
+          Oruaro
           <Box as="span" color="teal.400" ml={1}>·</Box>
         </Text>
 
@@ -187,7 +187,7 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
           top="60px"
           left="0"
           width="100%"
-          bg="rgba(10,10,10,0.97)"
+          bg="rgba(11,15,25,0.97)"
           backdropFilter="blur(16px)"
           borderBottom="1px solid"
           borderColor="whiteAlpha.100"
@@ -246,7 +246,6 @@ const Navbar = ({ isAuthenticated, isAdmin, siteSettings, onOpenNewsletter }) =>
 Navbar.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   isAdmin: PropTypes.bool,
-  siteSettings: PropTypes.object,
   onOpenNewsletter: PropTypes.func.isRequired,
 };
 

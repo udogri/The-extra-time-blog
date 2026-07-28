@@ -15,10 +15,10 @@ const categories = [
 ];
 
 const CATEGORY_COLORS = {
-  'Web Development': 'blue',
-  'Graphic Design': 'green',
+  'Web Development': 'teal',
+  'Graphic Design': 'purple',
   'Life & Hobbies': 'purple',
-  'Tutorials': 'orange',
+  'Tutorials': 'teal',
 };
 
 const Blog = () => {
@@ -39,12 +39,12 @@ const Blog = () => {
         const fetchedArticles = {};
         const categoriesWithArticles = [];
 
+        const snap = await getDocs(collection(db, 'articles'));
+        const allArticles = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
         for (const category of categories) {
           const categoryKey = category.toLowerCase().replace(/ /g, '');
-          const snap = await getDocs(collection(db, 'articles'));
-          const list = snap.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(item => item.category === category);
+          const list = allArticles.filter(item => item.category === category);
             
           if (list.length > 0) {
             fetchedArticles[categoryKey] = list;
@@ -75,10 +75,10 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="#0b0f19">
         <VStack spacing={3}>
-          <Spinner size="lg" color="teal.500" thickness="3px" />
-          <Text fontSize="sm" color="gray.500">Loading blog feed…</Text>
+          <Spinner size="lg" color="teal.400" thickness="3px" />
+          <Text fontSize="sm" color="gray.400">Loading blog feed…</Text>
         </VStack>
       </Box>
     );
@@ -87,16 +87,16 @@ const Blog = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="gray.50" pt="100px" pb={20}>
+    <Box minH="100vh" w="100vw" bg="#0b0f19" pt="100px" pb={20}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
         
         {/* Page Title & Search Header */}
         <Flex direction={{ base: 'column', md: 'row' }} align={{ base: 'flex-start', md: 'center' }} justify="space-between" mb={12} gap={6}>
           <Box>
-            <Heading size="lg" fontWeight="800" color="gray.900" letterSpacing="-0.03em" mb={2}>
+            <Heading size="lg" fontWeight="800" color="white" letterSpacing="-0.03em" mb={2}>
               ✍️ The Writing Log
             </Heading>
-            <Text fontSize="sm" color="gray.500">
+            <Text fontSize="sm" color="gray.400">
               Articles and logs covering web engineering, vector graphics, and lifestyle updates.
             </Text>
           </Box>
@@ -107,14 +107,17 @@ const Blog = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               size="md"
-              bg="white"
+              bg="#161e2e"
+              color="white"
               borderRadius="full"
-              borderColor="gray.200"
+              border="1px solid"
+              borderColor="whiteAlpha.100"
               focusBorderColor="teal.400"
+              _hover={{ borderColor: 'whiteAlpha.300' }}
               fontSize="sm"
               pl={10}
             />
-            <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.400">
+            <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.450">
               <FiSearch size={14} />
             </Box>
           </Box>
@@ -123,14 +126,14 @@ const Blog = () => {
         {/* Articles layout loop */}
         {searchQuery ? (
           <Box>
-            <Heading size="sm" fontWeight="700" mb={6} color="gray.500">
+            <Heading size="sm" fontWeight="700" mb={6} color="gray.400">
               Filtered Search Results ({filteredArticles.length})
             </Heading>
             {filteredArticles.length === 0 ? (
-              <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={16} textAlign="center">
+              <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={16} textAlign="center">
                 <Text fontSize="3xl" mb={4}>🔍</Text>
-                <Text fontWeight="700" color="gray.700">No matching articles found</Text>
-                <Text fontSize="sm" color="gray.450" mt={1}>Try checking another search term or keyphrase.</Text>
+                <Text fontWeight="700" color="white">No matching articles found</Text>
+                <Text fontSize="sm" color="gray.400" mt={1}>Try checking another search term or keyphrase.</Text>
               </Box>
             ) : (
               <VStack spacing={6} align="stretch">
@@ -156,8 +159,8 @@ const Blog = () => {
                 <Box key={categoryKey}>
                   {/* Section Title */}
                   <HStack spacing={2.5} mb={5} align="center">
-                    <Box w="4px" h="20px" bg={`${color}.500`} borderRadius="full" />
-                    <Heading size="sm" fontWeight="800" color="gray.800" letterSpacing="-0.01em">
+                    <Box w="4px" h="20px" bg={`${color}.400`} borderRadius="full" />
+                    <Heading size="sm" fontWeight="800" color="white" letterSpacing="-0.01em">
                       {category}
                     </Heading>
                     <Badge colorScheme={color} variant="subtle" fontSize="10px" px={2.5} py={0.5} borderRadius="full">
@@ -194,15 +197,15 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
 
   return (
     <Flex
-      bg="white"
+      bg="#161e2e"
       borderRadius="xl"
       border="1px solid"
-      borderColor="gray.100"
+      borderColor="whiteAlpha.100"
       overflow="hidden"
       cursor="pointer"
       onClick={onClick}
-      boxShadow="sm"
-      _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
+      boxShadow="2xl"
+      _hover={{ boxShadow: 'dark-lg', transform: 'translateY(-3px)', borderColor: `${color}.400` }}
       transition="all 0.2s"
       direction={{ base: 'column', md: 'row' }}
       w="100%"
@@ -252,14 +255,14 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
               {article.category}
             </Badge>
           )}
-          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="white">
             {article.title}
           </Text>
-          <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+          <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
             {article.description || article.content}
           </Text>
         </VStack>
-        <Text fontSize="10px" color="gray.400">
+        <Text fontSize="10px" color="gray.500">
           {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </Text>
       </Box>

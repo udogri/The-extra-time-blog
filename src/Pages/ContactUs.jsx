@@ -48,39 +48,40 @@ const ContactUs = () => {
   const inputStyles = {
     size: 'md',
     borderRadius: 'lg',
-    bg: 'gray.50',
+    bg: '#0b0f19',
+    color: 'white',
     border: '1px solid',
-    borderColor: 'gray.200',
+    borderColor: 'whiteAlpha.100',
     focusBorderColor: 'teal.400',
-    _hover: { borderColor: 'gray.300' },
-    _placeholder: { color: 'gray.400', fontSize: 'sm' },
+    _hover: { borderColor: 'whiteAlpha.300' },
+    _placeholder: { color: 'gray.550', fontSize: 'sm' },
   };
 
   return (
-    <Box minH="100vh" w="100vw" bg="gray.50" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
+    <Box minH="100vh" w="100vw" bg="#0b0f19" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
       <Box
         w="100%"
         maxW="800px"
-        bg="white"
+        bg="#161e2e"
         borderRadius="2xl"
         border="1px solid"
-        borderColor="gray.100"
-        boxShadow="xl"
+        borderColor="whiteAlpha.100"
+        boxShadow="2xl"
         overflow="hidden"
         display={{ base: 'block', md: 'flex' }}
       >
         {/* Left — Form */}
         <Box flex="3" p={{ base: 6, md: 10 }}>
-          <Heading size="md" fontWeight="700" letterSpacing="-0.02em" color="gray.900" mb={1}>
+          <Heading size="md" fontWeight="700" letterSpacing="-0.02em" color="white" mb={1}>
             Get in Touch
           </Heading>
-          <Text fontSize="sm" color="gray.500" mb={7}>
+          <Text fontSize="sm" color="gray.400" mb={7}>
             Have a question or partnership idea? We'd love to hear from you.
           </Text>
 
           <VStack spacing={4} align="stretch">
             <FormControl>
-              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.450" textTransform="uppercase" mb={1.5}>
                 Name
               </FormLabel>
               <Input
@@ -92,7 +93,7 @@ const ContactUs = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.450" textTransform="uppercase" mb={1.5}>
                 Email
               </FormLabel>
               <Input
@@ -105,7 +106,7 @@ const ContactUs = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.500" textTransform="uppercase" mb={1.5}>
+              <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="gray.450" textTransform="uppercase" mb={1.5}>
                 Message
               </FormLabel>
               <Textarea
@@ -149,7 +150,7 @@ const ContactUs = () => {
                 size="sm"
                 color="gray.400"
                 borderRadius="full"
-                _hover={{ color: 'teal.500', bg: 'teal.50' }}
+                _hover={{ color: 'teal.400', bg: 'whiteAlpha.100' }}
                 transition="all 0.2s"
               />
             ))}
@@ -159,7 +160,7 @@ const ContactUs = () => {
         {/* Right — Info Panel */}
         <Box
           flex="2"
-          bg="gray.900"
+          bg="#0b0f19"
           color="white"
           display="flex"
           flexDir="column"
@@ -169,6 +170,9 @@ const ContactUs = () => {
           minH={{ base: '200px', md: 'auto' }}
           position="relative"
           overflow="hidden"
+          borderLeft={{ md: '1px solid' }}
+          borderTop={{ base: '1px solid', md: 'none' }}
+          borderColor="whiteAlpha.100"
         >
           {/* Decorative circle */}
           <Box
@@ -178,7 +182,7 @@ const ContactUs = () => {
             w="200px"
             h="200px"
             borderRadius="full"
-            bg="teal.500"
+            bg="purple.500"
             opacity={0.12}
           />
           <Box
@@ -197,7 +201,7 @@ const ContactUs = () => {
             <Heading size="md" fontWeight="700" letterSpacing="-0.02em" mb={3} lineHeight="1.3">
               Let's build something together
             </Heading>
-            <Text fontSize="sm" color="whiteAlpha.600" lineHeight="1.7" maxW="220px">
+            <Text fontSize="sm" color="gray.400" lineHeight="1.7" maxW="220px">
               We're always open to thoughtful conversations, feedback, and new ideas.
             </Text>
 

@@ -47,7 +47,8 @@ const AddArticle = () => {
     if (!image) return null;
     const formData = new FormData();
     formData.append('image', image);
-    const res = await axios.post(`https://api.imgbb.com/1/upload?key=bc6aa3a9cee7036d9b191018c92c893a`, formData);
+    const imgBbKey = import.meta.env.VITE_IMGBB_API_KEY;
+    const res = await axios.post(`https://api.imgbb.com/1/upload?key=${imgBbKey}`, formData);
     return res.data.data.url;
   };
 

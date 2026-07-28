@@ -29,7 +29,7 @@ const Footer = ({ siteSettings }) => {
     <Box bg="#0b0f19" color="white" w="100%" position="relative" overflow="hidden">
       
       {/* Sleek top accent gradient line */}
-      <Box h="3px" w="100%" bgGradient="linear(to-r, blue.400, teal.400, purple.400)" />
+      <Box h="3px" w="100%" bgGradient="linear(to-r, teal.400, purple.400)" />
 
       {/* Main footer body */}
       <Box maxW="1200px" mx="auto" px={{ base: 6, md: 10 }} py={{ base: 12, md: 16 }}>

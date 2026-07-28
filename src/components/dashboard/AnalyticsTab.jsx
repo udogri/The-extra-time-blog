@@ -1,0 +1,255 @@
+import PropTypes from 'prop-types';
+import {
+  VStack, SimpleGrid, Box, Flex, Heading, Text, HStack, Alert, AlertIcon, AlertTitle, AlertDescription, Button, useToast
+} from '@chakra-ui/react';
+import { FiActivity, FiBookOpen, FiMail, FiInbox } from 'react-icons/fi';
+
+const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficError }) => {
+  const toast = useToast();
+  
+  // Analytics calculations
+  const totalArticleViews = articles.reduce((acc, curr) => acc + (curr.views || 0), 0);
+  
+  const popularArticles = [...articles]
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, 5);
+
+  const getTrafficChartData = () => {
+    const dailyTraffic = trafficData.dailyTraffic || {};
+    const chartList = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const label = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+      chartList.push({
+        date: dateStr,
+        label,
+        count: dailyTraffic[dateStr] || 0
+      });
+    }
+    return chartList;
+  };
+
+  const chartData = getTrafficChartData();
+  const maxTrafficCount = Math.max(...chartData.map(c => c.count), 5);
+
+  return (
+    <VStack spacing={6} align="stretch">
+      {trafficError === 'permission-denied' && (
+        <Alert
+          status="warning"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="flex-start"
+          borderRadius="xl"
+          p={5}
+          border="1px solid"
+          borderColor="orange.200"
+        >
+          <HStack align="center" spacing={2} mb={2}>
+            <AlertIcon />
+            <AlertTitle fontSize="md" fontWeight="bold">Firestore Security Rules Missing for Analytics</AlertTitle>
+          </HStack>
+          <AlertDescription fontSize="sm" color="gray.700" mb={4}>
+            The application failed to retrieve site visits analytics because of a <strong>Missing or Insufficient Permissions</strong> error. This means the Firestore rules in your Firebase Console are blocking access to the <code>analytics</code> collection.
+          </AlertDescription>
+          <Box w="full" bg="gray.900" color="green.300" p={4} borderRadius="lg" fontFamily="monospace" fontSize="xs" position="relative" overflowX="auto">
+            <Text color="gray.400" mb={2}>{"// Add the following match block to your Firestore Security Rules:"}</Text>
+            <pre>{`match /analytics/traffic {
+  allow read: if request.auth != null && request.auth.token.email == '${import.meta.env.VITE_ADMIN_EMAIL || 'oudogri@gmail.com'}';
+  allow write: if true; // Allows tracking anonymous page visits
+}`}</pre>
+            <Button
+              size="xs"
+              colorScheme="teal"
+              position="absolute"
+              top={3}
+              right={3}
+              onClick={() => {
+                navigator.clipboard.writeText(`match /analytics/traffic {\n  allow read: if request.auth != null && request.auth.token.email == '${import.meta.env.VITE_ADMIN_EMAIL || 'oudogri@gmail.com'}';\n  allow write: if true; // Allows tracking anonymous page visits\n}`);
+                toast({ title: 'Rules copied to clipboard!', status: 'success', duration: 2000 });
+              }}
+            >
+              Copy
+            </Button>
+          </Box>
+        </Alert>
+      )}
+      
+      {/* 1. Core Analytics Cards */}
+      <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
+        {/* Card 1: Site Visits */}
+        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Flex justify="space-between" align="center">
+            <VStack align="flex-start" spacing={1}>
+              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Total Site Visits</Text>
+              <Heading size="md" color="gray.850" fontWeight="800">
+                {trafficData.totalVisits || 0}
+              </Heading>
+            </VStack>
+            <Box bg="teal.50" color="teal.500" p={3} borderRadius="lg">
+              <FiActivity size={20} />
+            </Box>
+          </Flex>
+        </Box>
+
+        {/* Card 2: Article Reads */}
+        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Flex justify="space-between" align="center">
+            <VStack align="flex-start" spacing={1}>
+              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Article Views</Text>
+              <Heading size="md" color="gray.850" fontWeight="800">
+                {totalArticleViews}
+              </Heading>
+            </VStack>
+            <Box bg="blue.50" color="blue.500" p={3} borderRadius="lg">
+              <FiBookOpen size={20} />
+            </Box>
+          </Flex>
+        </Box>
+
+        {/* Card 3: Newsletter Subscribers */}
+        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Flex justify="space-between" align="center">
+            <VStack align="flex-start" spacing={1}>
+              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
+              <Heading size="md" color="gray.850" fontWeight="800">
+                {subscribers.length}
+              </Heading>
+            </VStack>
+            <Box bg="purple.50" color="purple.500" p={3} borderRadius="lg">
+              <FiMail size={20} />
+            </Box>
+          </Flex>
+        </Box>
+
+        {/* Card 4: Feedback Inbox */}
+        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Flex justify="space-between" align="center">
+            <VStack align="flex-start" spacing={1}>
+              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Feedback Inbox</Text>
+              <Heading size="md" color="gray.850" fontWeight="800">
+                {messages.length}
+              </Heading>
+            </VStack>
+            <Box bg="orange.50" color="orange.500" p={3} borderRadius="lg">
+              <FiInbox size={20} />
+            </Box>
+          </Flex>
+        </Box>
+      </SimpleGrid>
+
+      {/* 2. Visual Traffic Trend Chart */}
+      <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+        <VStack align="flex-start" spacing={5} w="100%">
+          <Box>
+            <Heading size="xs" fontWeight="800" color="gray.700" letterSpacing="-0.01em">
+              📈 Traffic Trend (Last 7 Days)
+            </Heading>
+            <Text fontSize="xs" color="gray.400" mt={0.5}>
+              Unique daily page loads recorded in this calendar week.
+            </Text>
+          </Box>
+
+          {/* Chart Core Bar Graph */}
+          <Flex h="200px" w="100%" align="flex-end" justify="space-between" pt={4} px={2} borderBottom="1px solid" borderColor="gray.150">
+            {chartData.map((day) => {
+              const heightPercent = `${(day.count / maxTrafficCount) * 100}%`;
+              return (
+                <VStack key={day.date} flex="1" spacing={2.5} h="100%" justify="flex-end">
+                  <Text fontSize="10px" fontWeight="700" color="teal.500">
+                    {day.count}
+                  </Text>
+                  <Box
+                    w={{ base: "14px", sm: "24px", md: "34px" }}
+                    h={day.count > 0 ? heightPercent : "4px"}
+                    bgGradient="linear(to-t, teal.400, teal.300)"
+                    borderRadius="t-md"
+                    transition="all 0.4s ease"
+                    _hover={{ bgGradient: "linear(to-t, teal.500, teal.400)" }}
+                  />
+                  <Text fontSize="10px" fontWeight="600" color="gray.400" whiteSpace="nowrap">
+                    {day.label}
+                  </Text>
+                </VStack>
+              );
+            })}
+          </Flex>
+        </VStack>
+      </Box>
+
+      {/* 3. Bottom Row: Category Stats + Popular Articles */}
+      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+        {/* Popular Articles */}
+        <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Heading size="xs" fontWeight="800" color="gray.700" mb={4}>
+            🔥 Top Performing Articles
+          </Heading>
+          {popularArticles.length === 0 ? (
+            <Text fontSize="xs" color="gray.400" py={4}>No views recorded yet.</Text>
+          ) : (
+            <VStack align="stretch" spacing={3}>
+              {popularArticles.map((art, idx) => (
+                <Flex key={art.id} justify="space-between" align="center" p={2.5} borderRadius="lg" _hover={{ bg: "gray.50" }}>
+                  <HStack spacing={3}>
+                    <Text fontSize="xs" fontWeight="800" color="gray.400" w="15px">#{idx + 1}</Text>
+                    <Box>
+                      <Text fontSize="xs" fontWeight="700" color="gray.700" noOfLines={1} maxW="280px">{art.title}</Text>
+                      <Text fontSize="10px" color="gray.400">{art.category}</Text>
+                    </Box>
+                  </HStack>
+                  <HStack spacing={4}>
+                    <VStack align="flex-end" spacing={0}>
+                      <Text fontSize="xs" fontWeight="800" color="teal.500">{art.views || 0}</Text>
+                      <Text fontSize="9px" color="gray.400">views</Text>
+                    </VStack>
+                  </HStack>
+                </Flex>
+              ))}
+            </VStack>
+          )}
+        </Box>
+
+        {/* Category Breakdown */}
+        <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+          <Heading size="xs" fontWeight="800" color="gray.700" mb={4}>
+            🗂️ Category Distribution
+          </Heading>
+          <VStack align="stretch" spacing={3.5}>
+            {['Web Development', 'Graphic Design', 'Life & Hobbies', 'Tutorials'].map((cat) => {
+              const catArticles = articles.filter(a => a.category === cat);
+              const catViews = catArticles.reduce((acc, curr) => acc + (curr.views || 0), 0);
+              const percentage = articles.length > 0 ? (catArticles.length / articles.length) * 100 : 0;
+              
+              return (
+                <Box key={cat}>
+                  <Flex justify="space-between" align="center" mb={1}>
+                    <Text fontSize="xs" fontWeight="700" color="gray.700">{cat}</Text>
+                    <HStack spacing={2}>
+                      <Text fontSize="10px" color="gray.400">{catArticles.length} posts</Text>
+                      <Text fontSize="10px" fontWeight="700" color="teal.500">{catViews} views</Text>
+                    </HStack>
+                  </Flex>
+                  <Box h="6px" w="100%" bg="gray.100" borderRadius="full" overflow="hidden">
+                    <Box h="100%" w={`${percentage}%`} bg="teal.400" borderRadius="full" />
+                  </Box>
+                </Box>
+              );
+            })}
+          </VStack>
+        </Box>
+      </SimpleGrid>
+    </VStack>
+  );
+};
+
+AnalyticsTab.propTypes = {
+  articles: PropTypes.array.isRequired,
+  subscribers: PropTypes.array.isRequired,
+  messages: PropTypes.array.isRequired,
+  trafficData: PropTypes.object.isRequired,
+  trafficError: PropTypes.string,
+};
+
+export default AnalyticsTab;

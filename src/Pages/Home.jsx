@@ -6,17 +6,17 @@ import {
   Divider, Center
 } from '@chakra-ui/react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import NetworkError from '../components/NetworkError';
-import { FiExternalLink, FiGithub, FiMail, FiBookOpen, FiArrowRight } from 'react-icons/fi';
+import { FiExternalLink, FiGithub, FiMail, FiArrowRight } from 'react-icons/fi';
 import { FaTwitter, FaLinkedin, FaGithub, FaInstagram, FaFacebook } from 'react-icons/fa';
 
 const CATEGORY_COLORS = {
-  'Web Development': 'blue',
-  'Graphic Design': 'green',
+  'Web Development': 'teal',
+  'Graphic Design': 'purple',
   'Life & Hobbies': 'purple',
-  'Tutorials': 'orange',
+  'Tutorials': 'teal',
 };
 
 const HomePage = () => {
@@ -41,10 +41,10 @@ const HomePage = () => {
         setProjects(projList);
 
         // Fetch Articles and sort by latest date
-        const snap = await getDocs(collection(db, 'articles'));
+        const articlesQuery = query(collection(db, 'articles'), orderBy('date', 'desc'), limit(3));
+        const snap = await getDocs(articlesQuery);
         const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        list.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setLatestArticles(list.slice(0, 3)); // Extract top 3 articles
+        setLatestArticles(list); // Extract top 3 articles
       } catch (error) {
         setNetworkError(true);
         toast({ title: 'Error loading page content.', description: error.message, status: 'error', duration: 3000 });
@@ -69,10 +69,10 @@ const HomePage = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="gray.50">
+      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="#0b0f19">
         <VStack spacing={3}>
-          <Spinner size="lg" color="teal.500" thickness="3px" />
-          <Text fontSize="sm" color="gray.500">Loading creative log…</Text>
+          <Spinner size="lg" color="teal.400" thickness="3px" />
+          <Text fontSize="sm" color="gray.400">Loading creative log…</Text>
         </VStack>
       </Box>
     );
@@ -81,19 +81,19 @@ const HomePage = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="gray.50" pt="80px" pb={16}>
+    <Box minH="100vh" w="100vw" bg="#0b0f19" pt="80px" pb={16}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* ── 1. PERSONAL HERO HEADER CARD ── */}
         <Box 
-          bg="white" 
+          bg="#161e2e" 
           borderRadius="2xl" 
           border="1px solid" 
-          borderColor="gray.100" 
+          borderColor="whiteAlpha.100" 
           p={{ base: 6, md: 8 }} 
           mb={12} 
           mt={4}
-          boxShadow="sm"
+          boxShadow="2xl"
         >
           <Flex direction={{ base: 'column', md: 'row' }} gap={8} align="center">
             <Avatar 
@@ -107,52 +107,24 @@ const HomePage = () => {
             <VStack align="flex-start" spacing={4} flex="1">
               <Box>
                 <HStack spacing={2} mb={1}>
-                  <Heading size="lg" fontWeight="600" color="gray.900" letterSpacing="-0.03em">
+                  <Heading size="lg" fontWeight="600" color="white" letterSpacing="-0.03em">
                     {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
                   </Heading>
-                  <Badge bg="#0b0f19" variant="solid" fontSize="10px" borderRadius="full" px={2} py={0.5}>
-                    Programmer & Designer
-                  </Badge>
                 </HStack>
-                <Text fontSize="md" color="gray.600" lineHeight="1.6">
+                <Text fontSize="md" color="gray.400" lineHeight="1.6">
                   {siteSettings?.bioText || 'I am a frontend developer who loves building digital interfaces and visual designs.'}
                 </Text>
               </Box>
-
-              {/* Skills Tags */}
-              {/* <Box w="100%">
-                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em" mb={2}>
-                  Core Tech & Design Tools
-                </Text>
-                <Flex gap={1.5} flexWrap="wrap">
-                  <Badge colorScheme="blue" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">React</Badge>
-                  <Badge colorScheme="blue" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">JavaScript</Badge>
-                  <Badge colorScheme="blue" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Chakra UI</Badge>
-                  <Badge colorScheme="blue" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Framer Motion</Badge>
-                  <Badge colorScheme="green" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Figma</Badge>
-                  <Badge colorScheme="green" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Branding</Badge>
-                  <Badge colorScheme="green" variant="subtle" borderRadius="md" px={2} py={0.5} fontSize="11px">Vector Graphics</Badge>
-                </Flex>
-              </Box> */}
 
               {/* Action Buttons & Socials */}
               <Flex w="100%" justify="space-between" align="center" flexWrap="wrap" gap={4} pt={2}>
                 <HStack spacing={3}>
                   <Button
                     size="sm"
-                    bg="#0b0f19"
-                    color="white"
-                    _hover={{ bg: 'gray.100', color: 'gray.900' }}
-                    borderRadius="full"
-                    leftIcon={<FiBookOpen />}
-                    onClick={() => navigate('/blog')}
-                  >
-                    Read Blog
-                  </Button>
-                  <Button
-                    size="sm"
                     variant="outline"
-                    colorScheme="gray"
+                    borderColor="whiteAlpha.300"
+                    color="white"
+                    _hover={{ bg: 'whiteAlpha.100', borderColor: 'teal.400', color: 'teal.400' }}
                     borderRadius="full"
                     leftIcon={<FiMail />}
                     onClick={() => navigate('/contact')}
@@ -176,7 +148,7 @@ const HomePage = () => {
                       variant="ghost"
                       color="gray.400"
                       borderRadius="full"
-                      _hover={{ color, bg: 'gray.50' }}
+                      _hover={{ color, bg: 'whiteAlpha.100' }}
                     />
                   ))}
                 </HStack>
@@ -187,14 +159,14 @@ const HomePage = () => {
 
         {/* ── 3. LATEST ARTICLES SECTION ── */}
         <Box mb={6}>
-          <Heading size="md" fontWeight="600" color="gray.900" letterSpacing="-0.02em" mb={6}>
+          <Heading size="md" fontWeight="600" color="white" letterSpacing="-0.02em" mb={6}>
             Latest Articles
           </Heading>
 
           {latestArticles.length === 0 ? (
-            <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center">
+            <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={12} textAlign="center">
               <Text fontSize="2xl" mb={3}>✍️</Text>
-              <Text fontWeight="650" color="gray.700">No posts published yet</Text>
+              <Text fontWeight="650" color="white">No posts published yet</Text>
               <Text fontSize="sm" color="gray.400" mt={1}>Check back later for tutorials and visual layouts!</Text>
             </Box>
           ) : (
@@ -218,7 +190,7 @@ const HomePage = () => {
                   size="sm"
                   fontWeight="600"
                   onClick={() => navigate('/blog')}
-                  _hover={{ bg: 'teal.50' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                 >
                   View All Blog Posts
                 </Button>
@@ -229,17 +201,18 @@ const HomePage = () => {
 
         <Box mb={16}>
           <Flex direction={{ base: 'column', sm: 'row' }} align={{ base: 'flex-start', sm: 'center' }} justify="space-between" mb={6} gap={4}>
-            <Heading size="md" fontWeight="600" color="gray.900" letterSpacing="-0.02em">
+            <Heading size="md" fontWeight="600" color="white" letterSpacing="-0.02em">
               Projects
             </Heading>
-            <HStack spacing={2} bg="gray.100" p={1} borderRadius="full">
+            <HStack spacing={2} bg="whiteAlpha.100" p={1} borderRadius="full">
               {['All', 'Web Development', 'Graphic Design'].map((filter) => (
                 <Button
                   key={filter}
                   size="xs"
                   borderRadius="full"
                   variant={activeProjectFilter === filter ? 'solid' : 'ghost'}
-                  colorScheme={activeProjectFilter === filter ? 'purple' : 'gray'}
+                  colorScheme={activeProjectFilter === filter ? 'purple' : 'whiteAlpha'}
+                  color={activeProjectFilter === filter ? 'white' : 'whiteAlpha.700'}
                   onClick={() => setActiveProjectFilter(filter)}
                   px={3}
                 >
@@ -250,9 +223,9 @@ const HomePage = () => {
           </Flex>
 
           {filteredProjects.length === 0 ? (
-            <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={12} textAlign="center" w="100%">
+            <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={12} textAlign="center" w="100%">
               <Text fontSize="2xl" mb={3}>🚀</Text>
-              <Text fontWeight="650" color="gray.700">No projects published yet</Text>
+              <Text fontWeight="650" color="white">No projects published yet</Text>
               <Text fontSize="sm" color="gray.400" mt={1}>Check back later for creative builds!</Text>
             </Box>
           ) : (
@@ -260,13 +233,13 @@ const HomePage = () => {
               {filteredProjects.map((proj) => (
                 <Box
                   key={proj.id}
-                  bg="white"
+                  bg="#161e2e"
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor="gray.100"
+                  borderColor="whiteAlpha.100"
                   overflow="hidden"
-                  boxShadow="sm"
-                  _hover={{ transform: 'translateY(-3px)', boxShadow: 'md' }}
+                  boxShadow="2xl"
+                  _hover={{ transform: 'translateY(-3px)', boxShadow: 'dark-lg' }}
                   transition="all 0.2s"
                   display="flex"
                   flexDirection="column"
@@ -282,13 +255,13 @@ const HomePage = () => {
                   )}
                   <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
                     <VStack align="flex-start" spacing={3}>
-                      <Badge colorScheme={proj.type === 'Web Development' ? 'blue' : 'green'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
+                      <Badge colorScheme={proj.type === 'Web Development' ? 'teal' : 'purple'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
                         {proj.type}
                       </Badge>
-                      <Heading size="xs" color="gray.850" fontWeight="700">
+                      <Heading size="xs" color="white" fontWeight="700">
                         {proj.title}
                       </Heading>
-                      <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+                      <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
                         {proj.description}
                       </Text>
                     </VStack>
@@ -297,20 +270,20 @@ const HomePage = () => {
                       {proj.techStack && proj.techStack.length > 0 && (
                         <Flex gap={1} flexWrap="wrap" mb={4}>
                           {proj.techStack.map((tool) => (
-                            <Badge key={tool} colorScheme="gray" variant="solid" fontSize="9px" px={1.5} py={0.2} borderRadius="md">
+                            <Badge key={tool} colorScheme="whiteAlpha" variant="solid" fontSize="9px" px={1.5} py={0.2} borderRadius="md">
                               {tool}
                             </Badge>
                           ))}
                         </Flex>
                       )}
                       
-                      <Divider mb={3} />
+                      <Divider borderColor="whiteAlpha.100" mb={3} />
                       
                       <HStack justify="space-between">
                         {proj.githubUrl ? (
                           <Button 
                             as="a" href={proj.githubUrl} target="_blank" rel="noopener noreferrer"
-                            leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" colorScheme="gray" fontSize="10px"
+                            leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" color="gray.400" _hover={{ color: 'white', bg: 'whiteAlpha.100' }} fontSize="10px"
                           >
                             Source Code
                           </Button>
@@ -344,15 +317,15 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
 
   return (
     <Flex
-      bg="white"
+      bg="#161e2e"
       borderRadius="xl"
       border="1px solid"
-      borderColor="gray.100"
+      borderColor="whiteAlpha.100"
       overflow="hidden"
       cursor="pointer"
       onClick={onClick}
-      boxShadow="sm"
-      _hover={{ boxShadow: 'md', transform: 'translateY(-3px)', borderColor: `${color}.200` }}
+      boxShadow="2xl"
+      _hover={{ boxShadow: 'dark-lg', transform: 'translateY(-3px)', borderColor: `${color}.400` }}
       transition="all 0.2s"
       direction={{ base: 'column', md: 'row' }}
       w="100%"
@@ -402,14 +375,14 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
               {article.category}
             </Badge>
           )}
-          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="gray.850">
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="white">
             {article.title}
           </Text>
-          <Text fontSize="xs" color="gray.500" noOfLines={3} lineHeight="1.5">
+          <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
             {article.description || article.content}
           </Text>
         </VStack>
-        <Text fontSize="10px" color="gray.400">
+        <Text fontSize="10px" color="gray.500">
           {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </Text>
       </Box>

@@ -26,7 +26,7 @@ const Footer = ({ siteSettings }) => {
   const categories = ['Web Development', 'Graphic Design', 'Life & Hobbies', 'Tutorials'];
 
   return (
-    <Box bg="#0b0f19" color="white" w="100%" position="relative" overflow="hidden">
+    <Box bg="footerBg" color="footerText" w="100%" position="relative" overflow="hidden">
       
       {/* Sleek top accent gradient line */}
       <Box h="3px" w="100%" bgGradient="linear(to-r, teal.400, purple.400)" />
@@ -47,7 +47,7 @@ const Footer = ({ siteSettings }) => {
               fontWeight="800"
               letterSpacing="0.05em"
               textTransform="uppercase"
-              color="white"
+              color="footerText"
               cursor="pointer"
               onClick={() => navigate('/')}
               _hover={{ color: 'teal.300' }}
@@ -56,7 +56,7 @@ const Footer = ({ siteSettings }) => {
               {siteSettings?.title || 'Pixels & Code'}
               <Box as="span" color="teal.400" ml={1}>.</Box>
             </Text>
-            <Text fontSize="sm" color="gray.400" lineHeight="1.75">
+            <Text fontSize="sm" color="footerMutedText" lineHeight="1.75">
               {siteSettings?.description || "A personal space focused on Frontend engineering, UI/UX, graphic design, and lifestyle logs."}
             </Text>
 
@@ -74,7 +74,7 @@ const Footer = ({ siteSettings }) => {
                     icon={<Icon size={14} />}
                     size="sm"
                     variant="ghost"
-                    color="gray.400"
+                    color="footerMutedText"
                     borderRadius="full"
                     _hover={{ color: hoverColor, bg: 'whiteAlpha.100' }}
                     transition="all 0.2s"
@@ -101,7 +101,7 @@ const Footer = ({ siteSettings }) => {
                 key={label}
                 href={href}
                 fontSize="sm"
-                color="gray.300"
+                color="footerMutedText"
                 fontWeight="500"
                 _hover={{ color: 'teal.300', textDecoration: 'none', pl: '2px' }}
                 transition="all 0.15s"
@@ -127,7 +127,7 @@ const Footer = ({ siteSettings }) => {
               <Text
                 key={cat}
                 fontSize="sm"
-                color="gray.300"
+                color="footerMutedText"
                 fontWeight="500"
                 cursor="pointer"
                 _hover={{ color: 'purple.300', pl: '2px' }}
@@ -157,31 +157,17 @@ const Footer = ({ siteSettings }) => {
               Contact
             </Text>
             <Box>
-              <Text fontSize="sm" color="gray.300" fontWeight="600">
+              <Text fontSize="sm" color="footerMutedText" fontWeight="600">
                 {siteSettings?.contactEmail || 'hello@creativedev.com'}
               </Text>
             </Box>
-            
-            {/* <Box
-              px={3} py={1}
-              borderRadius="full"
-              border="1px solid"
-              borderColor="teal.800"
-              bg="teal.950"
-              display="inline-flex"
-              alignItems="center"
-              gap={2}
-            >
-              <Box w="6px" h="6px" borderRadius="full" bg="teal.400" className="pulse-dot" />
-              <Text fontSize="10px" color="teal.300" fontWeight="700" letterSpacing="0.05em">ALL SYSTEMS ACTIVE</Text>
-            </Box> */}
           </VStack>
 
         </Flex>
       </Box>
 
       {/* Bottom Bar */}
-      <Box borderTop="1px solid" borderColor="whiteAlpha.100" bg="#070a12">
+      <Box borderTop="1px solid" borderColor="border" bg="footerAccentBg">
         <Flex
           maxW="1200px"
           mx="auto"
@@ -192,7 +178,7 @@ const Footer = ({ siteSettings }) => {
           flexWrap="wrap"
           gap={4}
         >
-          <Text fontSize="xs" color="gray.500">
+          <Text fontSize="xs" color="footerMutedText">
             © {currentYear} {siteSettings?.title || 'Pixels & Code'}. All rights reserved.
           </Text>
           <HStack spacing={5}>
@@ -202,8 +188,8 @@ const Footer = ({ siteSettings }) => {
                 as="a"
                 href="#"
                 fontSize="xs"
-                color="gray.500"
-                _hover={{ color: 'gray.300' }}
+                color="footerMutedText"
+                _hover={{ color: 'footerText' }}
                 transition="color 0.2s"
                 cursor="pointer"
               >

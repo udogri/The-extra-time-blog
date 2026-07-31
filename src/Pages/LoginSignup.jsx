@@ -100,19 +100,19 @@ const LoginSignup = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      bg="gray.50"
+      bg="bg"
       px={4}
       w="100vw"
     >
       <Box
-        bg="white"
+        bg="cardBg"
         p={6}
         boxShadow="md"
         borderRadius="md"
         maxWidth="400px"
         w="100%"
       >
-        <Heading size="lg" mb={6} textAlign="center">
+        <Heading size="lg" mb={6} textAlign="center" color="text">
         <Text>Extra Time Blog</Text>
 
         </Heading>

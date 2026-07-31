@@ -69,10 +69,10 @@ const HomePage = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="#0b0f19">
+      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="bg">
         <VStack spacing={3}>
           <Spinner size="lg" color="teal.400" thickness="3px" />
-          <Text fontSize="sm" color="gray.400">Loading creative log…</Text>
+          <Text fontSize="sm" color="mutedText">Loading creative log…</Text>
         </VStack>
       </Box>
     );
@@ -81,15 +81,15 @@ const HomePage = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="#0b0f19" pt="80px" pb={16}>
+    <Box minH="100vh" w="100vw" bg="bg" pt="80px" pb={16}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* ── 1. PERSONAL HERO HEADER CARD ── */}
         <Box 
-          bg="#161e2e" 
+          bg="cardBg" 
           borderRadius="2xl" 
           border="1px solid" 
-          borderColor="whiteAlpha.100" 
+          borderColor="border" 
           p={{ base: 6, md: 8 }} 
           mb={12} 
           mt={4}
@@ -107,11 +107,11 @@ const HomePage = () => {
             <VStack align="flex-start" spacing={4} flex="1">
               <Box>
                 <HStack spacing={2} mb={1}>
-                  <Heading size="lg" fontWeight="600" color="white" letterSpacing="-0.03em">
+                  <Heading size="lg" fontWeight="600" color="text" letterSpacing="-0.03em">
                     {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
                   </Heading>
                 </HStack>
-                <Text fontSize="md" color="gray.400" lineHeight="1.6">
+                <Text fontSize="md" color="mutedText" lineHeight="1.6">
                   {siteSettings?.bioText || 'I am a frontend developer who loves building digital interfaces and visual designs.'}
                 </Text>
               </Box>
@@ -122,8 +122,8 @@ const HomePage = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    borderColor="whiteAlpha.300"
-                    color="white"
+                    borderColor="border"
+                    color="text"
                     _hover={{ bg: 'whiteAlpha.100', borderColor: 'teal.400', color: 'teal.400' }}
                     borderRadius="full"
                     leftIcon={<FiMail />}
@@ -159,15 +159,15 @@ const HomePage = () => {
 
         {/* ── 3. LATEST ARTICLES SECTION ── */}
         <Box mb={6}>
-          <Heading size="md" fontWeight="600" color="white" letterSpacing="-0.02em" mb={6}>
+          <Heading size="md" fontWeight="600" color="text" letterSpacing="-0.02em" mb={6}>
             Latest Articles
           </Heading>
 
           {latestArticles.length === 0 ? (
-            <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={12} textAlign="center">
+            <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={12} textAlign="center">
               <Text fontSize="2xl" mb={3}>✍️</Text>
-              <Text fontWeight="650" color="white">No posts published yet</Text>
-              <Text fontSize="sm" color="gray.400" mt={1}>Check back later for tutorials and visual layouts!</Text>
+              <Text fontWeight="650" color="text">No posts published yet</Text>
+              <Text fontSize="sm" color="mutedText" mt={1}>Check back later for tutorials and visual layouts!</Text>
             </Box>
           ) : (
             <VStack spacing={6} align="stretch">
@@ -201,7 +201,7 @@ const HomePage = () => {
 
         <Box mb={16}>
           <Flex direction={{ base: 'column', sm: 'row' }} align={{ base: 'flex-start', sm: 'center' }} justify="space-between" mb={6} gap={4}>
-            <Heading size="md" fontWeight="600" color="white" letterSpacing="-0.02em">
+            <Heading size="md" fontWeight="600" color="text" letterSpacing="-0.02em">
               Projects
             </Heading>
             <HStack spacing={2} bg="whiteAlpha.100" p={1} borderRadius="full">
@@ -223,20 +223,20 @@ const HomePage = () => {
           </Flex>
 
           {filteredProjects.length === 0 ? (
-            <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={12} textAlign="center" w="100%">
+            <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={12} textAlign="center" w="100%">
               <Text fontSize="2xl" mb={3}>🚀</Text>
-              <Text fontWeight="650" color="white">No projects published yet</Text>
-              <Text fontSize="sm" color="gray.400" mt={1}>Check back later for creative builds!</Text>
+              <Text fontWeight="650" color="text">No projects published yet</Text>
+              <Text fontSize="sm" color="mutedText" mt={1}>Check back later for creative builds!</Text>
             </Box>
           ) : (
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
               {filteredProjects.map((proj) => (
                 <Box
                   key={proj.id}
-                  bg="#161e2e"
+                  bg="cardBg"
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor="whiteAlpha.100"
+                  borderColor="border"
                   overflow="hidden"
                   boxShadow="2xl"
                   _hover={{ transform: 'translateY(-3px)', boxShadow: 'dark-lg' }}
@@ -258,10 +258,10 @@ const HomePage = () => {
                       <Badge colorScheme={proj.type === 'Web Development' ? 'teal' : 'purple'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
                         {proj.type}
                       </Badge>
-                      <Heading size="xs" color="white" fontWeight="700">
+                      <Heading size="xs" color="text" fontWeight="700">
                         {proj.title}
                       </Heading>
-                      <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
+                      <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
                         {proj.description}
                       </Text>
                     </VStack>
@@ -277,7 +277,7 @@ const HomePage = () => {
                         </Flex>
                       )}
                       
-                      <Divider borderColor="whiteAlpha.100" mb={3} />
+                      <Divider borderColor="border" mb={3} />
                       
                       <HStack justify="space-between">
                         {proj.githubUrl ? (
@@ -317,10 +317,10 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
 
   return (
     <Flex
-      bg="#161e2e"
+      bg="cardBg"
       borderRadius="xl"
       border="1px solid"
-      borderColor="whiteAlpha.100"
+      borderColor="border"
       overflow="hidden"
       cursor="pointer"
       onClick={onClick}
@@ -375,10 +375,10 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
               {article.category}
             </Badge>
           )}
-          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="white">
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="text">
             {article.title}
           </Text>
-          <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
+          <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
             {article.description || article.content}
           </Text>
         </VStack>

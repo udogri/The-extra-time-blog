@@ -59,46 +59,50 @@ const SettingsTab = ({ siteSettings, onSaveSettings, isSavingSettings }) => {
   };
 
   return (
-    <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100">
-      <Heading size="md" mb={6} color="gray.900" fontWeight="700">Site Settings</Heading>
+    <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+      <Heading size="md" mb={6} color="text" fontWeight="700">Site Settings</Heading>
       
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} mb={8}>
         {/* Left Column: Branding details */}
         <VStack spacing={4} align="stretch">
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Blog Title</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Blog Title</FormLabel>
             <Input 
               value={localSettings?.title || ''} 
               onChange={(e) => handleSettingChange('title', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Subtitle / Tagline</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Subtitle / Tagline</FormLabel>
             <Input 
               value={localSettings?.subtitle || ''} 
               onChange={(e) => handleSettingChange('subtitle', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Description</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Description</FormLabel>
             <Textarea 
               value={localSettings?.description || ''} 
               onChange={(e) => handleSettingChange('description', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400" rows={3} resize="none"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Contact Email</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Contact Email</FormLabel>
             <Input 
               type="email"
               value={localSettings?.contactEmail || ''} 
               onChange={(e) => handleSettingChange('contactEmail', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
         </VStack>
@@ -106,26 +110,28 @@ const SettingsTab = ({ siteSettings, onSaveSettings, isSavingSettings }) => {
         {/* Right Column: Author Biography & Social Links */}
         <VStack spacing={4} align="stretch">
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Author Name</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Author Name</FormLabel>
             <Input 
               value={localSettings?.bioName || ''} 
               onChange={(e) => handleSettingChange('bioName', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Author Biography</FormLabel>
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Author Biography</FormLabel>
             <Textarea 
               value={localSettings?.bioText || ''} 
               onChange={(e) => handleSettingChange('bioText', e.target.value)}
               size="sm" borderRadius="lg" focusBorderColor="teal.400" rows={4} resize="none"
+              bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
             />
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="xs" fontWeight="700" color="gray.500" textTransform="uppercase">Avatar Image</FormLabel>
-            <Box display="flex" gap={4} align="center">
+            <FormLabel fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Avatar Image</FormLabel>
+            <Box display="flex" gap={4} alignItems="center">
               <Avatar src={localSettings?.avatarUrl || ''} size="md" name={localSettings?.bioName || 'Admin'} />
               <Box flex="1">
                 <Button 
@@ -140,65 +146,70 @@ const SettingsTab = ({ siteSettings, onSaveSettings, isSavingSettings }) => {
                   Upload Profile Picture
                 </Button>
                 <Input id="settingsAvatarFile" type="file" accept="image/*" display="none" onChange={handleAvatarUpload} />
-                <Text fontSize="10px" color="gray.400" mt={1}>Max file size: 5MB</Text>
+                <Text fontSize="10px" color="mutedText" mt={1}>Max file size: 5MB</Text>
               </Box>
             </Box>
           </FormControl>
         </VStack>
       </SimpleGrid>
 
-      <Divider mb={6} />
+      <Divider mb={6} borderColor="border" />
 
       {/* Social media URLs section */}
-      <Heading size="xs" mb={4} color="gray.900" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Social Links</Heading>
+      <Heading size="xs" mb={4} color="text" fontWeight="700" textTransform="uppercase" letterSpacing="0.05em">Social Links</Heading>
       <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={8}>
         <FormControl>
-          <FormLabel fontSize="xs" color="gray.500">Twitter URL</FormLabel>
+          <FormLabel fontSize="xs" color="mutedText">Twitter URL</FormLabel>
           <Input 
             placeholder="https://twitter.com/..."
             value={localSettings?.socials?.twitter || ''} 
             onChange={(e) => handleSocialSettingChange('twitter', e.target.value)}
             size="sm" borderRadius="lg" focusBorderColor="teal.400"
+            bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
           />
         </FormControl>
 
         <FormControl>
-          <FormLabel fontSize="xs" color="gray.500">LinkedIn URL</FormLabel>
+          <FormLabel fontSize="xs" color="mutedText">LinkedIn URL</FormLabel>
           <Input 
             placeholder="https://linkedin.com/in/..."
             value={localSettings?.socials?.linkedin || ''} 
             onChange={(e) => handleSocialSettingChange('linkedin', e.target.value)}
             size="sm" borderRadius="lg" focusBorderColor="teal.400"
+            bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
           />
         </FormControl>
 
         <FormControl>
-          <FormLabel fontSize="xs" color="gray.500">GitHub URL</FormLabel>
+          <FormLabel fontSize="xs" color="mutedText">GitHub URL</FormLabel>
           <Input 
             placeholder="https://github.com/..."
             value={localSettings?.socials?.github || ''} 
             onChange={(e) => handleSocialSettingChange('github', e.target.value)}
             size="sm" borderRadius="lg" focusBorderColor="teal.400"
+            bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
           />
         </FormControl>
 
         <FormControl>
-          <FormLabel fontSize="xs" color="gray.500">Facebook URL</FormLabel>
+          <FormLabel fontSize="xs" color="mutedText">Facebook URL</FormLabel>
           <Input 
             placeholder="https://facebook.com/..."
             value={localSettings?.socials?.facebook || ''} 
             onChange={(e) => handleSocialSettingChange('facebook', e.target.value)}
             size="sm" borderRadius="lg" focusBorderColor="teal.400"
+            bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
           />
         </FormControl>
 
         <FormControl>
-          <FormLabel fontSize="xs" color="gray.500">Instagram URL</FormLabel>
+          <FormLabel fontSize="xs" color="mutedText">Instagram URL</FormLabel>
           <Input 
             placeholder="https://instagram.com/..."
             value={localSettings?.socials?.instagram || ''} 
             onChange={(e) => handleSocialSettingChange('instagram', e.target.value)}
             size="sm" borderRadius="lg" focusBorderColor="teal.400"
+            bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
           />
         </FormControl>
       </SimpleGrid>

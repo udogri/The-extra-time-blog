@@ -75,10 +75,10 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="#0b0f19">
+      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="bg">
         <VStack spacing={3}>
           <Spinner size="lg" color="teal.400" thickness="3px" />
-          <Text fontSize="sm" color="gray.400">Loading blog feed…</Text>
+          <Text fontSize="sm" color="mutedText">Loading blog feed…</Text>
         </VStack>
       </Box>
     );
@@ -87,16 +87,16 @@ const Blog = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="#0b0f19" pt="100px" pb={20}>
+    <Box minH="100vh" w="100vw" bg="bg" pt="100px" pb={20}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
         
         {/* Page Title & Search Header */}
         <Flex direction={{ base: 'column', md: 'row' }} align={{ base: 'flex-start', md: 'center' }} justify="space-between" mb={12} gap={6}>
           <Box>
-            <Heading size="lg" fontWeight="800" color="white" letterSpacing="-0.03em" mb={2}>
+            <Heading size="lg" fontWeight="800" color="text" letterSpacing="-0.03em" mb={2}>
               ✍️ The Writing Log
             </Heading>
-            <Text fontSize="sm" color="gray.400">
+            <Text fontSize="sm" color="mutedText">
               Articles and logs covering web engineering, vector graphics, and lifestyle updates.
             </Text>
           </Box>
@@ -107,17 +107,17 @@ const Blog = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               size="md"
-              bg="#161e2e"
-              color="white"
+              bg="inputBg"
+              color="text"
               borderRadius="full"
               border="1px solid"
-              borderColor="whiteAlpha.100"
+              borderColor="border"
               focusBorderColor="teal.400"
-              _hover={{ borderColor: 'whiteAlpha.300' }}
+              _hover={{ borderColor: 'mutedText' }}
               fontSize="sm"
               pl={10}
             />
-            <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.450">
+            <Box position="absolute" left={4} top="50%" transform="translateY(-50%)" color="mutedText">
               <FiSearch size={14} />
             </Box>
           </Box>
@@ -126,14 +126,14 @@ const Blog = () => {
         {/* Articles layout loop */}
         {searchQuery ? (
           <Box>
-            <Heading size="sm" fontWeight="700" mb={6} color="gray.400">
+            <Heading size="sm" fontWeight="700" mb={6} color="mutedText">
               Filtered Search Results ({filteredArticles.length})
             </Heading>
             {filteredArticles.length === 0 ? (
-              <Box bg="#161e2e" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" p={16} textAlign="center">
+              <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={16} textAlign="center">
                 <Text fontSize="3xl" mb={4}>🔍</Text>
-                <Text fontWeight="700" color="white">No matching articles found</Text>
-                <Text fontSize="sm" color="gray.400" mt={1}>Try checking another search term or keyphrase.</Text>
+                <Text fontWeight="700" color="text">No matching articles found</Text>
+                <Text fontSize="sm" color="mutedText" mt={1}>Try checking another search term or keyphrase.</Text>
               </Box>
             ) : (
               <VStack spacing={6} align="stretch">
@@ -160,7 +160,7 @@ const Blog = () => {
                   {/* Section Title */}
                   <HStack spacing={2.5} mb={5} align="center">
                     <Box w="4px" h="20px" bg={`${color}.400`} borderRadius="full" />
-                    <Heading size="sm" fontWeight="800" color="white" letterSpacing="-0.01em">
+                    <Heading size="sm" fontWeight="800" color="text" letterSpacing="-0.01em">
                       {category}
                     </Heading>
                     <Badge colorScheme={color} variant="subtle" fontSize="10px" px={2.5} py={0.5} borderRadius="full">
@@ -197,10 +197,10 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
 
   return (
     <Flex
-      bg="#161e2e"
+      bg="cardBg"
       borderRadius="xl"
       border="1px solid"
-      borderColor="whiteAlpha.100"
+      borderColor="border"
       overflow="hidden"
       cursor="pointer"
       onClick={onClick}
@@ -255,14 +255,14 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
               {article.category}
             </Badge>
           )}
-          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="white">
+          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="text">
             {article.title}
           </Text>
-          <Text fontSize="xs" color="gray.400" noOfLines={3} lineHeight="1.5">
+          <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
             {article.description || article.content}
           </Text>
         </VStack>
-        <Text fontSize="10px" color="gray.500">
+        <Text fontSize="10px" color="mutedText">
           {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </Text>
       </Box>

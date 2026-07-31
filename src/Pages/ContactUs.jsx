@@ -48,34 +48,34 @@ const ContactUs = () => {
   const inputStyles = {
     size: 'md',
     borderRadius: 'lg',
-    bg: '#0b0f19',
-    color: 'white',
+    bg: 'inputBg',
+    color: 'text',
     border: '1px solid',
-    borderColor: 'whiteAlpha.100',
+    borderColor: 'border',
     focusBorderColor: 'teal.400',
-    _hover: { borderColor: 'whiteAlpha.300' },
+    _hover: { borderColor: 'mutedText' },
     _placeholder: { color: 'gray.550', fontSize: 'sm' },
   };
 
   return (
-    <Box minH="100vh" w="100vw" bg="#0b0f19" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
+    <Box minH="100vh" w="100vw" bg="bg" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
       <Box
         w="100%"
         maxW="800px"
-        bg="#161e2e"
+        bg="cardBg"
         borderRadius="2xl"
         border="1px solid"
-        borderColor="whiteAlpha.100"
+        borderColor="border"
         boxShadow="2xl"
         overflow="hidden"
         display={{ base: 'block', md: 'flex' }}
       >
         {/* Left — Form */}
         <Box flex="3" p={{ base: 6, md: 10 }}>
-          <Heading size="md" fontWeight="700" letterSpacing="-0.02em" color="white" mb={1}>
+          <Heading size="md" fontWeight="700" letterSpacing="-0.02em" color="text" mb={1}>
             Get in Touch
           </Heading>
-          <Text fontSize="sm" color="gray.400" mb={7}>
+          <Text fontSize="sm" color="mutedText" mb={7}>
             Have a question or partnership idea? We'd love to hear from you.
           </Text>
 
@@ -160,8 +160,8 @@ const ContactUs = () => {
         {/* Right — Info Panel */}
         <Box
           flex="2"
-          bg="#0b0f19"
-          color="white"
+          bg="bg"
+          color="text"
           display="flex"
           flexDir="column"
           alignItems="flex-start"
@@ -172,7 +172,7 @@ const ContactUs = () => {
           overflow="hidden"
           borderLeft={{ md: '1px solid' }}
           borderTop={{ base: '1px solid', md: 'none' }}
-          borderColor="whiteAlpha.100"
+          borderColor="border"
         >
           {/* Decorative circle */}
           <Box
@@ -198,10 +198,10 @@ const ContactUs = () => {
 
           <Box position="relative" zIndex={1}>
             <Box w="32px" h="2px" bg="teal.400" mb={5} borderRadius="full" />
-            <Heading size="md" fontWeight="700" letterSpacing="-0.02em" mb={3} lineHeight="1.3">
+            <Heading size="md" fontWeight="700" letterSpacing="-0.02em" mb={3} lineHeight="1.3" color="text">
               Let's build something together
             </Heading>
-            <Text fontSize="sm" color="gray.400" lineHeight="1.7" maxW="220px">
+            <Text fontSize="sm" color="mutedText" lineHeight="1.7" maxW="220px">
               We're always open to thoughtful conversations, feedback, and new ideas.
             </Text>
 
@@ -211,7 +211,7 @@ const ContactUs = () => {
               ].map(({ label, value }) => (
                 <Box key={label}>
                   <Text fontSize="9px" color="teal.400" fontWeight="700" letterSpacing="0.1em" textTransform="uppercase">{label}</Text>
-                  <Text fontSize="sm" color="whiteAlpha.800">{value}</Text>
+                  <Text fontSize="sm" color="text">{value}</Text>
                 </Box>
               ))}
             </VStack>

@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ChakraProvider, Box, Spinner } from '@chakra-ui/react';
 import Layout from './components/Layout';
+import theme from './theme';
 import ScrollToTop from './components/ScrollToTop';
 import { auth, db } from './firebaseConfig';
 import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
@@ -16,7 +17,6 @@ const ContactUs = lazy(() => import('./Pages/ContactUs'));
 const LoginSignup = lazy(() => import('./Pages/LoginSignup'));
 const Profile = lazy(() => import('./Pages/Profile'));
 const Blog = lazy(() => import('./Pages/Blog'));
-
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -97,7 +97,9 @@ const App = () => {
       try {
         await setDoc(trafficRef, {
           totalVisits: increment(1),
-          [`dailyTraffic.${today}`]: increment(1)
+          dailyTraffic: {
+            [today]: increment(1)
+          }
         }, { merge: true });
         
         sessionStorage.setItem('site_session_tracked', 'true');
@@ -113,7 +115,7 @@ const App = () => {
   }, []);
 
   return (
-    <ChakraProvider toastOptions={{ defaultOptions: { position: 'top', isClosable: true } }}>
+    <ChakraProvider theme={theme} toastOptions={{ defaultOptions: { position: 'top', isClosable: true } }}>
       <Router>
         <ScrollToTop />
         <Suspense fallback={

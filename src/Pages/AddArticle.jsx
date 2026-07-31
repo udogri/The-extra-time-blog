@@ -88,7 +88,7 @@ const AddArticle = () => {
   }
 
   return (
-    <Box minH="100vh" bg="gray.50" w="100vw" pt="80px" pb={16}>
+    <Box minH="100vh" bg="bg" w="100vw" pt="80px" pb={16}>
       <Box maxW="780px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* Header bar */}
@@ -102,9 +102,10 @@ const AddArticle = () => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               focusBorderColor="teal.400"
-              bg="white"
+              bg="cardBg"
               border="1px solid"
-              borderColor="gray.200"
+              borderColor="border"
+              color="text"
               fontSize="xs"
               fontWeight="500"
             >
@@ -120,7 +121,7 @@ const AddArticle = () => {
           </HStack>
 
           <HStack spacing={2}>
-            <Text fontSize="xs" color="gray.400">{wordCount} words</Text>
+            <Text fontSize="xs" color="mutedText">{wordCount} words</Text>
             <Button
               size="sm"
               colorScheme="teal"
@@ -146,12 +147,12 @@ const AddArticle = () => {
           overflow="hidden"
           mb={6}
           h={{ base: '220px', md: '340px' }}
-          bg="gray.100"
+          bg="bg"
           cursor="pointer"
           onClick={() => fileInputRef.current.click()}
           position="relative"
           border="2px dashed"
-          borderColor={image ? 'transparent' : 'gray.200'}
+          borderColor={image ? 'transparent' : 'border'}
           _hover={{ borderColor: 'teal.300' }}
           transition="all 0.2s"
         >
@@ -187,10 +188,10 @@ const AddArticle = () => {
               </Button>
             </>
           ) : (
-            <VStack h="100%" justify="center" spacing={2} color="gray.400">
+            <VStack h="100%" justify="center" spacing={2} color="mutedText">
               <FiImage size={28} />
               <Text fontSize="sm" fontWeight="500">Add a cover image</Text>
-              <Text fontSize="xs" color="gray.300">Click to browse · PNG, JPG, JPEG</Text>
+              <Text fontSize="xs" color="mutedText">Click to browse · PNG, JPG, JPEG</Text>
             </VStack>
           )}
           <Input
@@ -203,7 +204,7 @@ const AddArticle = () => {
         </Box>
 
         {/* Article Body */}
-        <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={{ base: 5, md: 8 }}>
+        <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={{ base: 5, md: 8 }}>
           <VStack align="stretch" spacing={5}>
             {/* Author */}
             <Input
@@ -212,13 +213,13 @@ const AddArticle = () => {
               onChange={(e) => setAuthor(e.target.value)}
               variant="unstyled"
               fontSize="sm"
-              color="gray.500"
+              color="mutedText"
               fontWeight="500"
-              _placeholder={{ color: 'gray.300' }}
+              _placeholder={{ color: 'gray.400' }}
             />
 
             {/* Divider */}
-            <Box h="1px" bg="gray.100" />
+            <Box h="1px" bg="border" />
 
             {/* Title */}
             <Textarea
@@ -228,12 +229,12 @@ const AddArticle = () => {
               variant="unstyled"
               fontSize={{ base: '2xl', md: '3xl' }}
               fontWeight="700"
-              color="gray.900"
+              color="text"
               lineHeight="1.25"
               letterSpacing="-0.02em"
               rows={2}
               resize="none"
-              _placeholder={{ color: 'gray.200' }}
+              _placeholder={{ color: 'gray.400' }}
             />
 
             {/* Body */}
@@ -246,15 +247,15 @@ const AddArticle = () => {
               resize="none"
               fontSize="md"
               lineHeight="1.8"
-              color="gray.700"
-              _placeholder={{ color: 'gray.300' }}
+              color="text"
+              _placeholder={{ color: 'gray.400' }}
             />
           </VStack>
         </Box>
 
         {/* Bottom CTA */}
         <HStack justify="flex-end" mt={5}>
-          <Button variant="ghost" size="sm" color="gray.400" onClick={() => navigate('/')}>
+          <Button variant="ghost" size="sm" color="mutedText" onClick={() => navigate('/')}>
             Discard
           </Button>
           <Button

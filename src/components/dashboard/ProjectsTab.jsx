@@ -139,9 +139,9 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
   };
 
   return (
-    <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100">
+    <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
       <Flex align="center" justify="space-between" mb={6}>
-        <Heading size="md" color="gray.900" fontWeight="700">Manage Projects</Heading>
+        <Heading size="md" color="text" fontWeight="700">Manage Projects</Heading>
         <Button
           size="sm"
           colorScheme="purple"
@@ -159,19 +159,21 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
           value={projectSearchQuery}
           onChange={(e) => setProjectSearchQuery(e.target.value)}
           size="sm"
-          bg="white"
+          bg="inputBg"
           borderRadius="lg"
           pl={8}
-          borderColor="gray.200"
+          borderColor="border"
+          color="text"
           focusBorderColor="purple.400"
+          _hover={{ borderColor: 'mutedText' }}
         />
-        <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color="gray.400">
+        <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color="mutedText">
           <FiSearch size={14} />
         </Box>
       </Box>
 
       {filteredProjects.length === 0 ? (
-        <Text fontSize="sm" color="gray.400" textAlign="center" py={8}>
+        <Text fontSize="sm" color="mutedText" textAlign="center" py={8}>
           No projects found. Add your portfolio pieces above!
         </Text>
       ) : (
@@ -179,11 +181,11 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
           <Table variant="simple" size="sm">
             <Thead>
               <Tr>
-                <Th color="gray.500">Image</Th>
-                <Th color="gray.500">Title</Th>
-                <Th color="gray.500">Type</Th>
-                <Th color="gray.500">Tools / Stack</Th>
-                <Th color="gray.500" textAlign="right">Actions</Th>
+                <Th color="mutedText">Image</Th>
+                <Th color="mutedText">Title</Th>
+                <Th color="mutedText">Type</Th>
+                <Th color="mutedText">Tools / Stack</Th>
+                <Th color="mutedText" textAlign="right">Actions</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -195,13 +197,13 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
                       w="60px" h="40px" objectFit="cover" borderRadius="md" 
                     />
                   </Td>
-                  <Td fontWeight="600" color="gray.800">{proj.title}</Td>
+                  <Td fontWeight="600" color="text">{proj.title}</Td>
                   <Td>
                     <Badge colorScheme={proj.type === 'Web Development' ? 'blue' : 'green'} variant="subtle">
                       {proj.type}
                     </Badge>
                   </Td>
-                  <Td color="gray.600">
+                  <Td color="mutedText">
                     {proj.techStack?.join(', ') || ''}
                   </Td>
                   <Td textAlign="right">
@@ -234,13 +236,13 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
       {/* Delete Confirmation Project */}
       <AlertDialog isOpen={!!projectToDelete} leastDestructiveRef={cancelRef} onClose={() => setProjectToDelete(null)} isCentered>
         <AlertDialogOverlay backdropFilter="blur(4px)">
-          <AlertDialogContent borderRadius="xl" border="1px solid" borderColor="gray.100">
-            <AlertDialogHeader fontSize="md" fontWeight="700" pb={2}>Delete Project</AlertDialogHeader>
-            <AlertDialogBody fontSize="sm" color="gray.600">
+          <AlertDialogContent bg="cardBg" color="text" borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+            <AlertDialogHeader fontSize="md" fontWeight="700" pb={2} color="text">Delete Project</AlertDialogHeader>
+            <AlertDialogBody fontSize="sm" color="mutedText">
               Are you sure you want to delete <strong>&quot;{projectToDelete?.title}&quot;</strong>? This cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter gap={2}>
-              <Button ref={cancelRef} onClick={() => setProjectToDelete(null)} size="sm" variant="ghost">
+              <Button ref={cancelRef} onClick={() => setProjectToDelete(null)} size="sm" variant="ghost" color="mutedText" _hover={{ bg: 'hoverBg', color: 'text' }}>
                 Cancel
               </Button>
               <Button colorScheme="red" size="sm" onClick={confirmDeleteProject} borderRadius="full">
@@ -254,74 +256,80 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
       {/* Add Project Modal */}
       <Modal isOpen={isAddProjOpen} onClose={() => setIsAddProjOpen(false)} isCentered size="md">
         <ModalOverlay backdropFilter="blur(4px)" />
-        <ModalContent borderRadius="xl">
-          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Add Project</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent bg="cardBg" color="text" borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1} color="text">Add Project</ModalHeader>
+          <ModalCloseButton color="mutedText" _hover={{ color: 'text' }} />
           <ModalBody>
             <VStack spacing={4}>
               <FormControl isRequired>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">PROJECT TITLE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">PROJECT TITLE</FormLabel>
                 <Input
                   value={newProject.title}
                   onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                   placeholder="e.g. Portfolio Website"
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">TYPE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">TYPE</FormLabel>
                 <Select
                   value={newProject.type}
                   onChange={(e) => setNewProject({ ...newProject, type: e.target.value })}
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 >
-                  <option value="Web Development">Web Development</option>
-                  <option value="Graphic Design">Graphic Design</option>
+                  <option value="Web Development" style={{ background: 'var(--chakra-colors-cardBg)' }}>Web Development</option>
+                  <option value="Graphic Design" style={{ background: 'var(--chakra-colors-cardBg)' }}>Graphic Design</option>
                 </Select>
               </FormControl>
               <FormControl isRequired>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">DESCRIPTION</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">DESCRIPTION</FormLabel>
                 <Textarea
                   value={newProject.description}
                   onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                   placeholder="Tell the story of the project..."
                   size="sm" borderRadius="lg" focusBorderColor="purple.400" rows={3} resize="none"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">TOOLS & TECH STACK (COMMA SEPARATED)</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">TOOLS & TECH STACK (COMMA SEPARATED)</FormLabel>
                 <Input
                   value={newProject.techStack}
                   onChange={(e) => setNewProject({ ...newProject, techStack: e.target.value })}
                   placeholder="React, Chakra UI, Firebase"
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <SimpleGrid columns={2} spacing={3} w="100%">
                 <FormControl>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500">GITHUB URL</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="mutedText">GITHUB URL</FormLabel>
                   <Input
                     value={newProject.githubUrl}
                     onChange={(e) => setNewProject({ ...newProject, githubUrl: e.target.value })}
                     placeholder="https://github.com/..."
                     size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                    bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500">LIVE DEMO URL</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="mutedText">LIVE DEMO URL</FormLabel>
                   <Input
                     value={newProject.liveUrl}
                     onChange={(e) => setNewProject({ ...newProject, liveUrl: e.target.value })}
                     placeholder="https://..."
                     size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                    bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                   />
                 </FormControl>
               </SimpleGrid>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">PROJECT COVER IMAGE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">PROJECT COVER IMAGE</FormLabel>
                 <Box
-                  p={4} border="2px dashed" borderColor="gray.200" borderRadius="lg" textAlign="center" cursor="pointer" bg="gray.50"
-                  _hover={{ borderColor: 'purple.300', bg: 'purple.50' }}
+                  p={4} border="2px dashed" borderColor="border" borderRadius="lg" textAlign="center" cursor="pointer" bg="bg"
+                  _hover={{ borderColor: 'purple.300', bg: 'hoverBg' }}
                   onClick={() => document.getElementById('addProjFileInput').click()}
                   transition="all 0.2s"
                 >
@@ -329,8 +337,8 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
                     <Image src={newProject.imageUrl} alt="Project Preview" borderRadius="md" maxH="120px" mx="auto" objectFit="cover" />
                   ) : (
                     <VStack spacing={1}>
-                      <Text fontSize="xs" color="gray.400">Click to upload cover</Text>
-                      <Text fontSize="10px" color="gray.300">PNG, JPG up to 5MB</Text>
+                      <Text fontSize="xs" color="mutedText">Click to upload cover</Text>
+                      <Text fontSize="10px" color="mutedText">PNG, JPG up to 5MB</Text>
                     </VStack>
                   )}
                 </Box>
@@ -340,7 +348,7 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
             </VStack>
           </ModalBody>
           <ModalFooter gap={2}>
-            <Button onClick={() => setIsAddProjOpen(false)} variant="ghost" size="sm">Cancel</Button>
+            <Button onClick={() => setIsAddProjOpen(false)} variant="ghost" size="sm" color="mutedText" _hover={{ bg: 'hoverBg', color: 'text' }}>Cancel</Button>
             <Button colorScheme="purple" size="sm" onClick={handleCreateProject} isLoading={isCreatingProj} borderRadius="full" px={6}>
               Add Project
             </Button>
@@ -351,70 +359,76 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
       {/* Edit Project Modal */}
       <Modal isOpen={isProjEditOpen} onClose={() => setIsProjEditOpen(false)} isCentered size="md">
         <ModalOverlay backdropFilter="blur(4px)" />
-        <ModalContent borderRadius="xl">
-          <ModalHeader fontSize="md" fontWeight="700" pb={1}>Edit Project</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent bg="cardBg" color="text" borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          <ModalHeader fontSize="md" fontWeight="700" pb={1} color="text">Edit Project</ModalHeader>
+          <ModalCloseButton color="mutedText" _hover={{ color: 'text' }} />
           <ModalBody>
             <VStack spacing={4}>
               <FormControl isRequired>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">PROJECT TITLE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">PROJECT TITLE</FormLabel>
                 <Input
                   value={editedProject.title || ''}
                   onChange={(e) => setEditedProject({ ...editedProject, title: e.target.value })}
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">TYPE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">TYPE</FormLabel>
                 <Select
                   value={editedProject.type || 'Web Development'}
                   onChange={(e) => setEditedProject({ ...editedProject, type: e.target.value })}
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 >
-                  <option value="Web Development">Web Development</option>
-                  <option value="Graphic Design">Graphic Design</option>
+                  <option value="Web Development" style={{ background: 'var(--chakra-colors-cardBg)' }}>Web Development</option>
+                  <option value="Graphic Design" style={{ background: 'var(--chakra-colors-cardBg)' }}>Graphic Design</option>
                 </Select>
               </FormControl>
               <FormControl isRequired>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">DESCRIPTION</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">DESCRIPTION</FormLabel>
                 <Textarea
                   value={editedProject.description || ''}
                   onChange={(e) => setEditedProject({ ...editedProject, description: e.target.value })}
                   size="sm" borderRadius="lg" focusBorderColor="purple.400" rows={3} resize="none"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">TOOLS & TECH STACK (COMMA SEPARATED)</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">TOOLS & TECH STACK (COMMA SEPARATED)</FormLabel>
                 <Input
                   value={Array.isArray(editedProject.techStack) ? editedProject.techStack.join(', ') : editedProject.techStack || ''}
                   onChange={(e) => setEditedProject({ ...editedProject, techStack: e.target.value })}
                   placeholder="React, Chakra UI, Firebase"
                   size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                  bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                 />
               </FormControl>
               <SimpleGrid columns={2} spacing={3} w="100%">
                 <FormControl>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500">GITHUB URL</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="mutedText">GITHUB URL</FormLabel>
                   <Input
                     value={editedProject.githubUrl || ''}
                     onChange={(e) => setEditedProject({ ...editedProject, githubUrl: e.target.value })}
                     size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                    bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.500">LIVE DEMO URL</FormLabel>
+                  <FormLabel fontSize="xs" fontWeight="600" color="mutedText">LIVE DEMO URL</FormLabel>
                   <Input
                     value={editedProject.liveUrl || ''}
                     onChange={(e) => setEditedProject({ ...editedProject, liveUrl: e.target.value })}
                     size="sm" borderRadius="lg" focusBorderColor="purple.400"
+                    bg="inputBg" color="text" borderColor="border" _hover={{ borderColor: 'mutedText' }}
                   />
                 </FormControl>
               </SimpleGrid>
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.500">PROJECT COVER IMAGE</FormLabel>
+                <FormLabel fontSize="xs" fontWeight="600" color="mutedText">PROJECT COVER IMAGE</FormLabel>
                 <Box
-                  p={4} border="2px dashed" borderColor="gray.200" borderRadius="lg" textAlign="center" cursor="pointer" bg="gray.50"
-                  _hover={{ borderColor: 'purple.300', bg: 'purple.50' }}
+                  p={4} border="2px dashed" borderColor="border" borderRadius="lg" textAlign="center" cursor="pointer" bg="bg"
+                  _hover={{ borderColor: 'purple.300', bg: 'hoverBg' }}
                   onClick={() => document.getElementById('editProjFileInput').click()}
                   transition="all 0.2s"
                 >
@@ -422,8 +436,8 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
                     <Image src={editedProject.imageUrl} alt="Project Preview" borderRadius="md" maxH="120px" mx="auto" objectFit="cover" />
                   ) : (
                     <VStack spacing={1}>
-                      <Text fontSize="xs" color="gray.400">Click to upload cover</Text>
-                      <Text fontSize="10px" color="gray.300">PNG, JPG up to 5MB</Text>
+                      <Text fontSize="xs" color="mutedText">Click to upload cover</Text>
+                      <Text fontSize="10px" color="mutedText">PNG, JPG up to 5MB</Text>
                     </VStack>
                   )}
                 </Box>
@@ -433,7 +447,7 @@ const ProjectsTab = ({ projects, onAddProject, onDeleteProject, onEditProject })
             </VStack>
           </ModalBody>
           <ModalFooter gap={2}>
-            <Button onClick={() => setIsProjEditOpen(false)} variant="ghost" size="sm">Cancel</Button>
+            <Button onClick={() => setIsProjEditOpen(false)} variant="ghost" size="sm" color="mutedText" _hover={{ bg: 'hoverBg', color: 'text' }}>Cancel</Button>
             <Button colorScheme="purple" size="sm" onClick={handleUpdateProject} isLoading={isProjUpdating} borderRadius="full" px={6}>
               Save Changes
             </Button>

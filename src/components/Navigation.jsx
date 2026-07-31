@@ -8,14 +8,17 @@ import {
   Text,
   useDisclosure,
   useToast,
+  useColorMode,
 } from '@chakra-ui/react';
 import { NavLink as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { FiSun, FiMoon } from 'react-icons/fi';
 import { auth } from '../firebaseConfig';
 import PropTypes from 'prop-types';
 
 const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
@@ -59,11 +62,11 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
         letterSpacing="0.06em"
         textTransform="uppercase"
         fontWeight="500"
-        color={isActive ? 'white' : 'whiteAlpha.600'}
+        color={isActive ? 'navText' : 'navTextMuted'}
         textDecoration="none"
         whiteSpace="nowrap"
         transition="color 0.2s"
-        _hover={{ color: 'white', textDecoration: 'none' }}
+        _hover={{ color: 'navText', textDecoration: 'none' }}
         _focus={{ boxShadow: 'none' }}
         _after={{
           content: '""',
@@ -86,16 +89,16 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
 
   return (
     <Box
-      bg="#0b0f19"
+      bg="navBg"
       borderBottom="1px solid"
-      borderColor="whiteAlpha.100"
+      borderColor="navBorder"
       px={6}
-      color="white"
+      color="navText"
       w="100vw"
       position="fixed"
       zIndex="1000"
       backdropFilter="blur(12px)"
-      sx={{ bg: 'rgba(11,15,25,0.92)' }}
+      sx={{ bg: 'navBg' }}
     >
       <Flex h="60px" alignItems="center" justifyContent="space-between" maxW="1200px" mx="auto">
         {/* Wordmark */}
@@ -104,7 +107,7 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
           fontWeight="700"
           letterSpacing="0.12em"
           textTransform="uppercase"
-          color="white"
+          color="navText"
           cursor="pointer"
           onClick={() => navigate('/')}
           whiteSpace="nowrap"
@@ -131,10 +134,10 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
                 letterSpacing="0.06em"
                 textTransform="uppercase"
                 fontWeight="500"
-                color="whiteAlpha.600"
+                color="navTextMuted"
                 cursor="pointer"
                 transition="color 0.2s"
-                _hover={{ color: 'white' }}
+                _hover={{ color: 'navText' }}
               >
                 {link.name}
               </Box>
@@ -142,14 +145,28 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
           )}
         </HStack>
 
-        {/* CTA */}
-        {isAuthenticated && (
-          <HStack spacing={3} display={{ base: 'none', md: 'flex' }}>
+        {/* Right Section */}
+        <HStack spacing={3}>
+          {/* Theme Toggle Button */}
+          <IconButton
+            size="sm"
+            variant="ghost"
+            onClick={toggleColorMode}
+            icon={colorMode === 'light' ? <FiMoon size={16} /> : <FiSun size={16} />}
+            aria-label="Toggle Color Mode"
+            borderRadius="full"
+            color="navText"
+            _hover={{ bg: 'whiteAlpha.100' }}
+            _focus={{ boxShadow: 'none' }}
+          />
+
+          {isAuthenticated && (
             <Button
+              display={{ base: 'none', md: 'flex' }}
               size="sm"
               variant="outline"
-              borderColor="whiteAlpha.300"
-              color="white"
+              borderColor="navBorder"
+              color="navText"
               fontSize="xs"
               letterSpacing="0.08em"
               textTransform="uppercase"
@@ -163,21 +180,21 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
             >
               Sign Out
             </Button>
-          </HStack>
-        )}
+          )}
 
-        {/* Mobile Toggle */}
-        <IconButton
-          size="sm"
-          bg="transparent"
-          color="whiteAlpha.700"
-          icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={4} h={4} />}
-          _focus={{ boxShadow: 'none' }}
-          _hover={{ bg: 'whiteAlpha.100' }}
-          aria-label="Toggle Navigation"
-          display={{ base: 'flex', md: 'none' }}
-          onClick={isOpen ? onClose : onOpen}
-        />
+          {/* Mobile Toggle */}
+          <IconButton
+            size="sm"
+            bg="transparent"
+            color="navTextMuted"
+            icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={4} h={4} />}
+            _focus={{ boxShadow: 'none' }}
+            _hover={{ bg: 'whiteAlpha.100' }}
+            aria-label="Toggle Navigation"
+            display={{ base: 'flex', md: 'none' }}
+            onClick={isOpen ? onClose : onOpen}
+          />
+        </HStack>
       </Flex>
 
       {/* Mobile Menu */}
@@ -187,10 +204,10 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
           top="60px"
           left="0"
           width="100%"
-          bg="rgba(11,15,25,0.97)"
+          bg="navBgMobile"
           backdropFilter="blur(16px)"
           borderBottom="1px solid"
-          borderColor="whiteAlpha.100"
+          borderColor="navBorder"
           px={6}
           py={6}
           zIndex="999"
@@ -206,9 +223,9 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
                   letterSpacing="0.08em"
                   textTransform="uppercase"
                   fontWeight="500"
-                  color="whiteAlpha.700"
+                  color="navTextMuted"
                   cursor="pointer"
-                  _hover={{ color: 'white' }}
+                  _hover={{ color: 'navText' }}
                 >
                   {link.name}
                 </Box>

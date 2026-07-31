@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import {
-  VStack, SimpleGrid, Box, Flex, Heading, Text, HStack, Alert, AlertIcon, AlertTitle, AlertDescription, Button, useToast
+  VStack, SimpleGrid, Box, Flex, Heading, Text, HStack, Alert, AlertIcon, AlertTitle, AlertDescription, Button, useToast, useColorModeValue
 } from '@chakra-ui/react';
 import { FiActivity, FiBookOpen, FiMail, FiInbox } from 'react-icons/fi';
 
@@ -80,60 +80,60 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
       {/* 1. Core Analytics Cards */}
       <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
         {/* Card 1: Site Visits */}
-        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
           <Flex justify="space-between" align="center">
             <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Total Site Visits</Text>
-              <Heading size="md" color="gray.850" fontWeight="800">
+              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Total Site Visits</Text>
+              <Heading size="md" color="text" fontWeight="800">
                 {trafficData.totalVisits || 0}
               </Heading>
             </VStack>
-            <Box bg="teal.50" color="teal.500" p={3} borderRadius="lg">
+            <Box bg={useColorModeValue('teal.50', 'rgba(49, 151, 149, 0.15)')} color="teal.500" p={3} borderRadius="lg">
               <FiActivity size={20} />
             </Box>
           </Flex>
         </Box>
 
         {/* Card 2: Article Reads */}
-        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
           <Flex justify="space-between" align="center">
             <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Article Views</Text>
-              <Heading size="md" color="gray.850" fontWeight="800">
+              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Article Views</Text>
+              <Heading size="md" color="text" fontWeight="800">
                 {totalArticleViews}
               </Heading>
             </VStack>
-            <Box bg="blue.50" color="blue.500" p={3} borderRadius="lg">
+            <Box bg={useColorModeValue('blue.50', 'rgba(49, 130, 206, 0.15)')} color="blue.500" p={3} borderRadius="lg">
               <FiBookOpen size={20} />
             </Box>
           </Flex>
         </Box>
 
         {/* Card 3: Newsletter Subscribers */}
-        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
           <Flex justify="space-between" align="center">
             <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
-              <Heading size="md" color="gray.850" fontWeight="800">
+              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
+              <Heading size="md" color="text" fontWeight="800">
                 {subscribers.length}
               </Heading>
             </VStack>
-            <Box bg="purple.50" color="purple.500" p={3} borderRadius="lg">
+            <Box bg={useColorModeValue('purple.50', 'rgba(128, 90, 213, 0.15)')} color="purple.500" p={3} borderRadius="lg">
               <FiMail size={20} />
             </Box>
           </Flex>
         </Box>
 
         {/* Card 4: Feedback Inbox */}
-        <Box bg="white" p={5} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
           <Flex justify="space-between" align="center">
             <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase" letterSpacing="0.05em">Feedback Inbox</Text>
-              <Heading size="md" color="gray.850" fontWeight="800">
+              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Feedback Inbox</Text>
+              <Heading size="md" color="text" fontWeight="800">
                 {messages.length}
               </Heading>
             </VStack>
-            <Box bg="orange.50" color="orange.500" p={3} borderRadius="lg">
+            <Box bg={useColorModeValue('orange.50', 'rgba(221, 107, 32, 0.15)')} color="orange.500" p={3} borderRadius="lg">
               <FiInbox size={20} />
             </Box>
           </Flex>
@@ -141,19 +141,19 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
       </SimpleGrid>
 
       {/* 2. Visual Traffic Trend Chart */}
-      <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
+      <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
         <VStack align="flex-start" spacing={5} w="100%">
           <Box>
-            <Heading size="xs" fontWeight="800" color="gray.700" letterSpacing="-0.01em">
+            <Heading size="xs" fontWeight="800" color="text" letterSpacing="-0.01em">
               📈 Traffic Trend (Last 7 Days)
             </Heading>
-            <Text fontSize="xs" color="gray.400" mt={0.5}>
+            <Text fontSize="xs" color="mutedText" mt={0.5}>
               Unique daily page loads recorded in this calendar week.
             </Text>
           </Box>
 
           {/* Chart Core Bar Graph */}
-          <Flex h="200px" w="100%" align="flex-end" justify="space-between" pt={4} px={2} borderBottom="1px solid" borderColor="gray.150">
+          <Flex h="200px" w="100%" align="flex-end" justify="space-between" pt={4} px={2} borderBottom="1px solid" borderColor="border">
             {chartData.map((day) => {
               const heightPercent = `${(day.count / maxTrafficCount) * 100}%`;
               return (
@@ -169,7 +169,7 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
                     transition="all 0.4s ease"
                     _hover={{ bgGradient: "linear(to-t, teal.500, teal.400)" }}
                   />
-                  <Text fontSize="10px" fontWeight="600" color="gray.400" whiteSpace="nowrap">
+                  <Text fontSize="10px" fontWeight="600" color="mutedText" whiteSpace="nowrap">
                     {day.label}
                   </Text>
                 </VStack>
@@ -182,27 +182,27 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
       {/* 3. Bottom Row: Category Stats + Popular Articles */}
       <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
         {/* Popular Articles */}
-        <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
-          <Heading size="xs" fontWeight="800" color="gray.700" mb={4}>
+        <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          <Heading size="xs" fontWeight="800" color="text" mb={4}>
             🔥 Top Performing Articles
           </Heading>
           {popularArticles.length === 0 ? (
-            <Text fontSize="xs" color="gray.400" py={4}>No views recorded yet.</Text>
+            <Text fontSize="xs" color="mutedText" py={4}>No views recorded yet.</Text>
           ) : (
             <VStack align="stretch" spacing={3}>
               {popularArticles.map((art, idx) => (
-                <Flex key={art.id} justify="space-between" align="center" p={2.5} borderRadius="lg" _hover={{ bg: "gray.50" }}>
+                <Flex key={art.id} justify="space-between" align="center" p={2.5} borderRadius="lg" _hover={{ bg: "hoverBg" }}>
                   <HStack spacing={3}>
-                    <Text fontSize="xs" fontWeight="800" color="gray.400" w="15px">#{idx + 1}</Text>
+                    <Text fontSize="xs" fontWeight="800" color="mutedText" w="15px">#{idx + 1}</Text>
                     <Box>
-                      <Text fontSize="xs" fontWeight="700" color="gray.700" noOfLines={1} maxW="280px">{art.title}</Text>
-                      <Text fontSize="10px" color="gray.400">{art.category}</Text>
+                      <Text fontSize="xs" fontWeight="700" color="text" noOfLines={1} maxW="280px">{art.title}</Text>
+                      <Text fontSize="10px" color="mutedText">{art.category}</Text>
                     </Box>
                   </HStack>
                   <HStack spacing={4}>
                     <VStack align="flex-end" spacing={0}>
                       <Text fontSize="xs" fontWeight="800" color="teal.500">{art.views || 0}</Text>
-                      <Text fontSize="9px" color="gray.400">views</Text>
+                      <Text fontSize="9px" color="mutedText">views</Text>
                     </VStack>
                   </HStack>
                 </Flex>
@@ -212,8 +212,8 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
         </Box>
 
         {/* Category Breakdown */}
-        <Box bg="white" p={6} borderRadius="xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
-          <Heading size="xs" fontWeight="800" color="gray.700" mb={4}>
+        <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          <Heading size="xs" fontWeight="800" color="text" mb={4}>
             🗂️ Category Distribution
           </Heading>
           <VStack align="stretch" spacing={3.5}>
@@ -225,13 +225,13 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
               return (
                 <Box key={cat}>
                   <Flex justify="space-between" align="center" mb={1}>
-                    <Text fontSize="xs" fontWeight="700" color="gray.700">{cat}</Text>
+                    <Text fontSize="xs" fontWeight="700" color="text">{cat}</Text>
                     <HStack spacing={2}>
-                      <Text fontSize="10px" color="gray.400">{catArticles.length} posts</Text>
+                      <Text fontSize="10px" color="mutedText">{catArticles.length} posts</Text>
                       <Text fontSize="10px" fontWeight="700" color="teal.500">{catViews} views</Text>
                     </HStack>
                   </Flex>
-                  <Box h="6px" w="100%" bg="gray.100" borderRadius="full" overflow="hidden">
+                  <Box h="6px" w="100%" bg="border" borderRadius="full" overflow="hidden">
                     <Box h="100%" w={`${percentage}%`} bg="teal.400" borderRadius="full" />
                   </Box>
                 </Box>

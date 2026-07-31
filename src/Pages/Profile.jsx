@@ -62,9 +62,16 @@ const Profile = () => {
       const snap = await getDoc(doc(db, 'analytics', 'traffic'));
       if (snap.exists()) {
         const data = snap.data();
+        const dailyTraffic = { ...(data.dailyTraffic || {}) };
+        Object.keys(data).forEach((key) => {
+          if (key.startsWith('dailyTraffic.')) {
+            const dateStr = key.substring('dailyTraffic.'.length);
+            dailyTraffic[dateStr] = (dailyTraffic[dateStr] || 0) + (data[key] || 0);
+          }
+        });
         setTrafficData({
           totalVisits: data.totalVisits || 0,
-          dailyTraffic: data.dailyTraffic || {}
+          dailyTraffic: dailyTraffic
         });
       }
       setTrafficError(null);

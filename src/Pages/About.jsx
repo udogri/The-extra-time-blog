@@ -41,8 +41,8 @@ const About = () => {
         <Box position="absolute" bottom="-50px" right="-50px" w="280px" h="280px" borderRadius="full" bg="teal.400" opacity={0.06} pointerEvents="none" />
 
         <Box position="relative" zIndex={1} maxW="700px" mx="auto" px={6}>
-          <Box display="inline-flex" px={3} py={0.5} borderRadius="full" bg="whiteAlpha.150" border="1px solid" borderColor="whiteAlpha.200" mb={4}>
-            <Text fontSize="xs" color="teal.300" fontWeight="600" letterSpacing="0.05em" textTransform="uppercase">
+          <Box display="inline-flex" px={3} py={0.5} borderRadius="full" bg="hoverBg" border="1px solid" borderColor="borderMuted" mb={4}>
+            <Text fontSize="xs" color="teal.400" fontWeight="600" letterSpacing="0.05em" textTransform="uppercase">
               The Developer & Designer
             </Text>
           </Box>
@@ -60,7 +60,7 @@ const About = () => {
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
           
           {/* Main Card: Avatar and bio */}
-          <Box gridColumn={{ base: "span 1", md: "span 2" }} bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          <Box gridColumn={{ base: "span 1", md: "span 2" }} bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="borderMuted" boxShadow="sm" _hover={{ borderColor: "teal.500", boxShadow: "0 12px 24px -10px rgba(49, 151, 149, 0.1)" }} transition="all 0.3s ease">
             <Flex direction={{ base: "column", sm: "row" }} gap={6} align={{ base: "center", sm: "flex-start" }}>
               <Avatar 
                 src={siteSettings?.avatarUrl || ""} 
@@ -95,7 +95,7 @@ const About = () => {
           </Box>
 
           {/* Socials & Contact Info */}
-          <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl" display="flex" flexDirection="column" justify="space-between">
+          <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="borderMuted" boxShadow="sm" _hover={{ borderColor: "teal.500", boxShadow: "0 12px 24px -10px rgba(49, 151, 149, 0.1)" }} transition="all 0.3s ease" display="flex" flexDirection="column" justify="space-between">
             <VStack align="stretch" spacing={5}>
               <Box>
                 <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em" mb={2}>
@@ -111,11 +111,11 @@ const About = () => {
                   Interests & Hobbies
                 </Text>
                 <Flex gap={1} flexWrap="wrap">
-                  <Badge colorScheme="purple" variant="subtle" fontSize="10px">UI Coding</Badge>
-                  <Badge colorScheme="purple" variant="subtle" fontSize="10px">Illustration</Badge>
-                  <Badge colorScheme="purple" variant="subtle" fontSize="10px">Gaming</Badge>
-                  <Badge colorScheme="purple" variant="subtle" fontSize="10px">Sports</Badge>
-                  <Badge colorScheme="purple" variant="subtle" fontSize="10px">Tech Writing</Badge>
+                  <Badge colorScheme="gray" variant="subtle" fontSize="10px">UI Coding</Badge>
+                  <Badge colorScheme="gray" variant="subtle" fontSize="10px">Illustration</Badge>
+                  <Badge colorScheme="gray" variant="subtle" fontSize="10px">Gaming</Badge>
+                  <Badge colorScheme="gray" variant="subtle" fontSize="10px">Sports</Badge>
+                  <Badge colorScheme="gray" variant="subtle" fontSize="10px">Tech Writing</Badge>
                 </Flex>
               </Box>
             </VStack>
@@ -137,9 +137,9 @@ const About = () => {
                     icon={<Icon size={14} />}
                     size="sm"
                     variant="ghost"
-                    color="gray.400"
+                    color="mutedText"
                     borderRadius="full"
-                    _hover={{ color, bg: "whiteAlpha.100" }}
+                    _hover={{ color, bg: "hoverBg" }}
                   />
                 ))}
               </HStack>
@@ -149,8 +149,8 @@ const About = () => {
         </SimpleGrid>
 
         {/* ── Skills Matrix Section ── */}
-        <Box bg="#161e2e" p={6} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" boxShadow="2xl">
-          <Heading size="sm" mb={6} color="white" fontWeight="700" letterSpacing="-0.01em">
+        <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="borderMuted" boxShadow="sm" _hover={{ borderColor: "teal.500", boxShadow: "0 12px 24px -10px rgba(49, 151, 149, 0.1)" }} transition="all 0.3s ease">
+          <Heading size="sm" mb={6} color="text" fontWeight="700" letterSpacing="-0.01em">
             ⚡ Skills Inventory
           </Heading>
 
@@ -160,7 +160,7 @@ const About = () => {
             <VStack align="stretch" spacing={3}>
               <HStack spacing={2}>
                 <FiCode color="#14b8a6" />
-                <Text fontSize="xs" fontWeight="700" color="gray.400" textTransform="uppercase">Frontend Dev</Text>
+                <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Frontend Dev</Text>
               </HStack>
               <Flex gap={1.5} flexWrap="wrap">
                 {frontendSkills.map(skill => (
@@ -179,7 +179,7 @@ const About = () => {
               </HStack>
               <Flex gap={1.5} flexWrap="wrap">
                 {designSkills.map(skill => (
-                  <Badge key={skill} colorScheme="purple" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
+                  <Badge key={skill} colorScheme="blue" variant="subtle" fontSize="10px" borderRadius="md" px={2} py={0.5}>
                     {skill}
                   </Badge>
                 ))}

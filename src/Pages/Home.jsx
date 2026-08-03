@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Box, Heading, Text, Button, VStack, useToast, Spinner,
   Image, HStack, Badge, Flex, SimpleGrid, Avatar, IconButton,
-  Divider, Center
+  Divider, Center, Icon
 } from '@chakra-ui/react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
@@ -84,34 +84,40 @@ const HomePage = () => {
     <Box minH="100vh" w="100vw" bg="bg" pt="80px" pb={16}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
 
-        {/* ── 1. PERSONAL HERO HEADER CARD ── */}
+        {/* ── 1. PERSONAL HERO HEADER (MINIMALIST) ── */}
         <Box 
-          bg="cardBg" 
-          borderRadius="2xl" 
-          border="1px solid" 
-          borderColor="border" 
-          p={{ base: 6, md: 8 }} 
+          py={{ base: 8, md: 12 }} 
           mb={12} 
           mt={4}
-          boxShadow="2xl"
         >
           <Flex direction={{ base: 'column', md: 'row' }} gap={8} align="center">
-            <Avatar 
-              src={siteSettings?.avatarUrl || ''} 
-              name={siteSettings?.bioName || 'Admin'} 
-              size="2xl" 
-              bg="teal.500" 
-              color="white" 
-              boxShadow="inner"
-            />
+            <Box position="relative">
+              <Box 
+                position="absolute"
+                inset="-4px"
+                borderRadius="full"
+                bgGradient="linear(to-tr, teal.400, purple.400)"
+                opacity="0.8"
+                filter="blur(1px)"
+              />
+              <Avatar 
+                src={siteSettings?.avatarUrl || ''} 
+                name={siteSettings?.bioName || 'Admin'} 
+                size="2xl" 
+                bg="teal.500" 
+                color="white" 
+                border="4px solid"
+                borderColor="bg"
+                position="relative"
+                zIndex="1"
+              />
+            </Box>
             <VStack align="flex-start" spacing={4} flex="1">
               <Box>
-                <HStack spacing={2} mb={1}>
-                  <Heading size="lg" fontWeight="600" color="text" letterSpacing="-0.03em">
-                    {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
-                  </Heading>
-                </HStack>
-                <Text fontSize="md" color="mutedText" lineHeight="1.6">
+                <Heading size="xl" fontWeight="800" color="text" letterSpacing="-0.04em" mb={2}>
+                  {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
+                </Heading>
+                <Text fontSize="lg" color="mutedText" lineHeight="1.6" maxW="2xl">
                   {siteSettings?.bioText || 'I am a frontend developer who loves building digital interfaces and visual designs.'}
                 </Text>
               </Box>
@@ -146,7 +152,7 @@ const HomePage = () => {
                       icon={<Icon size={16} />}
                       size="sm"
                       variant="ghost"
-                      color="gray.400"
+                      color="mutedText"
                       borderRadius="full"
                       _hover={{ color, bg: 'whiteAlpha.100' }}
                     />
@@ -158,8 +164,8 @@ const HomePage = () => {
         </Box>
 
         {/* ── 3. LATEST ARTICLES SECTION ── */}
-        <Box mb={6}>
-          <Heading size="md" fontWeight="600" color="text" letterSpacing="-0.02em" mb={6}>
+        <Box mb={14}>
+          <Heading size="md" fontWeight="800" color="text" letterSpacing="-0.03em" mb={8}>
             Latest Articles
           </Heading>
 
@@ -170,9 +176,22 @@ const HomePage = () => {
               <Text fontSize="sm" color="mutedText" mt={1}>Check back later for tutorials and visual layouts!</Text>
             </Box>
           ) : (
-            <VStack spacing={6} align="stretch">
-              {latestArticles.map((article) => (
-                <ArticleCard
+            <VStack spacing={4} align="stretch">
+              {/* Featured article (First one) */}
+              <FeaturedArticle
+                article={latestArticles[0]}
+                color={CATEGORY_COLORS[latestArticles[0].category] || 'teal'}
+                onClick={() => navigate(`/articledetails/${latestArticles[0].id}`)}
+              />
+              
+              {/* Divider if we have more articles */}
+              {latestArticles.length > 1 && (
+                <Divider borderColor="border" mb={4} />
+              )}
+              
+              {/* Other articles */}
+              {latestArticles.slice(1).map((article) => (
+                <SimpleArticleRow
                   key={article.id}
                   article={article}
                   color={CATEGORY_COLORS[article.category] || 'teal'}
@@ -180,7 +199,7 @@ const HomePage = () => {
                 />
               ))}
               
-              <Center pt={4}>
+              <Center pt={8}>
                 <Button
                   rightIcon={<FiArrowRight />}
                   colorScheme="teal"
@@ -204,15 +223,16 @@ const HomePage = () => {
             <Heading size="md" fontWeight="600" color="text" letterSpacing="-0.02em">
               Projects
             </Heading>
-            <HStack spacing={2} bg="whiteAlpha.100" p={1} borderRadius="full">
+            <HStack spacing={2} bg="hoverBg" p={1} borderRadius="full">
               {['All', 'Web Development', 'Graphic Design'].map((filter) => (
                 <Button
                   key={filter}
                   size="xs"
                   borderRadius="full"
                   variant={activeProjectFilter === filter ? 'solid' : 'ghost'}
-                  colorScheme={activeProjectFilter === filter ? 'purple' : 'whiteAlpha'}
-                  color={activeProjectFilter === filter ? 'white' : 'whiteAlpha.700'}
+                  bg={activeProjectFilter === filter ? 'text' : 'transparent'}
+                  color={activeProjectFilter === filter ? 'bg' : 'mutedText'}
+                  _hover={{ bg: activeProjectFilter === filter ? 'text' : 'hoverBg' }}
                   onClick={() => setActiveProjectFilter(filter)}
                   px={3}
                 >
@@ -236,41 +256,49 @@ const HomePage = () => {
                   bg="cardBg"
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor="border"
+                  borderColor="borderMuted"
                   overflow="hidden"
-                  boxShadow="2xl"
-                  _hover={{ transform: 'translateY(-3px)', boxShadow: 'dark-lg' }}
-                  transition="all 0.2s"
+                  boxShadow="sm"
+                  _hover={{ 
+                    transform: 'translateY(-4px)', 
+                    borderColor: 'teal.500', 
+                    boxShadow: '0 12px 24px -10px rgba(49, 151, 149, 0.15)' 
+                  }}
+                  transition="all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
                   display="flex"
                   flexDirection="column"
                 >
                   {proj.imageUrl && (
-                    <Image 
-                      src={proj.imageUrl} 
-                      alt={proj.title}
-                      h="160px"
-                      w="100%"
-                      objectFit="cover"
-                    />
+                    <Box overflow="hidden">
+                      <Image 
+                        src={proj.imageUrl} 
+                        alt={proj.title}
+                        h="160px"
+                        w="100%"
+                        objectFit="cover"
+                        transition="transform 0.5s ease"
+                        _hover={{ transform: 'scale(1.05)' }}
+                      />
+                    </Box>
                   )}
                   <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
                     <VStack align="flex-start" spacing={3}>
-                      <Badge colorScheme={proj.type === 'Web Development' ? 'teal' : 'purple'} variant="subtle" fontSize="9px" px={2} borderRadius="full">
+                      <Badge colorScheme={proj.type === 'Web Development' ? 'teal' : 'blue'} variant="subtle" fontSize="9px" px={2.5} py={0.5} borderRadius="full">
                         {proj.type}
                       </Badge>
-                      <Heading size="xs" color="text" fontWeight="700">
+                      <Heading size="xs" color="text" fontWeight="800" letterSpacing="-0.01em">
                         {proj.title}
                       </Heading>
-                      <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
+                      <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.6">
                         {proj.description}
                       </Text>
                     </VStack>
                     
                     <Box mt={4}>
                       {proj.techStack && proj.techStack.length > 0 && (
-                        <Flex gap={1} flexWrap="wrap" mb={4}>
+                        <Flex gap={1.5} flexWrap="wrap" mb={4}>
                           {proj.techStack.map((tool) => (
-                            <Badge key={tool} colorScheme="whiteAlpha" variant="solid" fontSize="9px" px={1.5} py={0.2} borderRadius="md">
+                            <Badge key={tool} variant="subtle" colorScheme="gray" fontSize="9px" px={2} py={0.2} borderRadius="md">
                               {tool}
                             </Badge>
                           ))}
@@ -283,7 +311,7 @@ const HomePage = () => {
                         {proj.githubUrl ? (
                           <Button 
                             as="a" href={proj.githubUrl} target="_blank" rel="noopener noreferrer"
-                            leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" color="gray.400" _hover={{ color: 'white', bg: 'whiteAlpha.100' }} fontSize="10px"
+                            leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" color="mutedText" _hover={{ color: 'text', bg: 'hoverBg' }} fontSize="10px"
                           >
                             Source Code
                           </Button>
@@ -292,7 +320,7 @@ const HomePage = () => {
                         {proj.liveUrl ? (
                           <Button 
                             as="a" href={proj.liveUrl} target="_blank" rel="noopener noreferrer"
-                            rightIcon={<FiExternalLink size={12} />} size="xs" variant="solid" colorScheme="purple" fontSize="10px" borderRadius="full"
+                            rightIcon={<FiExternalLink size={12} />} size="xs" variant="solid" colorScheme="teal" fontSize="10px" borderRadius="full" px={3}
                           >
                             Live Demo
                           </Button>
@@ -311,32 +339,31 @@ const HomePage = () => {
   );
 };
 
-const ArticleCard = ({ article, color = 'teal', onClick }) => {
+const FeaturedArticle = ({ article, color = 'teal', onClick }) => {
   const [imageError, setImageError] = useState(false);
   const showImage = article.imageUrl && !imageError;
 
   return (
     <Flex
-      bg="cardBg"
-      borderRadius="xl"
-      border="1px solid"
-      borderColor="border"
-      overflow="hidden"
+      direction={{ base: 'column', md: 'row' }}
+      gap={{ base: 4, md: 8 }}
       cursor="pointer"
       onClick={onClick}
-      boxShadow="2xl"
-      _hover={{ boxShadow: 'dark-lg', transform: 'translateY(-3px)', borderColor: `${color}.400` }}
-      transition="all 0.2s"
-      direction={{ base: 'column', md: 'row' }}
+      role="group"
+      mb={10}
+      align="center"
       w="100%"
     >
       {showImage && (
         <Box 
-          position="relative" 
-          w={{ base: '100%', md: '300px' }} 
-          minW={{ base: '100%', md: '300px' }} 
-          h={{ base: '200px', md: '200px' }} 
-          overflow="hidden"
+          overflow="hidden" 
+          borderRadius="2xl" 
+          w={{ base: '100%', md: '55%' }}
+          h={{ base: '220px', md: '340px' }}
+          bg="cardBg"
+          boxShadow="2xl"
+          transition="transform 0.3s ease"
+          _groupHover={{ transform: 'scale(1.015)' }}
         >
           <Image
             src={article.imageUrl}
@@ -346,51 +373,113 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
             objectFit="cover"
             onError={() => setImageError(true)}
           />
+        </Box>
+      )}
+      <VStack 
+        align="flex-start" 
+        spacing={4} 
+        flex="1" 
+        py={2}
+        w="100%"
+      >
+        <Badge
+          colorScheme={color}
+          fontSize="10px"
+          px={3}
+          py={1}
+          borderRadius="full"
+          letterSpacing="0.05em"
+          textTransform="uppercase"
+        >
+          {article.category}
+        </Badge>
+        <Heading 
+          size="md" 
+          fontWeight="800" 
+          color="text" 
+          letterSpacing="-0.03em"
+          lineHeight="1.3"
+          _groupHover={{ color: 'teal.400' }}
+          transition="color 0.2s"
+        >
+          {article.title}
+        </Heading>
+        <Text fontSize="sm" color="mutedText" lineHeight="1.6" noOfLines={3}>
+          {article.description || article.content}
+        </Text>
+        <Text fontSize="xs" fontWeight="600" color="mutedText">
+          {new Date(article.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </Text>
+      </VStack>
+    </Flex>
+  );
+};
+
+FeaturedArticle.propTypes = {
+  article: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    content: PropTypes.string,
+    imageUrl: PropTypes.string,
+    category: PropTypes.string,
+    date: PropTypes.string,
+  }).isRequired,
+  color: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+};
+
+const SimpleArticleRow = ({ article, color = 'teal', onClick }) => {
+  return (
+    <Flex
+      cursor="pointer"
+      onClick={onClick}
+      p={4}
+      mx={-4}
+      borderRadius="xl"
+      align="center"
+      justify="space-between"
+      _hover={{ bg: 'hoverBg' }}
+      transition="background-color 0.2s ease, transform 0.2s ease"
+      gap={4}
+      role="group"
+      w="100%"
+    >
+      <VStack align="flex-start" spacing={1.5} flex="1">
+        <HStack spacing={3}>
+          <Text fontSize="11px" fontWeight="600" color="mutedText">
+            {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </Text>
           <Badge
-            position="absolute"
-            top={3}
-            left={3}
             colorScheme={color}
             fontSize="9px"
-            px={2.5}
-            py={0.5}
+            px={2}
             borderRadius="full"
             letterSpacing="0.05em"
           >
             {article.category}
           </Badge>
-        </Box>
-      )}
-      <Box p={5} flex="1" display="flex" flexDirection="column" justify="space-between">
-        <VStack align="flex-start" spacing={2} mb={4}>
-          {!showImage && (
-            <Badge
-              colorScheme={color}
-              fontSize="9px"
-              px={2.5}
-              py={0.5}
-              borderRadius="full"
-              letterSpacing="0.05em"
-            >
-              {article.category}
-            </Badge>
-          )}
-          <Text fontWeight="700" fontSize="sm" noOfLines={2} lineHeight="1.4" color="text">
-            {article.title}
-          </Text>
-          <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
-            {article.description || article.content}
-          </Text>
-        </VStack>
-        <Text fontSize="10px" color="gray.500">
-          {new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </HStack>
+        <Heading 
+          size="xs" 
+          fontWeight="750" 
+          color="text" 
+          letterSpacing="-0.01em"
+          _groupHover={{ color: 'teal.400' }}
+          transition="color 0.2s"
+        >
+          {article.title}
+        </Heading>
+        <Text fontSize="xs" color="mutedText" noOfLines={1} maxW="xl">
+          {article.description || article.content}
         </Text>
-      </Box>
+      </VStack>
+      <Icon as={FiArrowRight} opacity={0} _groupHover={{ opacity: 1, transform: 'translateX(4px)' }} transition="all 0.2s" color="teal.400" w={4} h={4} />
     </Flex>
   );
 };
 
-ArticleCard.propTypes = {
+SimpleArticleRow.propTypes = {
   article: PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,

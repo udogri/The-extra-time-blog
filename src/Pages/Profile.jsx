@@ -264,12 +264,12 @@ const Profile = () => {
 
   if (!isAdmin) {
     return (
-      <Box minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bg="gray.50" px={6}>
-        <Box w="80px" h="80px" borderRadius="full" bg="gray.100" display="flex" alignItems="center" justifyContent="center" mb={6}>
+      <Box minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bg="bg" px={6}>
+        <Box w="80px" h="80px" borderRadius="full" bg="cardBg" border="1px solid" borderColor="border" display="flex" alignItems="center" justifyContent="center" mb={6}>
           <Text fontSize="2xl">🔒</Text>
         </Box>
-        <Heading size="md" mb={2} fontWeight="700" letterSpacing="-0.02em">Access Denied</Heading>
-        <Text fontSize="sm" color="gray.500" maxW="280px" mb={6} textAlign="center" lineHeight="1.6">
+        <Heading size="md" mb={2} fontWeight="700" letterSpacing="-0.02em" color="text">Access Denied</Heading>
+        <Text fontSize="sm" color="mutedText" maxW="280px" mb={6} textAlign="center" lineHeight="1.6">
           Only the administrator can access the Dashboard Console.
         </Text>
         <Button colorScheme="teal" size="sm" px={8} borderRadius="full" onClick={() => navigate('/')}>
@@ -280,15 +280,15 @@ const Profile = () => {
   }
 
   return (
-    <Box minH="100vh" bg="gray.50" pb={16}>
+    <Box minH="100vh" bg="bg" pb={16}>
       <Box maxW="1200px" mx="auto" px={{ base: 4, md: 8 }} pt={8}>
 
         {/* Dashboard Console Header */}
-        <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" p={6} mb={8} display="flex" alignItems="center" gap={5} flexWrap="wrap">
+        <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={6} mb={8} display="flex" alignItems="center" gap={5} flexWrap="wrap" boxShadow="2xl">
           <Avatar src={siteSettings?.avatarUrl || ''} name={siteSettings?.bioName || 'Admin'} size="lg" bg="teal.500" color="white" />
           <Box flex="1">
-            <Heading size="sm" fontWeight="700" letterSpacing="-0.01em" color="gray.900">{siteSettings?.bioName || 'Admin Console'}</Heading>
-            <Text fontSize="sm" color="gray.500" mt={0.5}>Creative Dev & Designer</Text>
+            <Heading size="sm" fontWeight="700" letterSpacing="-0.01em" color="text">{siteSettings?.bioName || 'Admin Console'}</Heading>
+            <Text fontSize="sm" color="mutedText" mt={0.5}>Developer</Text>
             <HStack mt={2} spacing={3} flexWrap="wrap">
               <Badge colorScheme="teal" variant="subtle" fontSize="xs" px={2} py={0.5} borderRadius="full">
                 {articles.length} {articles.length === 1 ? 'Article' : 'Articles'}
@@ -322,13 +322,20 @@ const Profile = () => {
 
         {/* Tab-driven layout console */}
         <Tabs variant="soft-rounded" colorScheme="teal">
-          <TabList bg="white" p={1.5} borderRadius="xl" border="1px solid" borderColor="gray.100" gap={1} overflowX="auto">
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Analytics</Tab>
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Articles</Tab>
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Site Settings</Tab>
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Projects</Tab>
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Subscribers</Tab>
-            <Tab fontSize="sm" fontWeight="600" borderRadius="lg">Inbox</Tab>
+          <TabList bg="cardBg" p={1.5} borderRadius="xl" border="1px solid" borderColor="border" gap={1} overflowX="auto" boxShadow="md">
+            {['Analytics', 'Articles', 'Site Settings', 'Projects', 'Subscribers', 'Inbox'].map((tabName) => (
+              <Tab
+                key={tabName}
+                fontSize="sm"
+                fontWeight="600"
+                borderRadius="lg"
+                color="mutedText"
+                _hover={{ bg: 'hoverBg', color: 'text' }}
+                _selected={{ color: 'white', bg: 'teal.500' }}
+              >
+                {tabName}
+              </Tab>
+            ))}
           </TabList>
 
           <TabPanels mt={6}>

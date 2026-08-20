@@ -14,6 +14,11 @@ const categories = [
   'Web Development', 'Graphic Design', 'Life & Hobbies', 'Tutorials'
 ];
 
+const cleanDescription = (text) => {
+  if (!text) return '';
+  return text.replace(/!\[.*?\]\(.*?\)/g, '').trim();
+};
+
 const CATEGORY_COLORS = {
   'Web Development': 'teal',
   'Graphic Design': 'purple',
@@ -259,7 +264,7 @@ const ArticleCard = ({ article, color = 'teal', onClick }) => {
             {article.title}
           </Text>
           <Text fontSize="xs" color="mutedText" noOfLines={3} lineHeight="1.5">
-            {article.description || article.content}
+            {cleanDescription(article.description || article.content)}
           </Text>
         </VStack>
         <Text fontSize="10px" color="mutedText">

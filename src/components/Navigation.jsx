@@ -27,7 +27,6 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
     { name: 'Home', path: '/' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
-    { name: 'About', path: '/about' },
     ...(isAdmin ? [{ name: 'Dashboard', path: '/profile' }] : []),
     { name: 'Newsletter', action: onOpenNewsletter },
   ];

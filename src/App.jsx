@@ -11,7 +11,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 const HomePage = lazy(() => import('./Pages/Home'));
 const AddArticle = lazy(() => import('./Pages/AddArticle'));
-const About = lazy(() => import('./Pages/About'));
 const ArticleDetails = lazy(() => import('./components/ArticleDetails'));
 const ContactUs = lazy(() => import('./Pages/ContactUs'));
 const LoginSignup = lazy(() => import('./Pages/LoginSignup'));
@@ -127,7 +126,6 @@ const App = () => {
             <Route element={<Layout isAuthenticated={isAuthenticated} isAdmin={isAdmin} siteSettings={siteSettings} setSiteSettings={setSiteSettings} user={user} />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/contact" element={<ContactUs />} />
-              <Route path="/about" element={<About />} />
               <Route path="/articledetails/:articleId" element={<ArticleDetails />} />
               <Route path="/blog" element={<Blog />} />
               

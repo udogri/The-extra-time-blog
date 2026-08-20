@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box, Heading, Text, Button, useToast, Spinner, IconButton,
   Image, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton,
@@ -10,7 +10,7 @@ import { doc, getDoc, deleteDoc, updateDoc, increment, addDoc, collection, query
 import { getAuth } from 'firebase/auth';
 import { db, app } from '../firebaseConfig';
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin } from 'react-icons/fa';
-import { FiThumbsUp, FiThumbsDown, FiArrowLeft } from 'react-icons/fi';
+import { FiThumbsUp, FiThumbsDown, FiArrowLeft, FiImage } from 'react-icons/fi';
 
 const ArticleDetails = () => {
   const { isAdmin, user: currentUser } = useOutletContext();
@@ -36,6 +36,55 @@ const ArticleDetails = () => {
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const { isOpen: isEditOpen,   onOpen: onEditOpen,   onClose: onEditClose   } = useDisclosure();
   const auth = getAuth(app);
+
+  // Edit inline image refs and state
+  const editContentRef = useRef(null);
+  const editBodyImageInputRef = useRef(null);
+  const [isUploadingEditBodyImage, setIsUploadingEditBodyImage] = useState(false);
+
+  const insertAtEditCursor = (textToInsert) => {
+    const textarea = editContentRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    
+    const newDescription = before + textToInsert + after;
+    setEditedArticle(prev => ({ ...prev, description: newDescription }));
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
+    }, 0);
+  };
+
+  const handleEditBodyImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingEditBodyImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const imgBbKey = import.meta.env.VITE_IMGBB_API_KEY;
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgBbKey}`, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        insertAtEditCursor(`\n![Image Description](${data.data.url})\n`);
+        toast({ title: 'Image inserted!', status: 'success', position: 'top', duration: 2000 });
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Image upload failed.', status: 'error', duration: 3000, isClosable: true, position: 'top' });
+    } finally {
+      setIsUploadingEditBodyImage(false);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     if (!articleId) return;
@@ -341,15 +390,62 @@ const ArticleDetails = () => {
           />
         )}
 
-        <Text
-          fontSize={{ base: 'sm', md: 'md' }}
-          lineHeight="1.9"
-          color="text"
-          mb={10}
-          whiteSpace="pre-wrap"
-        >
-          {article.description}
-        </Text>
+        {/* Render article body with support for inline images */}
+        <Box mb={10} width="100%">
+          {(() => {
+            if (!article.description) return null;
+            const imgRegex = /!\[(.*?)\]\((.*?)\)/g;
+            const elements = [];
+            let lastIndex = 0;
+            let match;
+            
+            while ((match = imgRegex.exec(article.description)) !== null) {
+              const textBefore = article.description.substring(lastIndex, match.index);
+              if (textBefore) {
+                elements.push(
+                  <Text key={`text-${lastIndex}`} fontSize={{ base: 'sm', md: 'md' }} lineHeight="1.9" color="text" whiteSpace="pre-wrap">
+                    {textBefore}
+                  </Text>
+                );
+              }
+              
+              const alt = match[1];
+              const url = match[2];
+              elements.push(
+                <Box key={`img-${match.index}`} my={6} overflow="hidden" borderRadius="xl" border="1px solid" borderColor="border" bg="bg">
+                  <Image 
+                    src={url} 
+                    alt={alt || "Article Image"} 
+                    maxH="600px" 
+                    w="auto" 
+                    maxW="100%"
+                    mx="auto"
+                    display="block"
+                    fallbackSrc="https://via.placeholder.com/800x400?text=Loading+Image..."
+                  />
+                  {alt && (
+                    <Text fontSize="xs" color="mutedText" textAlign="center" py={2} bg="cardBg" borderTop="1px solid" borderColor="border">
+                      {alt}
+                    </Text>
+                  )}
+                </Box>
+              );
+              
+              lastIndex = imgRegex.lastIndex;
+            }
+            
+            const textAfter = article.description.substring(lastIndex);
+            if (textAfter) {
+              elements.push(
+                <Text key={`text-${lastIndex}`} fontSize={{ base: 'sm', md: 'md' }} lineHeight="1.9" color="text" whiteSpace="pre-wrap">
+                  {textAfter}
+                </Text>
+              );
+            }
+            
+            return <VStack align="stretch" spacing={4}>{elements}</VStack>;
+          })()}
+        </Box>
 
         <Divider mb={7} borderColor="border" />
 
@@ -587,7 +683,37 @@ const ArticleDetails = () => {
                 <FormLabel fontSize="xs" fontWeight="600" letterSpacing="0.06em" color="mutedText" textTransform="uppercase">
                   Content
                 </FormLabel>
+
+                {/* Edit Modal body image upload toolbar */}
+                <HStack spacing={3} py={1} borderBottom="1px solid" borderColor="border" pb={2} mb={2} flexWrap="wrap" gap={2}>
+                  <Button
+                    leftIcon={<FiImage />}
+                    size="xs"
+                    variant="outline"
+                    borderColor="border"
+                    color="mutedText"
+                    _hover={{ bg: 'hoverBg', color: 'text', borderColor: 'teal.400' }}
+                    borderRadius="md"
+                    onClick={() => editBodyImageInputRef.current.click()}
+                    isLoading={isUploadingEditBodyImage}
+                    loadingText="Uploading image..."
+                  >
+                    Insert Image in Body
+                  </Button>
+                  <Text fontSize="xs" color="mutedText">
+                    Place cursor in the editor and click to insert dynamic inline images anywhere.
+                  </Text>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={editBodyImageInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleEditBodyImageUpload}
+                  />
+                </HStack>
+
                 <Textarea
+                  ref={editContentRef}
                   value={editedArticle.description}
                   onChange={(e) => setEditedArticle({ ...editedArticle, description: e.target.value })}
                   size="sm"

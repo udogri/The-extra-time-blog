@@ -12,6 +12,11 @@ import NetworkError from '../components/NetworkError';
 import { FiExternalLink, FiGithub, FiMail, FiArrowRight } from 'react-icons/fi';
 import { FaTwitter, FaLinkedin, FaGithub, FaInstagram, FaFacebook } from 'react-icons/fa';
 
+const cleanDescription = (text) => {
+  if (!text) return '';
+  return text.replace(/!\[.*?\]\(.*?\)/g, '').trim();
+};
+
 const CATEGORY_COLORS = {
   'Web Development': 'teal',
   'Graphic Design': 'purple',
@@ -26,7 +31,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [activeProjectFilter, setActiveProjectFilter] = useState('All');
-  
+
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -60,10 +65,10 @@ const HomePage = () => {
     : projects.filter(p => p.type === activeProjectFilter);
 
   const dynamicSocials = [
-    { Icon: FaTwitter,   label: "Twitter",   href: siteSettings?.socials?.twitter || "#", color: "#1DA1F2" },
-    { Icon: FaLinkedin,  label: "LinkedIn",  href: siteSettings?.socials?.linkedin || "#", color: "#0A66C2" },
-    { Icon: FaGithub,    label: "GitHub",    href: siteSettings?.socials?.github || "#", color: "#24292e" },
-    { Icon: FaFacebook,  label: "Facebook",  href: siteSettings?.socials?.facebook || "#", color: "#1877F2" },
+    { Icon: FaTwitter, label: "Twitter", href: siteSettings?.socials?.twitter || "#", color: "#1DA1F2" },
+    { Icon: FaLinkedin, label: "LinkedIn", href: siteSettings?.socials?.linkedin || "#", color: "#0A66C2" },
+    { Icon: FaGithub, label: "GitHub", href: siteSettings?.socials?.github || "#", color: "#24292e" },
+    { Icon: FaFacebook, label: "Facebook", href: siteSettings?.socials?.facebook || "#", color: "#1877F2" },
     { Icon: FaInstagram, label: "Instagram", href: siteSettings?.socials?.instagram || "#", color: "#E1306C" },
   ].filter(s => s.href && s.href !== '#');
 
@@ -85,14 +90,14 @@ const HomePage = () => {
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* ── 1. PERSONAL HERO HEADER (MINIMALIST) ── */}
-        <Box 
-          py={{ base: 8, md: 12 }} 
-          mb={12} 
+        <Box
+          py={{ base: 8, md: 12 }}
+          mb={12}
           mt={4}
         >
           <Flex direction={{ base: 'column', md: 'row' }} gap={8} align="center">
             <Box position="relative">
-              <Box 
+              <Box
                 position="absolute"
                 inset="-4px"
                 borderRadius="full"
@@ -100,12 +105,13 @@ const HomePage = () => {
                 opacity="0.8"
                 filter="blur(1px)"
               />
-              <Avatar 
-                src={siteSettings?.avatarUrl || ''} 
-                name={siteSettings?.bioName || 'Admin'} 
-                size="2xl" 
-                bg="teal.500" 
-                color="white" 
+              <Avatar
+                src={siteSettings?.avatarUrl || ''}
+                name={siteSettings?.bioName || 'Admin'}
+                width="200px"
+                height="200px"
+                bg="teal.500"
+                color="white"
                 border="4px solid"
                 borderColor="bg"
                 position="relative"
@@ -114,12 +120,13 @@ const HomePage = () => {
             </Box>
             <VStack align="flex-start" spacing={4} flex="1">
               <Box>
-                <Heading size="xl" fontWeight="800" color="text" letterSpacing="-0.04em" mb={2}>
+                <Heading fontSize="40px" fontWeight="600" color="text" letterSpacing="-0.04em" mb={2}>
                   {"Hi, I'm"} {siteSettings?.bioName || 'Creative Dev'}
                 </Heading>
-                <Text fontSize="lg" color="mutedText" lineHeight="1.6" maxW="2xl">
-                  {siteSettings?.bioText || 'I am a frontend developer who loves building digital interfaces and visual designs.'}
+                <Text fontSize="30px" color="mutedText" lineHeight="1.6" maxW="2xl">
+                  Web developer, Graphics designer, Gunner
                 </Text>
+
               </Box>
 
               {/* Action Buttons & Socials */}
@@ -163,6 +170,89 @@ const HomePage = () => {
           </Flex>
         </Box>
 
+        {/* ── 2. BRIEF ABOUT SECTION ── */}
+        <Box
+          mb={16}
+          p={{ base: 6, md: 8 }}
+          borderRadius="2xl"
+          bg="cardBg"
+          border="1px solid"
+          borderColor="borderMuted"
+          boxShadow="sm"
+          position="relative"
+          overflow="hidden"
+          _hover={{
+            borderColor: 'teal.500',
+            boxShadow: '0 12px 24px -10px rgba(49, 151, 149, 0.12)'
+          }}
+          transition="all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+        >
+          {/* Decorative background glows */}
+          <Box position="absolute" top="-50px" left="-50px" w="200px" h="200px" borderRadius="full" bg="teal.400" opacity={0.06} pointerEvents="none" filter="blur(30px)" />
+          <Box position="absolute" bottom="-50px" right="-50px" w="200px" h="200px" borderRadius="full" bg="purple.400" opacity={0.04} pointerEvents="none" filter="blur(30px)" />
+
+          <Flex direction={{ base: 'column', md: 'row' }} gap={8} align="stretch" position="relative" zIndex="1">
+            <VStack align="flex-start" spacing={4} flex="1.2">
+              {/* <HStack spacing={2}>
+                <Box w="3px" h="14px" bg="teal.500" borderRadius="full" />
+                <Text fontSize="xs" fontWeight="700" letterSpacing="0.05em" textTransform="uppercase" color="teal.400">
+                  About Me
+                </Text>
+              </HStack> */}
+              <Heading size="lg" color="text" fontWeight="800" letterSpacing="-0.02em">
+                Welcome Earthlings!
+              </Heading>
+              <Text fontSize="md" color="mutedText" lineHeight="1.75">
+                Welcome to my little piece of real Estate in the World Wide Web (That's the full meaning of WWW). Here I get to share my boring life, web development, designing and the occasional voices in my head.
+
+              </Text>
+              {/* <Text fontSize="sm" color="mutedText" lineHeight="1.75">
+                {siteSettings?.bioText || "I build responsive, clean, and interactive interfaces. Focused on React and frontend architectures, I balance full-time web development with creative graphics design, layouts, and lifestyle writing."}
+              </Text> */}
+
+              {/* <Flex gap={2} flexWrap="wrap" pt={2}>
+                {["React.js", "JavaScript", "TypeScript", "Figma", "UI/UX Design", "Chakra UI"].map(skill => (
+                  <Badge
+                    key={skill}
+                    colorScheme="teal"
+                    variant="subtle"
+                    fontSize="10px"
+                    borderRadius="full"
+                    px={3}
+                    py={0.5}
+                    border="1px solid"
+                    borderColor="teal.500"
+                    bg="transparent"
+                    color="teal.400"
+                  >
+                    {skill}
+                  </Badge>
+                ))}
+              </Flex> */}
+            </VStack>
+
+            {/* <VStack
+              align="flex-start"
+              spacing={4}
+              flex="0.8"
+              bg="bg"
+              p={6}
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="border"
+              justify="center"
+              position="relative"
+            >
+              <Text fontSize="xs" fontWeight="750" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">
+                My Philosophy
+              </Text>
+              <Text fontSize="sm" fontStyle="italic" color="text" lineHeight="1.6" borderLeft="3px solid" borderColor="teal.400" pl={4}>
+                "Whatever you create, make it useful. Whatever you do, do it with intention. And wherever you go, leave something better than you found it."
+              </Text>
+            </VStack> */}
+          </Flex>
+        </Box>
+
         {/* ── 3. LATEST ARTICLES SECTION ── */}
         <Box mb={14}>
           <Heading size="md" fontWeight="800" color="text" letterSpacing="-0.03em" mb={8}>
@@ -183,12 +273,12 @@ const HomePage = () => {
                 color={CATEGORY_COLORS[latestArticles[0].category] || 'teal'}
                 onClick={() => navigate(`/articledetails/${latestArticles[0].id}`)}
               />
-              
+
               {/* Divider if we have more articles */}
               {latestArticles.length > 1 && (
                 <Divider borderColor="border" mb={4} />
               )}
-              
+
               {/* Other articles */}
               {latestArticles.slice(1).map((article) => (
                 <SimpleArticleRow
@@ -198,7 +288,7 @@ const HomePage = () => {
                   onClick={() => navigate(`/articledetails/${article.id}`)}
                 />
               ))}
-              
+
               <Center pt={8}>
                 <Button
                   rightIcon={<FiArrowRight />}
@@ -244,7 +334,7 @@ const HomePage = () => {
 
           {filteredProjects.length === 0 ? (
             <Box bg="cardBg" borderRadius="xl" border="1px solid" borderColor="border" p={12} textAlign="center" w="100%">
-              <Text fontSize="2xl" mb={3}>🚀</Text>
+              {/* <Text fontSize="2xl" mb={3}>🚀</Text> */}
               <Text fontWeight="650" color="text">No projects published yet</Text>
               <Text fontSize="sm" color="mutedText" mt={1}>Check back later for creative builds!</Text>
             </Box>
@@ -259,10 +349,10 @@ const HomePage = () => {
                   borderColor="borderMuted"
                   overflow="hidden"
                   boxShadow="sm"
-                  _hover={{ 
-                    transform: 'translateY(-4px)', 
-                    borderColor: 'teal.500', 
-                    boxShadow: '0 12px 24px -10px rgba(49, 151, 149, 0.15)' 
+                  _hover={{
+                    transform: 'translateY(-4px)',
+                    borderColor: 'teal.500',
+                    boxShadow: '0 12px 24px -10px rgba(49, 151, 149, 0.15)'
                   }}
                   transition="all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
                   display="flex"
@@ -270,8 +360,8 @@ const HomePage = () => {
                 >
                   {proj.imageUrl && (
                     <Box overflow="hidden">
-                      <Image 
-                        src={proj.imageUrl} 
+                      <Image
+                        src={proj.imageUrl}
                         alt={proj.title}
                         h="160px"
                         w="100%"
@@ -293,7 +383,7 @@ const HomePage = () => {
                         {proj.description}
                       </Text>
                     </VStack>
-                    
+
                     <Box mt={4}>
                       {proj.techStack && proj.techStack.length > 0 && (
                         <Flex gap={1.5} flexWrap="wrap" mb={4}>
@@ -304,12 +394,12 @@ const HomePage = () => {
                           ))}
                         </Flex>
                       )}
-                      
+
                       <Divider borderColor="border" mb={3} />
-                      
+
                       <HStack justify="space-between">
                         {proj.githubUrl ? (
-                          <Button 
+                          <Button
                             as="a" href={proj.githubUrl} target="_blank" rel="noopener noreferrer"
                             leftIcon={<FiGithub size={12} />} size="xs" variant="ghost" color="mutedText" _hover={{ color: 'text', bg: 'hoverBg' }} fontSize="10px"
                           >
@@ -318,7 +408,7 @@ const HomePage = () => {
                         ) : <Box />}
 
                         {proj.liveUrl ? (
-                          <Button 
+                          <Button
                             as="a" href={proj.liveUrl} target="_blank" rel="noopener noreferrer"
                             rightIcon={<FiExternalLink size={12} />} size="xs" variant="solid" colorScheme="teal" fontSize="10px" borderRadius="full" px={3}
                           >
@@ -355,9 +445,9 @@ const FeaturedArticle = ({ article, color = 'teal', onClick }) => {
       w="100%"
     >
       {showImage && (
-        <Box 
-          overflow="hidden" 
-          borderRadius="2xl" 
+        <Box
+          overflow="hidden"
+          borderRadius="2xl"
           w={{ base: '100%', md: '55%' }}
           h={{ base: '220px', md: '340px' }}
           bg="cardBg"
@@ -375,10 +465,10 @@ const FeaturedArticle = ({ article, color = 'teal', onClick }) => {
           />
         </Box>
       )}
-      <VStack 
-        align="flex-start" 
-        spacing={4} 
-        flex="1" 
+      <VStack
+        align="flex-start"
+        spacing={4}
+        flex="1"
         py={2}
         w="100%"
       >
@@ -393,10 +483,10 @@ const FeaturedArticle = ({ article, color = 'teal', onClick }) => {
         >
           {article.category}
         </Badge>
-        <Heading 
-          size="md" 
-          fontWeight="800" 
-          color="text" 
+        <Heading
+          size="md"
+          fontWeight="800"
+          color="text"
           letterSpacing="-0.03em"
           lineHeight="1.3"
           _groupHover={{ color: 'teal.400' }}
@@ -405,7 +495,7 @@ const FeaturedArticle = ({ article, color = 'teal', onClick }) => {
           {article.title}
         </Heading>
         <Text fontSize="sm" color="mutedText" lineHeight="1.6" noOfLines={3}>
-          {article.description || article.content}
+          {cleanDescription(article.description || article.content)}
         </Text>
         <Text fontSize="xs" fontWeight="600" color="mutedText">
           {new Date(article.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -460,10 +550,10 @@ const SimpleArticleRow = ({ article, color = 'teal', onClick }) => {
             {article.category}
           </Badge>
         </HStack>
-        <Heading 
-          size="xs" 
-          fontWeight="750" 
-          color="text" 
+        <Heading
+          size="xs"
+          fontWeight="750"
+          color="text"
           letterSpacing="-0.01em"
           _groupHover={{ color: 'teal.400' }}
           transition="color 0.2s"
@@ -471,7 +561,7 @@ const SimpleArticleRow = ({ article, color = 'teal', onClick }) => {
           {article.title}
         </Heading>
         <Text fontSize="xs" color="mutedText" noOfLines={1} maxW="xl">
-          {article.description || article.content}
+          {cleanDescription(article.description || article.content)}
         </Text>
       </VStack>
       <Icon as={FiArrowRight} opacity={0} _groupHover={{ opacity: 1, transform: 'translateX(4px)' }} transition="all 0.2s" color="teal.400" w={4} h={4} />

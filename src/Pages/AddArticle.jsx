@@ -27,6 +27,51 @@ const AddArticle = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef();
+  const textareaRef = useRef(null);
+  const bodyImageInputRef = useRef();
+  const [isUploadingBodyImage, setIsUploadingBodyImage] = useState(false);
+
+  const insertAtCursor = (textToInsert) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    
+    const newContent = before + textToInsert + after;
+    setContent(newContent);
+    
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
+    }, 0);
+  };
+
+  const handleBodyImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingBodyImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const imgBbKey = import.meta.env.VITE_IMGBB_API_KEY;
+      const res = await axios.post(`https://api.imgbb.com/1/upload?key=${imgBbKey}`, formData);
+      const url = res.data.data.url;
+      if (url) {
+        insertAtCursor(`\n![Image Description](${url})\n`);
+        toast({ title: 'Image inserted!', status: 'success', position: 'top', duration: 2000 });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Upload failed', description: 'Could not upload image.', status: 'error', position: 'top' });
+    } finally {
+      setIsUploadingBodyImage(false);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     const auth = getAuth();
@@ -237,8 +282,37 @@ const AddArticle = () => {
               _placeholder={{ color: 'gray.400' }}
             />
 
+            {/* Toolbar */}
+            <HStack spacing={3} py={1} borderBottom="1px solid" borderColor="border" pb={2} flexWrap="wrap" gap={2}>
+              <Button
+                leftIcon={<FiImage />}
+                size="xs"
+                variant="outline"
+                borderColor="border"
+                color="mutedText"
+                _hover={{ bg: 'hoverBg', color: 'text', borderColor: 'teal.400' }}
+                borderRadius="md"
+                onClick={() => bodyImageInputRef.current.click()}
+                isLoading={isUploadingBodyImage}
+                loadingText="Uploading image..."
+              >
+                Insert Image in Body
+              </Button>
+              <Text fontSize="xs" color="mutedText">
+                Place cursor in the editor and click to insert dynamic inline images anywhere.
+              </Text>
+              <input
+                type="file"
+                accept="image/*"
+                ref={bodyImageInputRef}
+                style={{ display: 'none' }}
+                onChange={handleBodyImageUpload}
+              />
+            </HStack>
+
             {/* Body */}
             <Textarea
+              ref={textareaRef}
               placeholder="Tell your story…"
               value={content}
               onChange={(e) => setContent(e.target.value)}

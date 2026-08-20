@@ -6,7 +6,6 @@ import { FaFacebook, FaTwitter, FaLinkedin, FaGithub, FaInstagram } from 'react-
 
 const NAV_LINKS = [
   { label: 'Home',       href: '/' },
-  { label: 'About',      href: '/about' },
   { label: 'Contact',    href: '/contact' },
   { label: 'Profile',    href: '/profile' },
 ];
@@ -112,7 +111,7 @@ const Footer = ({ siteSettings }) => {
           </VStack>
 
           {/* Column 3: Categories */}
-          <VStack align="flex-start" spacing={3}>
+          {/* <VStack align="flex-start" spacing={3}>
             <Text
               fontSize="xs"
               fontWeight="800"
@@ -142,7 +141,7 @@ const Footer = ({ siteSettings }) => {
                 {cat}
               </Text>
             ))}
-          </VStack>
+          </VStack> */}
 
           {/* Column 4: Contact & System Status */}
           <VStack align="flex-start" spacing={4} maxW="240px">

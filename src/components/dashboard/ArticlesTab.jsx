@@ -9,6 +9,11 @@ import {
 import { FiSearch, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { HiDotsVertical } from 'react-icons/hi';
 
+const cleanDescription = (text) => {
+  if (!text) return '';
+  return text.replace(/!\[.*?\]\(.*?\)/g, '').trim();
+};
+
 const ArticlesTab = ({ articles, onDeletePost, onEditPost }) => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -161,7 +166,7 @@ const ArticlesTab = ({ articles, onDeletePost, onEditPost }) => {
                   {article.title}
                 </Heading>
                 <Text fontSize="xs" color="mutedText" noOfLines={2} lineHeight="1.5" mb={4}>
-                  {article.description || article.content}
+                  {cleanDescription(article.description || article.content)}
                 </Text>
                 <HStack justify="space-between" align="center">
                   <Text fontSize="xs" color="mutedText">

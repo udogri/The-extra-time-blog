@@ -102,7 +102,7 @@ const LoginSignup = () => {
       alignItems="center"
       bg="bg"
       px={4}
-      w="100vw"
+      w="100%"
     >
       <Box
         bg="cardBg"

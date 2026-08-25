@@ -58,7 +58,7 @@ const ContactUs = () => {
   };
 
   return (
-    <Box minH="100vh" w="100vw" bg="bg" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
+    <Box minH="100vh" w="100%" bg="bg" display="flex" justifyContent="center" alignItems="center" p={{ base: 4, md: 8 }} pt="80px">
       <Box
         w="100%"
         maxW="800px"

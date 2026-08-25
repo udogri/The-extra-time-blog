@@ -74,7 +74,7 @@ const HomePage = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="bg">
+      <Box minH="100vh" w="100%" display="flex" justifyContent="center" alignItems="center" bg="bg">
         <VStack spacing={3}>
           <Spinner size="lg" color="teal.400" thickness="3px" />
           <Text fontSize="sm" color="mutedText">Loading creative log…</Text>
@@ -86,7 +86,7 @@ const HomePage = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="bg" pt="80px" pb={16}>
+    <Box minH="100vh" w="100%" bg="bg" pt="80px" pb={16}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* ── 1. PERSONAL HERO HEADER (MINIMALIST) ── */}
@@ -203,7 +203,7 @@ const HomePage = () => {
                 Welcome Earthlings!
               </Heading>
               <Text fontSize="md" color="mutedText" lineHeight="1.75">
-                Welcome to my little piece of real Estate in the World Wide Web (That's the full meaning of WWW). Here I get to share my boring life, web development, designing and the occasional voices in my head.
+                Welcome to my little piece of real Estate in the World Wide Web. Here I get to share my boring life, web development, designing and the occasional voices in my head.
 
               </Text>
               {/* <Text fontSize="sm" color="mutedText" lineHeight="1.75">

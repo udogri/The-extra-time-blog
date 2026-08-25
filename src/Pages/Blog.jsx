@@ -80,7 +80,7 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" w="100vw" display="flex" justifyContent="center" alignItems="center" bg="bg">
+      <Box minH="100vh" w="100%" display="flex" justifyContent="center" alignItems="center" bg="bg">
         <VStack spacing={3}>
           <Spinner size="lg" color="teal.400" thickness="3px" />
           <Text fontSize="sm" color="mutedText">Loading blog feed…</Text>
@@ -92,7 +92,7 @@ const Blog = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100vw" bg="bg" pt="100px" pb={20}>
+    <Box minH="100vh" w="100%" bg="bg" pt="100px" pb={20}>
       <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
         
         {/* Page Title & Search Header */}

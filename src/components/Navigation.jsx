@@ -93,7 +93,7 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
       borderColor="navBorder"
       px={6}
       color="navText"
-      w="100vw"
+      w="100%"
       position="fixed"
       zIndex="1000"
       backdropFilter="blur(12px)"

@@ -1,14 +1,59 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import {
-  VStack, SimpleGrid, Box, Flex, Heading, Text, HStack, Alert, AlertIcon, AlertTitle, AlertDescription, Button, useToast, useColorModeValue
+  VStack, SimpleGrid, Box, Flex, Heading, Text, HStack, Alert, AlertIcon, AlertTitle, AlertDescription, Button, useToast, useColorModeValue, Select
 } from '@chakra-ui/react';
 import { FiActivity, FiBookOpen, FiMail, FiInbox } from 'react-icons/fi';
 
 const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficError }) => {
   const toast = useToast();
+  const [filterPeriod, setFilterPeriod] = useState('total');
   
   // Analytics calculations
-  const totalArticleViews = articles.reduce((acc, curr) => acc + (curr.views || 0), 0);
+  const getFilteredStats = () => {
+    let siteVisits = 0;
+    let articleViews = 0;
+    let subscribersCount = 0;
+    let messagesCount = 0;
+    const dailyTraffic = trafficData.dailyTraffic || {};
+    
+    if (filterPeriod === 'total') {
+      siteVisits = trafficData.totalVisits || 0;
+      articleViews = articles.reduce((acc, curr) => acc + (curr.views || 0), 0);
+      subscribersCount = subscribers.length;
+      messagesCount = messages.length;
+    } else {
+      let daysToLookBack = 0;
+      if (filterPeriod === 'today') daysToLookBack = 0;
+      if (filterPeriod === '7days') daysToLookBack = 6;
+      if (filterPeriod === '1month') daysToLookBack = 29;
+
+      const cutoffDate = new Date();
+      cutoffDate.setHours(0, 0, 0, 0);
+      cutoffDate.setDate(cutoffDate.getDate() - daysToLookBack);
+      
+      subscribersCount = subscribers.filter(s => new Date(s.date) >= cutoffDate).length;
+      messagesCount = messages.filter(m => new Date(m.date) >= cutoffDate).length;
+
+      for (let i = 0; i <= daysToLookBack; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        
+        siteVisits += (dailyTraffic[dateStr] || 0);
+        
+        articles.forEach(art => {
+          if (art.dailyViews && art.dailyViews[dateStr]) {
+            articleViews += art.dailyViews[dateStr];
+          }
+        });
+      }
+    }
+    
+    return { siteVisits, articleViews, subscribersCount, messagesCount };
+  };
+
+  const { siteVisits, articleViews, subscribersCount, messagesCount } = getFilteredStats();
   
   const popularArticles = [...articles]
     .sort((a, b) => (b.views || 0) - (a.views || 0))
@@ -78,67 +123,92 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
       )}
       
       {/* 1. Core Analytics Cards */}
-      <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
-        {/* Card 1: Site Visits */}
-        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
-          <Flex justify="space-between" align="center">
-            <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Total Site Visits</Text>
-              <Heading size="md" color="text" fontWeight="800">
-                {trafficData.totalVisits || 0}
-              </Heading>
-            </VStack>
-            <Box bg={useColorModeValue('teal.50', 'rgba(49, 151, 149, 0.15)')} color="teal.500" p={3} borderRadius="lg">
-              <FiActivity size={20} />
-            </Box>
-          </Flex>
-        </Box>
+      <Box>
+        <Flex justify="flex-end" align="center" mb={4}>
+          <HStack spacing={3}>
+            <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase">Filter:</Text>
+            <Select 
+              value={filterPeriod} 
+              onChange={(e) => setFilterPeriod(e.target.value)} 
+              w="140px" 
+              size="sm" 
+              borderRadius="lg" 
+              bg="cardBg" 
+              borderColor="border"
+              color="text"
+              fontWeight="600"
+              cursor="pointer"
+            >
+              <option value="today">Today</option>
+              <option value="7days">Last 7 Days</option>
+              <option value="1month">1 Month</option>
+              <option value="total">Total Views</option>
+            </Select>
+          </HStack>
+        </Flex>
 
-        {/* Card 2: Article Reads */}
-        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
-          <Flex justify="space-between" align="center">
-            <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Article Views</Text>
-              <Heading size="md" color="text" fontWeight="800">
-                {totalArticleViews}
-              </Heading>
-            </VStack>
-            <Box bg={useColorModeValue('blue.50', 'rgba(49, 130, 206, 0.15)')} color="blue.500" p={3} borderRadius="lg">
-              <FiBookOpen size={20} />
-            </Box>
-          </Flex>
-        </Box>
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
+          {/* Card 1: Site Visits */}
+          <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+            <Flex justify="space-between" align="center">
+              <VStack align="flex-start" spacing={1}>
+                <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Site Visits</Text>
+                <Heading size="md" color="text" fontWeight="800">
+                  {siteVisits}
+                </Heading>
+              </VStack>
+              <Box bg={useColorModeValue('teal.50', 'rgba(49, 151, 149, 0.15)')} color="teal.500" p={3} borderRadius="lg">
+                <FiActivity size={20} />
+              </Box>
+            </Flex>
+          </Box>
 
-        {/* Card 3: Newsletter Subscribers */}
-        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
-          <Flex justify="space-between" align="center">
-            <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
-              <Heading size="md" color="text" fontWeight="800">
-                {subscribers.length}
-              </Heading>
-            </VStack>
-            <Box bg={useColorModeValue('purple.50', 'rgba(128, 90, 213, 0.15)')} color="purple.500" p={3} borderRadius="lg">
-              <FiMail size={20} />
-            </Box>
-          </Flex>
-        </Box>
+          {/* Card 2: Article Reads */}
+          <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+            <Flex justify="space-between" align="center">
+              <VStack align="flex-start" spacing={1}>
+                <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Article Views</Text>
+                <Heading size="md" color="text" fontWeight="800">
+                  {articleViews}
+                </Heading>
+              </VStack>
+              <Box bg={useColorModeValue('blue.50', 'rgba(49, 130, 206, 0.15)')} color="blue.500" p={3} borderRadius="lg">
+                <FiBookOpen size={20} />
+              </Box>
+            </Flex>
+          </Box>
 
-        {/* Card 4: Feedback Inbox */}
-        <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
-          <Flex justify="space-between" align="center">
-            <VStack align="flex-start" spacing={1}>
-              <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Feedback Inbox</Text>
-              <Heading size="md" color="text" fontWeight="800">
-                {messages.length}
-              </Heading>
-            </VStack>
-            <Box bg={useColorModeValue('orange.50', 'rgba(221, 107, 32, 0.15)')} color="orange.500" p={3} borderRadius="lg">
-              <FiInbox size={20} />
-            </Box>
-          </Flex>
-        </Box>
-      </SimpleGrid>
+          {/* Card 3: Newsletter Subscribers */}
+          <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+            <Flex justify="space-between" align="center">
+              <VStack align="flex-start" spacing={1}>
+                <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
+                <Heading size="md" color="text" fontWeight="800">
+                  {subscribersCount}
+                </Heading>
+              </VStack>
+              <Box bg={useColorModeValue('purple.50', 'rgba(128, 90, 213, 0.15)')} color="purple.500" p={3} borderRadius="lg">
+                <FiMail size={20} />
+              </Box>
+            </Flex>
+          </Box>
+
+          {/* Card 4: Feedback Inbox */}
+          <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+            <Flex justify="space-between" align="center">
+              <VStack align="flex-start" spacing={1}>
+                <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Feedback Inbox</Text>
+                <Heading size="md" color="text" fontWeight="800">
+                  {messagesCount}
+                </Heading>
+              </VStack>
+              <Box bg={useColorModeValue('orange.50', 'rgba(221, 107, 32, 0.15)')} color="orange.500" p={3} borderRadius="lg">
+                <FiInbox size={20} />
+              </Box>
+            </Flex>
+          </Box>
+        </SimpleGrid>
+      </Box>
 
       {/* 2. Visual Traffic Trend Chart */}
       <Box bg="cardBg" p={6} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">

@@ -126,14 +126,14 @@ const AddArticle = () => {
 
   if (!authChecked) {
     return (
-      <Box h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="center">
+      <Box h="100vh" w="100%" display="flex" alignItems="center" justifyContent="center">
         <Spinner size="lg" color="teal.500" thickness="3px" />
       </Box>
     );
   }
 
   return (
-    <Box minH="100vh" bg="bg" w="100vw" pt="80px" pb={16}>
+    <Box minH="100vh" bg="bg" w="100%" pt="80px" pb={16}>
       <Box maxW="780px" mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* Header bar */}

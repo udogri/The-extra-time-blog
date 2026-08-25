@@ -102,9 +102,11 @@ const ArticleDetails = () => {
           const hasViewed = sessionStorage.getItem(`viewed_art_${articleId}`);
           if (!hasViewed) {
             sessionStorage.setItem(`viewed_art_${articleId}`, 'true');
+            const dateStr = new Date().toISOString().split('T')[0];
             try {
               await updateDoc(doc(db, 'articles', articleId), {
-                views: increment(1)
+                views: increment(1),
+                [`dailyViews.${dateStr}`]: increment(1)
               });
             } catch (viewErr) {
               console.warn("Could not update article view count:", viewErr);

@@ -14,7 +14,7 @@ const NetworkError = ({ onRetry }) => {
       borderColor="gray.200"
       boxShadow="sm"
       p={6}
-      w="100vw"
+      w="100%"
       textAlign="center"
     >
       <VStack spacing={4}>

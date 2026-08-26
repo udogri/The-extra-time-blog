@@ -386,7 +386,6 @@ const ArticleDetails = () => {
             alt={article.title}
             borderRadius="xl"
             w="100%"
-            maxH="420px"
             objectFit="cover"
             mb={8}
           />
@@ -414,7 +413,7 @@ const ArticleDetails = () => {
               const alt = match[1];
               const url = match[2];
               elements.push(
-                <Box key={`img-${match.index}`} my={6} overflow="hidden" borderRadius="xl" border="1px solid" borderColor="border" bg="bg">
+                <Box key={`img-${match.index}`} my={6} overflow="hidden" borderRadius="xl">
                   <Image 
                     src={url} 
                     alt={alt || "Article Image"} 
@@ -426,7 +425,7 @@ const ArticleDetails = () => {
                     fallbackSrc="https://via.placeholder.com/800x400?text=Loading+Image..."
                   />
                   {alt && (
-                    <Text fontSize="xs" color="mutedText" textAlign="center" py={2} bg="cardBg" borderTop="1px solid" borderColor="border">
+                    <Text fontSize="xs" color="mutedText" textAlign="center" py={2} >
                       {alt}
                     </Text>
                   )}

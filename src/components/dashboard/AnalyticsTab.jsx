@@ -147,7 +147,7 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
           </HStack>
         </Flex>
 
-        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={5}>
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={5}>
           {/* Card 1: Site Visits */}
           <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
             <Flex justify="space-between" align="center">
@@ -179,7 +179,7 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
           </Box>
 
           {/* Card 3: Newsletter Subscribers */}
-          <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
+          {/* <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">
             <Flex justify="space-between" align="center">
               <VStack align="flex-start" spacing={1}>
                 <Text fontSize="xs" fontWeight="700" color="mutedText" textTransform="uppercase" letterSpacing="0.05em">Subscribers</Text>
@@ -191,7 +191,7 @@ const AnalyticsTab = ({ articles, subscribers, messages, trafficData, trafficErr
                 <FiMail size={20} />
               </Box>
             </Flex>
-          </Box>
+          </Box> */}
 
           {/* Card 4: Feedback Inbox */}
           <Box bg="cardBg" p={5} borderRadius="xl" border="1px solid" borderColor="border" boxShadow="2xl">

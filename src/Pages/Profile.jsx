@@ -323,7 +323,7 @@ const Profile = () => {
         {/* Tab-driven layout console */}
         <Tabs variant="soft-rounded" colorScheme="teal">
           <TabList bg="cardBg" p={1.5} borderRadius="xl" border="1px solid" borderColor="border" gap={1} overflowX="auto" boxShadow="md">
-            {['Analytics', 'Articles', 'Site Settings', 'Projects', 'Subscribers', 'Inbox'].map((tabName) => (
+            {['Analytics', 'Articles', 'Site Settings', 'Projects', 'Inbox'].map((tabName) => (
               <Tab
                 key={tabName}
                 fontSize="sm"
@@ -374,12 +374,12 @@ const Profile = () => {
               />
             </TabPanel>
 
-            <TabPanel p={0}>
+            {/* <TabPanel p={0}>
               <SubscribersTab 
                 subscribers={subscribers} 
                 onDeleteSubscriber={onDeleteSubscriber} 
               />
-            </TabPanel>
+            </TabPanel> */}
 
             <TabPanel p={0}>
               <InboxTab 

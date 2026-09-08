@@ -16,7 +16,9 @@ import { FiSun, FiMoon } from 'react-icons/fi';
 import { auth } from '../firebaseConfig';
 import PropTypes from 'prop-types';
 
-const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
+const Navbar = ({ isAuthenticated, isAdmin,
+  // onOpenNewsletter
+ }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const location = useLocation();
@@ -28,7 +30,7 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
     ...(isAdmin ? [{ name: 'Dashboard', path: '/profile' }] : []),
-    { name: 'Newsletter', action: onOpenNewsletter },
+    // { name: 'Newsletter', action: onOpenNewsletter },
   ];
 
   const handleLinkClick = () => { if (isOpen) onClose(); };
@@ -262,7 +264,7 @@ const Navbar = ({ isAuthenticated, isAdmin, onOpenNewsletter }) => {
 Navbar.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   isAdmin: PropTypes.bool,
-  onOpenNewsletter: PropTypes.func.isRequired,
+  // onOpenNewsletter: PropTypes.func.isRequired,
 };
 
 export default Navbar;

@@ -41,8 +41,13 @@ const HomePage = () => {
       setNetworkError(false);
       try {
         // Fetch Projects
+        // Fetch Projects and sort by latest date
         const projSnap = await getDocs(collection(db, 'projects'));
-        const projList = projSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const projList = projSnap.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+
         setProjects(projList);
 
         // Fetch Articles and sort by latest date

@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import {
   Box, Heading, Text, Button, VStack, useToast, Spinner,
   Image, HStack, Badge, Flex, SimpleGrid, Avatar, IconButton,
-  Divider, Center, Icon
+  Divider, Center, Icon,
+  Modal, ModalOverlay, ModalContent, ModalHeader,
+  ModalCloseButton, ModalBody, ModalFooter
 } from '@chakra-ui/react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
@@ -31,6 +33,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [activeProjectFilter, setActiveProjectFilter] = useState('All');
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -91,8 +94,8 @@ const HomePage = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100%" bg="bg" pt="80px" pb={16}>
-      <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
+    <Box minH="100vh" w="100%" bg="bg" py={3}>
+      <Box mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* ── 1. PERSONAL HERO HEADER (MINIMALIST) ── */}
         <Box
@@ -348,6 +351,8 @@ const HomePage = () => {
               {filteredProjects.map((proj) => (
                 <Box
                   key={proj.id}
+                  cursor="pointer"
+                  onClick={() => setSelectedProject(proj)}
                   bg="cardBg"
                   borderRadius="xl"
                   border="1px solid"
@@ -430,6 +435,149 @@ const HomePage = () => {
         </Box>
 
       </Box>
+      <Modal
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+        size="xl"
+        isCentered
+      >
+        <ModalOverlay backdropFilter="blur(4px)" />
+
+        <ModalContent
+          bg="cardBg"
+          color="text"
+          borderRadius="2xl"
+          overflow="hidden"
+        >
+          <ModalCloseButton zIndex={2} />
+
+          {selectedProject?.imageUrl && (
+            <Image
+              src={selectedProject.imageUrl}
+              alt={selectedProject.title}
+              w="100%"
+              h={{ base: '220px', md: '300px' }}
+              objectFit="cover"
+            />
+          )}
+
+          <ModalHeader
+            fontSize="xl"
+            fontWeight="800"
+            pt={6}
+            pb={2}
+            pr={12}
+          >
+            {selectedProject?.title}
+          </ModalHeader>
+
+          <ModalBody>
+            {selectedProject && (
+              <VStack align="stretch" spacing={5}>
+                <Badge
+                  alignSelf="flex-start"
+                  colorScheme={
+                    selectedProject.type === 'Web Development'
+                      ? 'teal'
+                      : 'purple'
+                  }
+                  variant="subtle"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                  fontSize="10px"
+                >
+                  {selectedProject.type}
+                </Badge>
+
+                {selectedProject.date && (
+                  <Text fontSize="xs" color="mutedText">
+                    {new Date(selectedProject.date).toLocaleDateString(
+                      'en-US',
+                      {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      }
+                    )}
+                  </Text>
+                )}
+
+                <Text
+                  fontSize="sm"
+                  color="mutedText"
+                  lineHeight="1.8"
+                >
+                  {selectedProject.description}
+                </Text>
+
+                {selectedProject.techStack?.length > 0 && (
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="700"
+                      color="text"
+                      mb={3}
+                    >
+                      Built with
+                    </Text>
+
+                    <Flex gap={2} flexWrap="wrap">
+                      {selectedProject.techStack.map((tool) => (
+                        <Badge
+                          key={tool}
+                          variant="subtle"
+                          colorScheme="gray"
+                          fontSize="10px"
+                          px={3}
+                          py={1}
+                          borderRadius="md"
+                        >
+                          {tool}
+                        </Badge>
+                      ))}
+                    </Flex>
+                  </Box>
+                )}
+              </VStack>
+            )}
+          </ModalBody>
+
+          <ModalFooter gap={3}>
+            {selectedProject?.githubUrl && (
+              <Button
+                as="a"
+                href={selectedProject.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                leftIcon={<FiGithub size={14} />}
+                size="sm"
+                variant="outline"
+                borderRadius="full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Source Code
+              </Button>
+            )}
+
+            {selectedProject?.liveUrl && (
+              <Button
+                as="a"
+                href={selectedProject.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                rightIcon={<FiExternalLink size={14} />}
+                size="sm"
+                colorScheme="teal"
+                borderRadius="full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Live Demo
+              </Button>
+            )}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

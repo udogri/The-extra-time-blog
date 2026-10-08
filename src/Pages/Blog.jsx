@@ -95,8 +95,8 @@ const Blog = () => {
   if (networkError) return <NetworkError onRetry={() => window.location.reload()} />;
 
   return (
-    <Box minH="100vh" w="100%" bg="bg" pt="100px" pb={20}>
-      <Box maxW="1100px" mx="auto" px={{ base: 4, md: 8 }}>
+    <Box minH="100vh" w="100%" bg="bg" py={10}>
+      <Box  mx="auto" px={{ base: 4, md: 8 }}>
 
         {/* Page Title & Search Header */}
         <Flex direction={{ base: 'column', md: 'row' }} align={{ base: 'flex-start', md: 'center' }} justify="space-between" mb={12} gap={6}>

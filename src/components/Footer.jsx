@@ -31,7 +31,7 @@ const Footer = ({ siteSettings }) => {
       <Box h="3px" w="100%" bgGradient="linear(to-r, teal.400, purple.400)" />
 
       {/* Main footer body */}
-      <Box maxW="1200px" mx="auto" px={{ base: 6, md: 10 }} py={{ base: 12, md: 16 }}>
+      <Box  mx="auto" px={{ base: 4, md: 8 }} py={{ base: 12, md: 16 }}>
         <Flex
           direction={{ base: 'column', md: 'row' }}
           justify="space-between"
@@ -168,9 +168,8 @@ const Footer = ({ siteSettings }) => {
       {/* Bottom Bar */}
       <Box borderTop="1px solid" borderColor="border" bg="footerAccentBg">
         <Flex
-          maxW="1200px"
           mx="auto"
-          px={{ base: 6, md: 10 }}
+          px={{ base: 4, md: 8 }}
           py={5}
           justify="space-between"
           align="center"
